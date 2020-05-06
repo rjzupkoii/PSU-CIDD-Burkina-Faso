@@ -7,6 +7,6 @@ The main repository for the simuation can be found at [maciekboni/PSU-CIDD-Malar
 ### Organziation
 Analysis/ - Scripts and data related to analysis subtasks (ex., movement calibration).
 
-Configuratoin / - Reference configurations for Burkina Faso.
+Configuration / - Reference configurations for Burkina Faso.
 
 GIS/ - Reference GIS files for Burkina Faso, as prepared for the simuation.
