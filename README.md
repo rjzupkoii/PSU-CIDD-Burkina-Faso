@@ -11,6 +11,8 @@ Analysis/Common   - Common MATLAB functions.
 
 Analysis/Movement - MATLAB scripts used for movement analysis and 
 
-Configuration/ - Reference configurations for Burkina Faso.
+Configuration/    - Reference configurations for Burkina Faso.
 
-GIS/ - Reference GIS files for Burkina Faso, as prepared for the simuation.
+Database/         - Queries used to extract data used for calibration or analysis.
+
+GIS/              - Reference GIS files for Burkina Faso, as prepared for the simuation.
