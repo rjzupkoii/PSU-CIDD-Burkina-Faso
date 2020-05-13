@@ -4,8 +4,12 @@
 
 import csv
 
+# Margin used for PfPR values
+MARGIN = 0.001
+
 BETAVALUES = '../../Data/bf-population-beta.csv'
 PFPRVALUES = '../../GIS/bf_pfpr_raster.asc'
+POPULATIONVALUES = '../../GIS/bf_pop_raster.asc'
 
 # Read the relevent data from the CSV file into a dictionary
 def load_betas():
@@ -20,13 +24,14 @@ def load_betas():
 
 
             # Append the beta and PfPR
-            lookup[row['population']].append([ row['pfpr2to10'], row['beta'] ])
+            lookup[row['population']].append( \
+                [ float(row['pfpr2to10']) / 100, float(row['beta']) ])
     return lookup
 
 
 # Read the ASC file and return the header / data
-def load_asc():
-    with open(PFPRVALUES) as ascfile:    
+def load_asc(filename):
+    with open(filename) as ascfile:    
         lines = ascfile.readlines()
 
         # Read the header values
@@ -66,10 +71,87 @@ def write_asc(ascheader, ascdata, filename):
             ascfile.write(row)
             ascfile.write('\n')
 
+
+# Get the beta values that generate the PfPR for the given popuation, with the
+# given margin of error.
+def get_betas(pfpr, population, lookup, margin):
+
+    # Note the bounds
+    low = pfpr - margin
+    high = pfpr + margin
+
+    # Scan the PfPR values for the popuation that are within the margin
+    betas = []
+    for value in lookup[str(get_bin(population))]:
+        if low <= value[0] and value[0] <= high:
+            betas.append(value[1])
+
+    # Note the list size if > 1
+    if len(betas) > 1: print(len(betas))
+
+    # Return the betas collected
+    return(betas)
+
+
+# Get the popuation bin (200, 2000, 20000, or 200000) that the value belongs to
+def get_bin(value):
+    if value <= 200: return 200
+    if value <= 2000: return 2000
+    if value <= 20000: return 20000
+    if value <= 200000: return 200000
+    return 200000
+    
+
+def main():               
+    # Load the relevent data
+    [ ascheader, pfpr ] = load_asc(PFPRVALUES)
+    [ ascheader, population ] = load_asc(POPULATIONVALUES)
+    lookup = load_betas()
+
+    # Prepare for the ASC data
+    minBeta = []
+    meanBeta = []
+    maxBeta = []
+
+    # Scan each of the rows 
+    for row in range(0, ascheader['nrows']):
+
+        # Append the empty rows
+        minBeta.append([])
+        meanBeta.append([])
+        maxBeta.append([])
+
+        # Scan each of the PfPR values    
+        for col in range(0, ascheader['ncols']):
+
+            # Append nodata and continue
+            if pfpr[row][col] == ascheader['nodata']:
+                minBeta[row].append(ascheader['nodata'])
+                meanBeta[row].append(ascheader['nodata'])
+                maxBeta[row].append(ascheader['nodata'])
+                continue
+
+            # Get the beta values
+            values = get_betas(pfpr[row][col], \
+                               population[row][col], lookup, MARGIN)
+
+            # Was nothing returned?
+            if len(values) == 0:
+                minBeta[row].append(0)
+                meanBeta[row].append(0)
+                maxBeta[row].append(0)
+                continue
+
+            # Get the min, mean, and max
+            minBeta[row].append(min(values))
+            meanBeta[row].append(sum(values) / len(values))
+            maxBeta[row].append(max(values))
             
+    # Write the results
+    write_asc(ascheader, minBeta, 'bf_min_beta.asc')
+    write_asc(ascheader, meanBeta, 'bf_mean_beta.asc')
+    write_asc(ascheader, maxBeta, 'bf_max_beta.asc')
 
-[ ascheader, ascdata ] = load_asc()
-write_asc(ascheader, ascdata, 'sample.asc')
-lookup = load_betas()
 
-
+if __name__ == "__main__":
+    main()
