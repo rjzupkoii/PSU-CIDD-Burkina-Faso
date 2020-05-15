@@ -23,9 +23,14 @@ def load_betas():
             if not row['population'] in lookup:
                 lookup[row['population']] = []
 
+            # Ignore the zeros
+            if float(row['pfpr2to10']) == 0:
+                continue
+
             # Append the beta and PfPR
             lookup[row['population']].append( \
                 [ float(row['pfpr2to10']) / 100, float(row['beta']) ])
+            
     return lookup
 
 
@@ -57,7 +62,7 @@ def write_asc(ascheader, ascdata, filename):
     with open(filename, 'w') as ascfile:
 
         # Write the header values
-        ascfile.write('ncols         ' + str(ascheader['ncols']) + '\n')
+        ascfile.write('ncols         ' + str(ascheader[' ncols']) + '\n')
         ascfile.write('nrows         ' + str(ascheader['nrows']) + '\n')
         ascfile.write('xllcorner     ' + str(ascheader['xllcorner']) + '\n')
         ascfile.write('yllcorner     ' + str(ascheader['yllcorner']) + '\n')
@@ -105,8 +110,13 @@ def get_betas_scan(pfpr, population, lookup, epsilon):
     # Scan the PfPR values for the popuation that are within the margin
     betas = []
     for value in lookup[str(get_bin(population))]:
+        # Add the value if it is in the bounds
         if low <= value[0] and value[0] <= high:
             betas.append(value[1])
+
+        # We assume the data is stored, so break once the high value is less
+        # than the current PfPR
+        if high < value[0]: break
 
     # Note the list size if > 1
     if len(betas) > 1: print(len(betas))
