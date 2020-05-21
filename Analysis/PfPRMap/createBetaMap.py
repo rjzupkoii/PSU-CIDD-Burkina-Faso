@@ -8,7 +8,7 @@ import csv
 EPSILON = 0.00001
 MAX_EPSILON = 1.0
 
-BETAVALUES = '../../Data/bf-population-beta.csv'
+BETAVALUES = '../../Data/bf-population-jenks-beta.csv'
 PFPRVALUES = '../../GIS/bf_pfpr_raster.asc'
 POPULATIONVALUES = '../../GIS/bf_pop_raster.asc'
 

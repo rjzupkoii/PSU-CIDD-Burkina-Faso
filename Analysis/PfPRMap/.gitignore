@@ -1,0 +1,2 @@
+# Script outputs ASC files, so ignore ones in this directory
+*.asc
