@@ -5,7 +5,7 @@
 import csv
 
 # Starting epsilon and delta to be used
-EPSILON = 0.00000001
+EPSILON = 0.00001
 MAX_EPSILON = 1.0
 
 BETAVALUES = '../../Data/bf-population-beta.csv'
@@ -62,7 +62,7 @@ def write_asc(ascheader, ascdata, filename):
     with open(filename, 'w') as ascfile:
 
         # Write the header values
-        ascfile.write('ncols         ' + str(ascheader[' ncols']) + '\n')
+        ascfile.write('ncols         ' + str(ascheader['ncols']) + '\n')
         ascfile.write('nrows         ' + str(ascheader['nrows']) + '\n')
         ascfile.write('xllcorner     ' + str(ascheader['xllcorner']) + '\n')
         ascfile.write('yllcorner     ' + str(ascheader['yllcorner']) + '\n')
@@ -109,7 +109,7 @@ def get_betas_scan(pfpr, population, lookup, epsilon):
 
     # Scan the PfPR values for the popuation that are within the margin
     betas = []
-    for value in lookup[str(get_bin(population))]:
+    for value in lookup[str(get_bin(population, lookup.keys()))]:
         # Add the value if it is in the bounds
         if low <= value[0] and value[0] <= high:
             betas.append(value[1])
@@ -125,13 +125,20 @@ def get_betas_scan(pfpr, population, lookup, epsilon):
     return(betas)
 
 
-# Get the popuation bin (200, 2000, 20000, or 200000) that the value belongs to
-def get_bin(value):
-    if value <= 200: return 200
-    if value <= 2000: return 2000
-    if value <= 20000: return 20000
-    if value <= 200000: return 200000
-    return 200000
+# Get the popuation bin that the value belongs to
+def get_bin(value, bins):
+    # Sort the bins and step through them
+    bins.sort()
+    for item in bins:
+        if value < item:
+            return item
+
+    # For values greater than the largest bin, return that one
+    if item >= max(bins):
+        return max(bins)
+
+    # Throw an error if we coudln't find a match (shouldn't happen)
+    raise Exception("Matching bin not found for value: " + str(value))
     
 
 def main():               
