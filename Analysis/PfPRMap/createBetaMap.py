@@ -158,10 +158,10 @@ def main():
             print(row, col)
             
     # Write the results
-    write_asc(ascheader, epsilons, 'bf_epsilons_beta.asc')
-    write_asc(ascheader, minBeta, 'bf_min_beta.asc')
-    write_asc(ascheader, meanBeta, 'bf_mean_beta.asc')
-    write_asc(ascheader, maxBeta, 'bf_max_beta.asc')
+    write_asc(ascheader, epsilons, 'out/bf_epsilons_beta.asc')
+    write_asc(ascheader, minBeta, 'out/bf_min_beta.asc')
+    write_asc(ascheader, meanBeta, 'out/bf_mean_beta.asc')
+    write_asc(ascheader, maxBeta, 'out/bf_max_beta.asc')
 
 
 if __name__ == "__main__":
