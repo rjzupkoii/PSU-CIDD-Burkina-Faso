@@ -39,7 +39,7 @@ start_collect_data_day: 1826
 # Number of days to keep track total number of parasites in population
 number_of_tracking_days: 11
 
-# Tranmission parameter based upon MMC data, adjusts the odds that
+# Transmission parameter based upon MMC data, adjusts the odds that
 # an individual will be infected when challenged by sporozoites
 transmission_parameter: 0.55
 
@@ -50,8 +50,7 @@ age_structure: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 15, 20, 60, 100]
 # Age structure used when initializing the model at T-0
 initial_age_structure: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 25, 35, 45, 55, 65, 100]
 
-# population_size_by_location is scaled by this value to increase the total 
-# number of individuals in the model
+# Scaling of the population in the model
 artificial_rescaling_of_population_size: 1.0
 
 # ---------------------------------------------------------------
@@ -70,9 +69,8 @@ raster_db:
   # Set the cell size used by raster, in sq.km
   cell_size: 5
 
-  # TODO Update these values!
-  # When raster files are being used, we assume that the age distribution can be constant for the country
-  age_distribution_by_location: [[0.0334, 0.0300, 0.0329, 0.0324, 0.0332, 0.0314, 0.0316, 0.0310, 0.0285, 0.0256, 0.0298, 0.0212, 0.0321, 0.0228, 0.0230, 0.1906, 0.1403, 0.0966, 0.0605, 0.0344, 0.0387]]
+  # Approximate national age distribution for Burkina Faso
+  age_distribution_by_location: [[0.0346, 0.0346, 0.0346, 0.0346, 0.034, 0.034, 0.034, 0.034, 0.034, 0.0294, 0.0294, 0.0294, 0.0294, 0.0294, 0.158, 0.122, 0.094, 0.062, 0.043, 0.031, 0]]
 
   # probability that a symptomatic and infected individual seeks and receives antimalarial treatment
   #if the number of values less than number of locations, the first value will be applied for all locations
@@ -102,9 +100,8 @@ spatial_model:
     capital: 14
     penalty: 12
 
-# TODO Update with USAID values
-# below value indicates 37.25 births per 1000 individuals per year
-birth_rate: 0.03725
+# Crude Birth Rate: 35.1 (BF2017MIS)
+birth_rate: 0.0351
 
 # TODO 
 # annual death rate (probability) by age group
@@ -350,6 +347,7 @@ initial_parasite_info:
 #               to intermediate concentrations, and then decreases linearly from intermediate concentrations to zero
 #
 drug_db:
+  # Used
   0:
     name: "artmisinin"
     half_life: 0.0
@@ -406,6 +404,8 @@ drug_db:
       16...: 1.05
       #TYFYF
       17...: 0.95
+      
+  # Used
   2:
     name: "amodiaquine"
     half_life: 9.0
@@ -483,6 +483,8 @@ drug_db:
        .5... : 1.1
        .6... : 1.1
        .7... : 1.1
+       
+  # Used       
   5:
     name: "SP"
     half_life: 6.5
@@ -495,6 +497,8 @@ drug_db:
     k: 4
     EC50:
       .....: 1.08
+      
+  # Used
   6:
     name: "CQ"
     half_life: 10
