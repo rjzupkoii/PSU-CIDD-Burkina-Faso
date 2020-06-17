@@ -78,7 +78,7 @@ raster_db:
   p_treatment_for_less_than_5_by_location: [0.72]
   p_treatment_for_more_than_5_by_location: [0.72]
 
-  # Will be overriden by beta_raster
+  # Will be overridden by beta_raster
   beta_by_location: [ -1 ]
 
 # TODO Find this for Burkina Faso
@@ -100,8 +100,8 @@ spatial_model:
     capital: 14
     penalty: 12
 
-# Crude Birth Rate: 35.1 (BF2017MIS)
-birth_rate: 0.0351
+# Crude Birth Rate: 37.5 based upon UN data
+birth_rate: 0.0375
 
 # Malaria adjusted, all-causes death rate for Burkina Faso
 death_rate_by_age_class: [0.0382, 0.03019, 0.02027, 0.01525, 0.01248, 0.00359, 0.00361, 0.00365, 0.00379, 0.00379, 0.00386, 0.0059, 0.00664, 0.01727, 0.36621]
@@ -156,7 +156,7 @@ immune_system_information:
   # parameter kappa in supplement of 2015 LGH paper
   factor_effect_age_mature_immunity: 1
 
-# Settings that determine how long an indivdiual stays in a given location
+# Settings that determine how long an individual stays in a given location
 circulation_info:
   max_relative_moving_value: 35
   number_of_moving_levels: 100
@@ -167,14 +167,13 @@ circulation_info:
     Gamma:
       mean: 5
       sd: 10
-  # Percentage of the popuation selected for movement outside of their cell each timestep
+  # Percentage of the population selected for movement outside of their cell each timestep
   circulation_percent: 0.00336
   length_of_stay:
     mean: 5
     sd: 10
 
-# TODO Verify values
-# Define locations of drug resitant genes
+# Define locations of drug resistant genes
 genotype_info:
   loci:
     # here we start defining the first locus
@@ -292,28 +291,14 @@ genotype_info:
           mutation_level: 1
           daily_cost_of_resistance: 0.0005
 
-
+# Definition for initial parasite
 #
-# initialize parasite population
-# day-location - id - number
-# day= 0 is 7 days ago
+# 1. loc 
+# 2. id (this is the resistance type of the parasite) 
+# 3. prevalence unweighted by biting rate
 #
-# this is all currently based on the fact that development inside the moquito takes 7 days (DiM=7)
-# but, we will want to do sensitivity analyses that allow us to look at DiM=10, DiM=14 and so on.
-#
-# so, for the IC (inital conditions) below we can just assume that if we had 600 infected persons 3 days ago,
-# that the number of infected persons 1 day ago and 5 days ago wa salso 600; in other words, we can remove column
-# one from here
-#
-
-#
-#
-# NOV 19 2009: the new input method should look like this
-# so that we don't have to put DiM explicitly into the input file
-#
-#1. loc 2. id (this is the resistance type of the parasite) 3. prevalence unweighted by biting rate
+# location id is -1 results in all locations having the same initial parasites
 initial_parasite_info:
-  #if location id is -1 all location will have the same initial parasites
   - location_id: -1
     parasite_info:
       #TNY__C1x
@@ -322,8 +307,10 @@ initial_parasite_info:
       - parasite_type_id: 72
         prevalence: 0.05
 
-# TODO Verify against USAID drugs
-# drug information below
+# Events for Burkina Faso
+events:
+
+# Drug Information
 #
 # maximum_parasite_killing_rate: 
 #       e.g. 0.999 means the drug can kill 99.9% of parasites in 1 day if a person has 
@@ -346,9 +333,9 @@ initial_parasite_info:
 #               to intermediate concentrations, and then decreases linearly from intermediate concentrations to zero
 #
 drug_db:
-  # Used
+  # Burkina Faso Treatments
   0:
-    name: "artmisinin"
+    name: "ART"       # Artemisinin
     half_life: 0.0
     maximum_parasite_killing_rate: 0.999
     n: 25
@@ -361,52 +348,7 @@ drug_db:
       ..0..: 0.75
       ..1..: 1.2
   1:
-    name: "lumefantrine"
-    half_life: 4.5
-    maximum_parasite_killing_rate: 0.99
-    n: 20
-    age_specific_drug_concentration_sd: [0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4]
-    mutation_probability: 0.005
-    affecting_loci: [0,1]
-    selecting_alleles: [[0],[0,2,3,4,6,7]]
-    k: 4
-    EC50:
-      #KNY--
-      00...: 0.8
-      #KYY--
-      01...: 0.67
-      #KNF--
-      02...: 0.9
-      #KYF--
-      03...: 0.8
-      #KNYNY
-      04...: 1.0
-      #KYYYY
-      05...: 0.87
-      #KNFNF
-      06...: 1.1
-      #KYFYF
-      07...: 1.0
-      #TNY--
-      10...: 0.75
-      #TYY--
-      11...: 0.6
-      #TNF--
-      12...: 0.85
-      #TYF--
-      13...: 0.75
-      #TNYNY
-      14...: 0.95
-      #TYYNY
-      15...: 0.8
-      #TNFNF
-      16...: 1.05
-      #TYFYF
-      17...: 0.95
-      
-  # Used
-  2:
-    name: "amodiaquine"
+    name: "ADQ"       # Amodiaquine
     half_life: 9.0
     maximum_parasite_killing_rate: 0.95
     n: 19
@@ -447,45 +389,9 @@ drug_db:
       #TNFNF
       16...: 0.65
       #TYFYF
-      17...: 0.82
-  3:
-    name: "piperaquine"
-    half_life: 28.0
-    maximum_parasite_killing_rate: 0.9
-    n: 15
-    age_specific_drug_concentration_sd: [0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4]
-    mutation_probability: 0.005
-    affecting_loci: [3]
-    selecting_alleles: [[1]]
-    resistant_factor: [[1]]
-    k: 4
-    EC50:
-      ...0.: 0.58
-      ...1.: 1.4
-  #MQ
-  4:
-    name: "Mefloquine"
-    half_life: 21.0
-    maximum_parasite_killing_rate: 0.9
-    n: 15
-    age_specific_drug_concentration_sd: [0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4]
-    mutation_probability: 0.005
-    affecting_loci: [1]
-    selecting_alleles: [[4,5,6,7]]
-    k: 4
-    EC50:
-       .0... : 0.45
-       .1... : 0.45
-       .2... : 0.45
-       .3... : 0.45
-       .4... : 1.1
-       .5... : 1.1
-       .6... : 1.1
-       .7... : 1.1
-       
-  # Used       
-  5:
-    name: "SP"
+      17...: 0.82      
+  2:
+    name: "SP"        # Sulfadoxine/pyrimethamine
     half_life: 6.5
     maximum_parasite_killing_rate: 0.9
     n: 15
@@ -496,10 +402,8 @@ drug_db:
     k: 4
     EC50:
       .....: 1.08
-      
-  # Used
-  6:
-    name: "CQ"
+  3:
+    name: "CQ"      # Chloroquine
     half_life: 10
     maximum_parasite_killing_rate: 0.95
     n: 19
@@ -540,184 +444,149 @@ drug_db:
       #TNFNF
       16...: 1.19
       #TYFYF
-      17...: 1.35
-
-
-lumefantrine_drug_id: 2
+      17...: 1.35     
+  4:
+    name: "LUM"       # Lumefantrine
+    half_life: 4.5
+    maximum_parasite_killing_rate: 0.99
+    n: 20
+    age_specific_drug_concentration_sd: [0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4]
+    mutation_probability: 0.005
+    affecting_loci: [0,1]
+    selecting_alleles: [[0],[0,2,3,4,6,7]]
+    k: 4
+    EC50:
+      #KNY--
+      00...: 0.8
+      #KYY--
+      01...: 0.67
+      #KNF--
+      02...: 0.9
+      #KYF--
+      03...: 0.8
+      #KNYNY
+      04...: 1.0
+      #KYYYY
+      05...: 0.87
+      #KNFNF
+      06...: 1.1
+      #KYFYF
+      07...: 1.0
+      #TNY--
+      10...: 0.75
+      #TYY--
+      11...: 0.6
+      #TNF--
+      12...: 0.85
+      #TYF--
+      13...: 0.75
+      #TNYNY
+      14...: 0.95
+      #TYYNY
+      15...: 0.8
+      #TNFNF
+      16...: 1.05
+      #TYFYF
+      17...: 0.95       
+  # --- NOT USED / NOT commonly used in Burkina Faso --- 
+  5:
+    name: "piperaquine"
+    half_life: 28.0
+    maximum_parasite_killing_rate: 0.9
+    n: 15
+    age_specific_drug_concentration_sd: [0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4]
+    mutation_probability: 0.005
+    affecting_loci: [3]
+    selecting_alleles: [[1]]
+    resistant_factor: [[1]]
+    k: 4
+    EC50:
+      ...0.: 0.58
+      ...1.: 1.4
+  6:
+    name: "Mefloquine"
+    half_life: 21.0
+    maximum_parasite_killing_rate: 0.9
+    n: 15
+    age_specific_drug_concentration_sd: [0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4]
+    mutation_probability: 0.005
+    affecting_loci: [1]
+    selecting_alleles: [[4,5,6,7]]
+    k: 4
+    EC50:
+       .0... : 0.45
+       .1... : 0.45
+       .2... : 0.45
+       .3... : 0.45
+       .4... : 1.1
+       .5... : 1.1
+       .6... : 1.1
+       .7... : 1.1
+         
+# Drug IDs for the model
 artemisinin_drug_id: 0
+lumefantrine_drug_id: 4
 
-# therapy info
-# the drug_ids that make up the therapy, and the number of days that the therapy is prescribed for 
+# Therapies that are used in Burkina Faso
+#
+# drug_id -     The ids from the above drug_db that make up the therapy
+# dosing_days - The number of days that the therapy is prescribed for 
+#
 # testing day tells you the follow-up point at which it is determined if treatment failed or not
 tf_testing_day: 28
-
 therapy_db:
-  #mono as
+  # Burkina Faso Treatments
+  # ACT - artesunate–amodiaquine (ASAQ)
   0:
-    drug_id: [0]
-    dosing_days: [3]
-  #mono Lumefaltrine
-  1:
-    drug_id: [1]
-    dosing_days: [3]
-  #mono AQ
-  2:
-    drug_id: [2]
-    dosing_days: [3]
-  #mono PPQ
-  3:
-    drug_id: [3]
-    dosing_days: [3]
-  #mono MQ
-  4:
-    drug_id: [4]
-    dosing_days: [3]
-  #mono SP
-  5:
-    drug_id: [5]
-    dosing_days: [3]
-  #AL
-  6:
     drug_id: [0,1]
-    dosing_days: [3]
-  #AS-AQ
-  7:
-    drug_id: [0,2]
-    dosing_days: [3]
-  # DHA-PPQ
-  8:
-    drug_id: [0,3]
-    dosing_days: [3]
-  #AS-MQ
-  9:
+    dosing_days: [3] 
+  # ACT - artemether–lumefantrine (AL) 
+  1:
     drug_id: [0,4]
     dosing_days: [3]
-  #TACT DHA-PPQ-MQ
-  10:
-    drug_id: [0,3,4]
+  # MONO - Amodiaquine (ADQ)
+  2:
+    drug_id: [1]
     dosing_days: [3]
-  #TACT AL-AQ
-  11:
-    drug_id: [0,1,2]
+  # MONO - Artesunate (ART)
+  3:
+    drug_id: [0]
     dosing_days: [3]
-  #CQ
-  12:
-    drug_id: [6]
+  # MONO - Chloroquine (CQ)
+  4:
+    drug_id: [3]
+    dosing_days: [3]
+  # MONO - Sulfadoxine/pyrimethamine (SP)
+  5:
+    drug_id: [2]
     dosing_days: [3]
 
-# drug-deployment strategy - simply uncomment below to turn on a particular strategy
+# Drug-deployment strategy - baseline represents the survey data for Burkina Faso
 strategy_db:
   0:
-    name: SP-AQ-CQ-AL-MFTStrategy
+    # ASAQ, AL, ADQ, ART, CQ, SP, Quinine shifted over to ART
+    name: BurkinaFaso-Baseline
     type: MFT
-    therapy_ids: [5,2,12,6]
-    distribution: [0.3,0.3,0.3,0.1]
-  1:
-    name: AL-SFTStrategy
-    type: SFT
-    therapy_id: 6
-  2:
-    name: ASAQ-SFTStrategy
-    type: SFT
-    therapy_id: 7
-  3:
-    name: CyclingStrategy
-    type: Cycling
-    therapy_ids: [8,7,6]
-    cycling_time: 1825
-  4:
-    name: AdaptiveCyclingStrategy
-    type: AdaptiveCycling
-    therapy_ids: [8,7,6]
-    trigger_value: 0.1
-    delay_until_actual_trigger: 365
-    turn_off_days: 365
-  5:
-    name: MFTStrategy
-    type: MFT
-    therapy_ids: [8,7,6]
-    distribution: [0.333333,0.333333,0.333334]
-  6:
-    name: AL-ASAQ-DP-MFTRebalancingStrategy1
-    type: MFTRebalancing
-    therapy_ids: [8,7,6]
-    distribution: [0.333333,0.333333,0.333334]
-    delay_until_actual_trigger: 365
-    update_duration_after_rebalancing: 365
-  7:
-    name: AL-ASAQ-DP-MFTRebalancingStrategy2
-    type: MFTRebalancing
-    therapy_ids: [8,7,6]
-    distribution: [0.333333,0.333333,0.333334]
-    delay_until_actual_trigger: 365
-    update_duration_after_rebalancing: 730
-  8:
-    name: AL-ASAQ-DP-MFTRebalancingStrategy4
-    type: MFTRebalancing
-    therapy_ids: [8,7,6]
-    distribution: [0.333333,0.333333,0.333334]
-    delay_until_actual_trigger: 365
-    update_duration_after_rebalancing: 1460
-  9:
-    name: DPM-SFTStrategy
-    type: SFT
-    therapy_id: 10
-  10:
-    name: AL-AQ-SFTStrategy
-    type: SFT
-    therapy_id: 11
-  11:
-    name: AL-BaseLineStrategy
-    type: NestedMFT
-    strategy_ids: [1,0]
-    start_distribution: [0.05, 0.95]
-    peak_distribution: [0.8,0.2]
-    peak_after: 3650
-  12:
-    name: ASAQ-BaseLineStrategy
-    type: NestedMFT
-    strategy_ids: [2,0]
-    start_distribution: [0.05, 0.95]
-    peak_distribution: [0.8,0.2]
-    peak_after: 3650
-  13:
-    name: MFTMultiLocation
-    type: MFTMultiLocation
-    therapy_ids: [6,8,10,7,9]
-    start_distribution: [[0.84,0.06,0.05,0.03,0.02]]
-    peak_distribution: [[0.84,0.06,0.05,0.03,0.02]]
-    peak_after: 365
-  14:
-    name: BaseLineStrategy
-    type: NestedMFTMultiLocation
-    strategy_ids: [0,1]
-    start_distribution: [[0.05, 0.95]]
-    peak_distribution: [[0.8,0.2]]
-    peak_after: 3650
+    therapy_ids: [0, 1, 2, 3, 4, 5]
+    distribution: [0.383, 0.383, 0.124, 0.078, 0.015, 0.016]
+initial_strategy_id: 0
 
-initial_strategy_id: 5
-
-# this number use to detemine whether a therapy is "useful" or not and it is used to calculate 
+# This number use to determine whether a therapy is "useful" or not and it is used to calculate 
 # the useful therapeutic duration of a therapy
 tf_rate: 0.1
 
-# days from end of liver-stage infection to appearance of symptoms
+# Days from end of liver-stage infection to appearance of symptoms
 days_to_clinical_under_five: 4
 days_to_clinical_over_five: 6
 
-# days that parasites develop mature gametocyte after exiting liverstage
-# please read the documentation carefully - there are no explicit gametocytes in
-# v3.0.2 of the simulation
+# Days that parasites develop mature gametocyte after exiting liver stage
 days_mature_gametocyte_under_five: 4
 days_mature_gametocyte_over_five: 6
 
-# probability that a patient completes a course of treatment
+# Probability of patient compliance
 p_compliance: 1
 
-# this functionality works. It is used when p_compliance (above) is less than 1.
-# It was not used in any analyses for the 2015 LGH paper where p_compliance is always 1.
-# this guarantees that the minimum number of dosing days for a poorly-complying 
-# patient is still 1
+# Minimum dosing days if patient compliance is < 1 - EFFECTIVELY DISABLED 
 min_dosing_days: 1
 
 # relative biting rates for individuals; uncomment "distribution: Exponential" to use an
@@ -811,44 +680,9 @@ fraction_mosquitoes_interrupted_feeding: 0.0
 
 inflation_factor: 0.01
 
-events:
-  - name: introduce_plas2_parasites
-    info:
-      - location: 0
-        day: 1990/3/20
-        fraction: 0.01
 
-  - name: introduce_parasites
-    info:
-      - location: 0
-        parasite_info:
-          - day: 1990/3/20
-            genotype_id: 1
-            number_of_cases: 5
-          - day: 1990/4/15
-            genotype_id: 2
-            number_of_cases: 5
-      - location: 1
-        parasite_info:
-          - day: 1990/8/25
-            genotype_id: 4
-            number_of_cases: 5
-          - day: 1990/10/20
-            genotype_id: 8
-            number_of_cases: 5
-  - name: introduce_parasites_periodically
-    info:
-      - location: 0
-        parasite_info:
-          - duration: 10
-            genotype_id: -1
-            number_of_cases: 1
-            start_day: 1990/6/2
-
+# Settings for MDAs - NOT USED
 mda_therapy_id: 8
-
 age_bracket_prob_individual_present_at_mda: [10, 40]
-
 mean_prob_individual_present_at_mda: [0.85, 0.75, 0.85]
-
 sd_prob_individual_present_at_mda: [0.3, 0.3, 0.3]
