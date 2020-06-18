@@ -373,9 +373,8 @@ drug_db:
       16...: 1.05
       #TYFYF
       17...: 0.95       
-  # --- NOT USED / NOT commonly used in Burkina Faso --- 
   5:
-    name: "piperaquine"
+    name: "PQ"        # Piperaquine
     half_life: 28.0
     maximum_parasite_killing_rate: 0.9
     n: 15
@@ -388,8 +387,8 @@ drug_db:
     EC50:
       ...0.: 0.58
       ...1.: 1.4
-  6:
-    name: "Mefloquine"
+  7:
+    name: "MF"      # Mefloquine
     half_life: 21.0
     maximum_parasite_killing_rate: 0.9
     n: 15
@@ -423,37 +422,45 @@ therapy_db:
   # Burkina Faso Treatments
   # ACT - artesunate–amodiaquine (ASAQ)
   0:
-    drug_id: [0,1]
+    drug_id: [0, 1]
     dosing_days: [3] 
   # ACT - artemether–lumefantrine (AL) 
   1:
-    drug_id: [0,4]
+    drug_id: [0, 4]
+    dosing_days: [3]
+  # ACT - artesunate-mefloquine (ASMQ)
+  2:
+    drug_id: [0, 7]
+    dosing_days: [3]
+  # ACT - Dihydroartemisinin-piperaquine (DP)
+  3:
+    drug_id: [0, 5]
     dosing_days: [3]
   # MONO - Amodiaquine (ADQ)
-  2:
+  4:
     drug_id: [1]
     dosing_days: [3]
-  # MONO - Artesunate (ART)
-  3:
+  # MONO - Artesunate (AS)
+  5:
     drug_id: [0]
     dosing_days: [3]
   # MONO - Chloroquine (CQ)
-  4:
+  6:
     drug_id: [3]
     dosing_days: [3]
-  # MONO - Sulfadoxine/pyrimethamine (SP)
-  5:
+  # COMBINATION - Sulfadoxine/pyrimethamine (SP)
+  7:
     drug_id: [2]
     dosing_days: [3]
 
 # Drug-deployment strategy - baseline represents the survey data for Burkina Faso
 strategy_db:
   0:
-    # ASAQ, AL, ADQ, ART, CQ, SP, Quinine shifted over to ART
+    # AL, ASAQ, ASMQ, DP, ADQ, AS, CQ, SP
     name: BurkinaFaso-Baseline
     type: MFT
-    therapy_ids: [0, 1, 2, 3, 4, 5]
-    distribution: [0.383, 0.383, 0.124, 0.078, 0.015, 0.016]
+    therapy_ids: [0, 1, 2, 3, 4, 5, 6, 7]
+    distribution: [0.72, 0.026, 0.014, 0.052, 0.131, 0.024, 0.016, 0.017]
 initial_strategy_id: 0
 
 # This number use to determine whether a therapy is "useful" or not and it is used to calculate 
