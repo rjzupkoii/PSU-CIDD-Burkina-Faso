@@ -113,6 +113,7 @@ def main():
     minBeta = []
     meanBeta = []
     maxBeta = []
+    adjusted = []
 
     # Scan each of the rows 
     for row in range(0, ascheader['nrows']):
@@ -122,6 +123,7 @@ def main():
         minBeta.append([])
         meanBeta.append([])
         maxBeta.append([])
+        adjusted.append([])
 
         # Scan each of the PfPR values    
         for col in range(0, ascheader['ncols']):
@@ -132,6 +134,7 @@ def main():
                 minBeta[row].append(ascheader['nodata'])
                 meanBeta[row].append(ascheader['nodata'])
                 maxBeta[row].append(ascheader['nodata'])
+                adjusted[row].append(ascheader['nodata'])
                 continue
 
             # Get the beta values
@@ -144,6 +147,7 @@ def main():
                 minBeta[row].append(0)
                 meanBeta[row].append(0)
                 maxBeta[row].append(0)
+                adjusted[row].append(0)
                 continue
 
             # Note the epsilon
@@ -154,6 +158,12 @@ def main():
             meanBeta[row].append(sum(values) / len(values))
             maxBeta[row].append(max(values))
 
+            # Adjust the value from untreated to treated
+            beta = min(values)
+            diff = (-1.24 * pow(beta, 2) + 4.88 * beta + 2.13) / 100
+            [values, epsilon] = get_betas(pfpr[row][col] - diff, population[row][col], lookup)
+            adjusted[row].append(min(values))            
+
             # Note the progress
             print(row, col)
             
@@ -162,6 +172,7 @@ def main():
     write_asc(ascheader, minBeta, 'out/bf_min_beta.asc')
     write_asc(ascheader, meanBeta, 'out/bf_mean_beta.asc')
     write_asc(ascheader, maxBeta, 'out/bf_max_beta.asc')
+    write_asc(ascheader, adjusted, 'out/bf_adjusted_beta.asc')
 
 
 if __name__ == "__main__":
