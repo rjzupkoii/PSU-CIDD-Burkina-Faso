@@ -59,9 +59,7 @@ artificial_rescaling_of_population_size: 1.0
 # ---------------------------------------------------------------
 raster_db:
   # One cell raster files
-  population_raster: "raster/pixel.asc"
-  district_raster: "raster/pixel.asc"
-  travel_raster: "raster/pixel.asc"
+  population_raster: "single.asc" 
     
   # Set the cell size used by raster, in sq.km
   cell_size: 5
@@ -69,11 +67,9 @@ raster_db:
   # Approximate national age distribution for Burkina Faso
   age_distribution_by_location: [[0.0346, 0.0346, 0.0346, 0.0346, 0.034, 0.034, 0.034, 0.034, 0.034, 0.0294, 0.0294, 0.0294, 0.0294, 0.0294, 0.158, 0.122, 0.094, 0.062, 0.043, 0.031, 0]]
 
-  # probability that a symptomatic and infected individual seeks and receives antimalarial treatment
-  #if the number of values less than number of locations, the first value will be applied for all locations
-  # this is the initial value, the modification values can be change by setting in events node
-  p_treatment_for_less_than_5_by_location: [0.72]
-  p_treatment_for_more_than_5_by_location: [0.72]
+  # Since we are calibrating the treatment, all the individuals receive treatment
+  p_treatment_for_less_than_5_by_location: [1.0]
+  p_treatment_for_more_than_5_by_location: [1.0]
 
   # No further transmission to keep things simple
   beta_by_location: [ 0 ]
@@ -88,13 +84,12 @@ seasonal_info:
 
 # No movement
 spatial_model:
-  name: "BurkinaFaso"
-  BurkinaFaso:
+  name: "Wesolowski"
+  Wesolowski:
+    kappa: 0
     alpha: 0
-    log_rho: 0
-    tau: 0
-    capital: 0
-    penalty: 0
+    beta:  0
+    gamma: 0
 
 # Crude Birth Rate: 37.5 based upon UN data
 birth_rate: 0.0375
@@ -304,8 +299,7 @@ strategy_db:
   0:
     name: Calibration
     type: SFT
-    therapy_ids: [0]
-    distribution: [1.0]
+    therapy_id: 0
 initial_strategy_id: 0
 
 # Treatment failures are set to zero to keep things simple
