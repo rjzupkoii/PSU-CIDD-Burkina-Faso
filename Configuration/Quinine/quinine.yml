@@ -29,10 +29,10 @@ report_frequency: 1
 # ---------------------------------------------------------------
 # Since we are looking at treatment, we can start recording at T+0
 starting_date: 2020/06/1
-start_of_comparison_period: 2020/06/29
+start_of_comparison_period: 2020/06/1
 
-# End at T+28 days of treatment plus two day buffer
-ending_date: 2020/06/29
+# End the next month to provide some buffer
+ending_date: 2020/08/01
 
 # Start collecting immediately
 start_collect_data_day: 0 
@@ -111,7 +111,7 @@ parasite_density_level:
   log_parasite_density_clinical_from:   3.301    # corresponds to 2000 parasites per microliter of blood (total 10^10)
   log_parasite_density_clinical_to:     5.301    # corresponds to 200,000 parasites per microliter of blood (total 10^12)
   log_parasite_density_detectable:      1.000    # corresponds to 10 parasites per microliter of blood
-  log_parasite_density_detectable_pfpr: 1.000    # corresponds to 100 parasites per microliter of blood
+  log_parasite_density_detectable_pfpr: 2.000    # corresponds to 100 parasites per microliter of blood
   log_parasite_density_pyrogenic:       3.398    # corresponds to 2500 parasites per microliter of blood
 
 immune_system_information:
@@ -178,7 +178,7 @@ initial_parasite_info:
     parasite_info:
       #TNY__C1x
       - parasite_type_id: 64
-        prevalence: 1.0
+        prevalence: 1.3
 
 # Events for Burkina Faso
 events:
@@ -209,76 +209,20 @@ drug_db:
   # Burkina Faso Treatments
   0:
     name: "QUIN"       # Quinine, presumes no resistance
-    half_life: 0.0
-    maximum_parasite_killing_rate: 0.999
-    n: 25
+    half_life: 18      # 3.21 - 26.0 h, DrugBank cites 18 h / https://www.drugbank.ca/drugs/DB00468
+    maximum_parasite_killing_rate: 0.9    # Rounded estimate based upon PMR = 6 rates from Pukrittayakamee et al. 2003
+    n: 3                                  # Based on Pukrittayakamee et al. 2003 
     age_specific_drug_concentration_sd: [0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4]
-    mutation_probability: 0.005
-    affecting_loci: [2]
-    selecting_alleles: [[1]]
+    mutation_probability: 0.0
+    affecting_loci: []
+    selecting_alleles: []
     k: 4
     EC50:
-      .....: 0.6
-  1:
-    name: "ART"       # Artemisinin
-    half_life: 0.0
-    maximum_parasite_killing_rate: 0.999
-    n: 25
-    age_specific_drug_concentration_sd: [0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4]
-    mutation_probability: 0.005
-    affecting_loci: [2]
-    selecting_alleles: [[1]]
-    k: 4
-    EC50:
-      ..0..: 0.75
-      ..1..: 1.2 
-  2:
-    name: "LUM"       # Lumefantrine
-    half_life: 4.5
-    maximum_parasite_killing_rate: 0.99
-    n: 20
-    age_specific_drug_concentration_sd: [0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4]
-    mutation_probability: 0.005
-    affecting_loci: [0,1]
-    selecting_alleles: [[0],[0,2,3,4,6,7]]
-    k: 4
-    EC50:
-      #KNY--
-      00...: 0.8
-      #KYY--
-      01...: 0.67
-      #KNF--
-      02...: 0.9
-      #KYF--
-      03...: 0.8
-      #KNYNY
-      04...: 1.0
-      #KYYYY
-      05...: 0.87
-      #KNFNF
-      06...: 1.1
-      #KYFYF
-      07...: 1.0
-      #TNY--
-      10...: 0.75
-      #TYY--
-      11...: 0.6
-      #TNF--
-      12...: 0.85
-      #TYF--
-      13...: 0.75
-      #TNYNY
-      14...: 0.95
-      #TYYNY
-      15...: 0.8
-      #TNFNF
-      16...: 1.05
-      #TYFYF
-      17...: 0.95       
+      .....: 0.44
          
 # Drug IDs for the model
-artemisinin_drug_id: 1
-lumefantrine_drug_id: 2
+artemisinin_drug_id:  -1
+lumefantrine_drug_id: -1
 
 # Calibration therapies
 #
