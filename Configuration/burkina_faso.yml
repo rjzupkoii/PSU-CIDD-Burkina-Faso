@@ -406,6 +406,18 @@ drug_db:
        .5... : 1.1
        .6... : 1.1
        .7... : 1.1
+  8:
+    name: "QUIN"   # Quinine
+    half_lfe: 18
+    maximum_parasite_killing_rate: 0.9
+    n: 3
+    age_specific_drug_concentration_sd: [0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4]
+    mutation_probability: 0
+    affecting_loci: []
+    selecting_alleles: []
+    k: 4
+    EC50:
+      ...... : 1.2
          
 # Drug IDs for the model
 artemisinin_drug_id: 0
@@ -448,19 +460,23 @@ therapy_db:
   6:
     drug_id: [3]
     dosing_days: [3]
-  # COMBINATION - Sulfadoxine/pyrimethamine (SP)
+  # MONO - Quinine (QUIN)
   7:
+    drug_id: [8]
+    dosing_days: [7]
+  # COMBINATION - Sulfadoxine/pyrimethamine (SP)
+  8:
     drug_id: [2]
     dosing_days: [3]
-
+  
 # Drug-deployment strategy - baseline represents the survey data for Burkina Faso
 strategy_db:
   0:
-    # AL, ASAQ, ASMQ, DP, ADQ, AS, CQ, SP
+    # AL, ASAQ, ASMQ, DP, ADQ, AS, CQ, QUIN, SP
     name: BurkinaFaso-Baseline
     type: MFT
-    therapy_ids: [0, 1, 2, 3, 4, 5, 6, 7]
-    distribution: [0.72, 0.026, 0.014, 0.052, 0.131, 0.024, 0.016, 0.017]
+    therapy_ids: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    distribution: [0.68, 0.025, 0.013, 0.049, 0.124, 0.022, 0.015, 0.056, 0.017]
 initial_strategy_id: 0
 
 # This number use to determine whether a therapy is "useful" or not and it is used to calculate 
