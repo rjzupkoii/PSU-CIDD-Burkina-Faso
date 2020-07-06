@@ -218,7 +218,10 @@ drug_db:
     selecting_alleles: []
     k: 4
     EC50:
-      .....: 0.44
+      # K----
+      0....: 1.41
+      # T----
+      1....: 1.41
          
 # Drug IDs for the model
 artemisinin_drug_id:  -1
