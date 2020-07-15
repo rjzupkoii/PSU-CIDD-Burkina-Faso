@@ -407,17 +407,20 @@ drug_db:
        .6... : 1.1
        .7... : 1.1
   8:
-    name: "QUIN"   # Quinine
-    half_lfe: 18
+    name: "QUIN"       # Quinine
+    half_life: 18
     maximum_parasite_killing_rate: 0.9
-    n: 3
+    n: 3                              
     age_specific_drug_concentration_sd: [0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4]
-    mutation_probability: 0
+    mutation_probability: 0.0
     affecting_loci: []
     selecting_alleles: []
     k: 4
     EC50:
-      ...... : 1.2
+      # K----
+      0....: 1.41
+      # T----
+      1....: 1.41
          
 # Drug IDs for the model
 artemisinin_drug_id: 0
