@@ -76,8 +76,8 @@ raster_db:
   # probability that a symptomatic and infected individual seeks and receives antimalarial treatment
   #if the number of values less than number of locations, the first value will be applied for all locations
   # this is the initial value, the modification values can be change by setting in events node
-  p_treatment_for_less_than_5_by_location: [0.72]
-  p_treatment_for_more_than_5_by_location: [0.72]
+  p_treatment_for_less_than_5_by_location: [#ACCESS#]
+  p_treatment_for_more_than_5_by_location: [#ACCESS#]
 
   # Will be overridden by beta_raster
   beta_by_location: [ -1 ]
