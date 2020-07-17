@@ -91,15 +91,14 @@ seasonal_info:
   min_value: [0.1]
   period: 365
 
-# Country specific movement model and calibration
+# Effectively disable movement during the beta run
 spatial_model:
-  name: "BurkinaFaso"
-  BurkinaFaso:
-    alpha: 1.27
-    log_rho: 0.45
-    tau: 1.342
-    capital: 14
-    penalty: 12
+  name: "Wesolowski"
+  Wesolowski:
+    kappa: 0
+    alpha: 0
+    beta:  0
+    gamma: 0
 
 # Crude Birth Rate: 37.5 based upon UN data
 birth_rate: 0.0375
@@ -385,7 +384,7 @@ drug_db:
     EC50:
       ...0.: 0.58
       ...1.: 1.4
-  7:
+  6:
     name: "MF"      # Mefloquine
     half_life: 21.0
     maximum_parasite_killing_rate: 0.9
@@ -404,7 +403,8 @@ drug_db:
        .5... : 1.1
        .6... : 1.1
        .7... : 1.1
-  8:
+       
+  7:
     name: "QUIN"       # Quinine
     half_life: 18
     maximum_parasite_killing_rate: 0.9
@@ -418,7 +418,7 @@ drug_db:
       # K----
       0....: 1.41
       # T----
-      1....: 1.41
+      1....: 1.41     
          
 # Drug IDs for the model
 artemisinin_drug_id: 0
@@ -443,7 +443,7 @@ therapy_db:
     dosing_days: [3]
   # ACT - artesunate-mefloquine (ASMQ)
   2:
-    drug_id: [0, 7]
+    drug_id: [0, 6]
     dosing_days: [3]
   # ACT - Dihydroartemisinin-piperaquine (DP)
   3:
@@ -463,7 +463,7 @@ therapy_db:
     dosing_days: [3]
   # MONO - Quinine (QUIN)
   7:
-    drug_id: [8]
+    drug_id: [7]
     dosing_days: [7]
   # COMBINATION - Sulfadoxine/pyrimethamine (SP)
   8:
