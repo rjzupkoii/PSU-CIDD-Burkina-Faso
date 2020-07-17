@@ -12,7 +12,7 @@ echo "Job started on `hostname` at `date`"
 
 # Change to the directory we launched the script from and launch the simulation
 cd $PBS_O_WORKDIR
-./MaSim -i #POPULATION#-#ACCESS#-#BETA#-bfa.pbs -s 6
+./MaSim -i #POPULATION#-#ACCESS#-#BETA#-bfa.yml -s 6
 
 # Note the end time
 echo "Job ended at `date`"

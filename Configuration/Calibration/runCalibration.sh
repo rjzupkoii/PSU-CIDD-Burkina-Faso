@@ -32,7 +32,7 @@ for population in 797 1417 2279 3668 6386 12627 25584 53601 117418; do
   
       sed 's/#BETA#/'"$beta"'/g' template.job > $population-$access-$beta-bfa.pbs
       sed -i 's/#POPULATION#/'"$population"'/g' $population-$access-$beta-bfa.pbs
-      sed -i 's/#ACCESS'"$access"'/g' $population-$access-$beta-bfa.pbs
+      sed -i 's/#ACCESS#/'"$access"'/g' $population-$access-$beta-bfa.pbs
   
       # Queue the next item
       qsub $population-$access-$beta-bfa.pbs
