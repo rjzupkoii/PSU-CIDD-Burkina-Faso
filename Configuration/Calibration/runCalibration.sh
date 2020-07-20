@@ -25,6 +25,11 @@ for population in 797 1417 2279 3668 6386 12627 25584 53601 117418; do
         sleep 10s
       done
 
+      # Delete the jobs that have completed with no errors
+      for item in `find . -name '*.pbs.e*' -size 0 | sed 's/\(.*\)\.pbs.e.*/\1.*/'`; do
+        rm $item
+      done
+
       # Prepare the configuration file
       sed 's/#BETA#/'"$beta"'/g' bf-calibration.yml > $population-$access-$beta-bfa.yml
       sed -i 's/#POPULATION#/'"$population"'/g' $population-$access-$beta-bfa.yml  
