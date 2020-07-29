@@ -1,3 +1,5 @@
+# basicStats.py
+#
 # This module contains some basic math functions to use when evaluating results
 # from the MaSim model. This module was written with ASC files and NODATA values
 # in mind.
