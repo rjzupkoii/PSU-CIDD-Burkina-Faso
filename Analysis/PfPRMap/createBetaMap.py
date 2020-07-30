@@ -7,6 +7,7 @@
 import csv
 
 from ascFile import *
+from utility import *
 
 # Starting epsilon and delta to be used
 EPSILON = 0.00001
@@ -25,12 +26,12 @@ def load_betas():
         for row in reader:
 
             # Add a new entry for the population
-            population = row['population']
+            population = float(row['population'])
             if not population in lookup:
-                lookup[population] = []
+                lookup[population] = {}
             
             # Add a new entry for the treatment
-            treatment = row['access']
+            treatment = float(row['access'])
             if not treatment in lookup[population]:
                 lookup[population][treatment] = []
 
@@ -39,7 +40,7 @@ def load_betas():
 
             # Append the beta and PfPR
             lookup[population][treatment].append([ float(row['pfpr2to10']) / 100, float(row['beta']) ])
-            
+
     return lookup
 
 # Get the beta values that generate the PfPR for the given population and 
@@ -68,6 +69,10 @@ def get_betas(pfpr, population, treatment, lookup):
 # treatment level, within the given margin of error.
 def get_betas_scan(pfpr, population, treatment, lookup, epsilon):
 
+    # Determine the population and treatment bin we are working with
+    populationBin = get_bin(population, lookup.keys())
+    treatmentBin = get_bin(treatment, lookup[populationBin].keys())
+    
     # Note the bounds
     low = pfpr - epsilon
     high = pfpr + epsilon
@@ -75,19 +80,15 @@ def get_betas_scan(pfpr, population, treatment, lookup, epsilon):
     # Scan the PfPR values for the population and treatment level that are 
     # within the margin
     betas = []
-    for populationValue in lookup[str(get_bin(population, lookup.keys()))]:
-        for treatmentLevel in lookup[populationValue][str(get_bin(treatment, lookup[populationValue].keys()))]:
-
-            # Add the value if it is in the bounds
-            if low <= value[0] and value[0] <= high:
-                betas.append(value[1])
-
-            # We assume the data is stored, so break once the high value is less
-            # than the current PfPR
-            if high < value[0]: break
-
-    # Note the list size if > 1
-    if len(betas) > 1: print(len(betas))
+    for value in lookup[populationBin][treatmentBin]:
+            
+        # Add the value if it is in the bounds
+        if low <= value[0] and value[0] <= high:
+            betas.append(value[1])
+            
+        # We assume the data is stored, so break once the high value is less
+        # than the current PfPR
+        if high < value[0]: break
 
     # Return the betas collected
     return(betas)
@@ -120,6 +121,8 @@ def main():
     epsilons = []
     meanBeta = []
 
+    print "Determining betas for {} rows, {} columns".format(ascheader['nrows'], ascheader['ncols'])
+
     # Scan each of the rows 
     for row in range(0, ascheader['nrows']):
 
@@ -138,7 +141,7 @@ def main():
 
             # Get the beta values
             [values, epsilon] = get_betas( \
-                pfpr[row][col], population[row][col], treatment[row][col], lookup)
+                pfpr[row][col], population[row][col], treatment[row][col] / 100, lookup)
 
             # Was nothing returned?
             if len(values) == 0:
@@ -150,11 +153,13 @@ def main():
             epsilons[row].append(epsilon)
             meanBeta[row].append(sum(values) / len(values))
 
-            # Note the progress
-            print(row, col)
-            
+        # Note the progress
+        progressBar(row + 1, ascheader['nrows'])
+                
     # Write the results
+    print "Saving {}".format('out/bf_epsilons_beta.asc')
     write_asc(ascheader, epsilons, 'out/bf_epsilons_beta.asc')
+    print "Saving {}".format('out/bf_mean_beta.asc')
     write_asc(ascheader, meanBeta, 'out/bf_mean_beta.asc')
 
 
