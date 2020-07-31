@@ -76,7 +76,11 @@ raster_db:
   travel_raster: "bounded_travel.asc"
   
   # Raster file that contains the beta values
-  beta_raster: "bounded_nb_beta.asc"
+  beta_raster: "bounded_beta.asc"
+
+  # Raster file with the treatment information
+  pr_treatment_under5: "bounded_treatment.asc"
+  pr_treatment_over5: "bounded_treatment.asc"
   
   # Set the cell size used by raster, in sq.km
   cell_size: 5
@@ -87,8 +91,8 @@ raster_db:
   # probability that a symptomatic and infected individual seeks and receives antimalarial treatment
   #if the number of values less than number of locations, the first value will be applied for all locations
   # this is the initial value, the modification values can be change by setting in events node
-  p_treatment_for_less_than_5_by_location: [0.600000]
-  p_treatment_for_more_than_5_by_location: [0.500000]
+  p_treatment_for_less_than_5_by_location: [ -1 ]
+  p_treatment_for_more_than_5_by_location: [ -1 ]
 
   #transmission intensity
   #if the number of values less than number of locations, the first value will be applied for all locations
@@ -97,11 +101,12 @@ raster_db:
 # seasonality parameters for all location
 seasonal_info:
   enable: false
-  a: [1]
+  a: [-0.9]
+  b: [-1.8]
   phi: [250]
-  min_value: [0.1]
-  period: 365
-
+  period: [320]
+  base: [0.1]
+  
 spatial_model:
   name: "BurkinaFaso"
   BurkinaFaso:
@@ -123,15 +128,15 @@ mortality_when_treatment_fail_by_age_class: [0.040, 0.020,0.020,0.020,0.020,0.00
 
 # definitions of some log parasite density levels
 parasite_density_level:
-  log_parasite_density_cured:        -4.699    # corresponds to 100 total parasites (0.00002 per μl)
-  log_parasite_density_from_liver:    -2.000    # corresponds to 50,000 total parasites (0.01 per μl)
-  log_parasite_density_asymptomatic: 3    # corresponds to 1000 parasites per microliter of blood
-  log_parasite_density_clinical:     4.301    # corresponds to 20,000 parasites per microliter of blood (total 10^11)
-  log_parasite_density_clinical_from:     3.301    # corresponds to 2000 parasites per microliter of blood (total 10^10)
-  log_parasite_density_clinical_to:     5.301    # corresponds to 200,000 parasites per microliter of blood (total 10^12)
-  log_parasite_density_detectable:   1.000    # corresponds to 10 parasites per microliter of blood
-  log_parasite_density_detectable_pfpr: 1.000 # corresponds to 100 parasites per microliter of blood
-  log_parasite_density_pyrogenic:    3.398    # corresponds to 2500 parasites per microliter of blood
+  log_parasite_density_cured:           -4.699    # corresponds to 100 total parasites (0.00002 per μl)
+  log_parasite_density_from_liver:      -2.000    # corresponds to 50,000 total parasites (0.01 per μl)
+  log_parasite_density_asymptomatic:    3         # corresponds to 1000 parasites per microliter of blood
+  log_parasite_density_clinical:        4.301     # corresponds to 20,000 parasites per microliter of blood (total 10^11)
+  log_parasite_density_clinical_from:   3.301     # corresponds to 2000 parasites per microliter of blood (total 10^10)
+  log_parasite_density_clinical_to:     5.301     # corresponds to 200,000 parasites per microliter of blood (total 10^12)
+  log_parasite_density_detectable:      1.000     # corresponds to 10 parasites per microliter of blood
+  log_parasite_density_detectable_pfpr: 1.000     # corresponds to 100 parasites per microliter of blood
+  log_parasite_density_pyrogenic:       3.398     # corresponds to 2500 parasites per microliter of blood
 
 immune_system_information:
   #rate at which antimalarial immune function increases when a host is parasitaemic

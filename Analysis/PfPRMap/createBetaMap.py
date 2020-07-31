@@ -10,7 +10,7 @@ from ascFile import *
 from utility import *
 
 # Starting epsilon and delta to be used
-EPSILON = 0.00001
+EPSILON = 0.000001
 MAX_EPSILON = 1.0
 
 BETAVALUES = 'data/calibration.csv'
