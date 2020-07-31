@@ -18,6 +18,9 @@ do
         sleep 10s
     done
 
+    # Trim the return
+    beta="$(echo "$beta"|tr -d '\r')"
+
     # Prepare the configuration file
     sed 's/#BETA#/'"$beta"'/g' bf-calibration.yml > $population-$access-$beta-bfa.yml
     sed -i 's/#POPULATION#/'"$population"'/g' $population-$access-$beta-bfa.yml  
