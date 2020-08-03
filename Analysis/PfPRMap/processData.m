@@ -1,39 +1,90 @@
-clear all;
+clear;
 
+% Get the common data for the functions
+global raw districts scales;
 raw = csvread('data/population-scaling.csv', 1, 0);
 districts = sort(transpose(unique(raw(:, 4))));
-scales = sort(transpose(unique(raw(:, 1))));
+scales = sort(transpose(unique(raw(:, 1))));    
 
-hold on;
-colors = colormap(jet(size(scales, 2)));
-index = 1;
-values = {};
+%scales = 0.25;
 
-for scale = scales
-    data = raw(raw(:, 1) == scale, :);
-    for district = districts
-        timestep = data(data(:, 4) == district, 3);
-        eir = data(data(:, 4) == district, 5);
-        pfpr = data(data(:, 4) == district, 7);
+plotError();
+%plotScaling();
+
+function [] = plotError() 
+    % Ganzourgou - Oubritenga - Sanmatenga
+    reference = [ 15 31.06; 17 19.03; 25 32.93 ];
+
+    global raw districts scales;
+    colors = colormap(jet(size(scales, 2)));
+    index = 1;
+
+    hold on;
+    for scale = scales
+        variance = [];
+        error = [];
+
+        % Prepare the data set, discard everything before 4000 days
+        data = raw(raw(:, 1) == scale, :);
+        data = data(data(:, 3) > 4000, :);
         
-        plot(timestep, pfpr, 'Color', colors(index, :));
+        for district = districts
+            expected = reference(reference(:, 1) == district, 2);
+            values = (data(data(:, 4) == district, 7) - expected) / expected;
+            variance(end + 1) = var(values);
+            error(end + 1) = 100 * (sum(values) / size(values, 1));
+        end
+
+        scatter(error, variance, 50, colors(index, :), 'Filled');
+        index = index + 1;
     end
-    index = index + 1;
+
+    addLegend(scales, colors, 0);
+    title('Population Scaling versus Expected Values');
+    xlabel('Mean Percent Error');
+    ylabel('Variance');
+
+    graphic = gca;
+    graphic.FontSize = 18;
+
+    hold off;
 end
 
-xline(4000, '-.', 'Model Burn-in', 'FontSize', 18, 'LabelVerticalAlignment', 'middle');
+function [] = plotScaling()
+    global raw districts scales;
+    
+    colors = colormap(jet(size(scales, 2)));
 
-addReference();
-addLegend(scales, colors);
+    hold on;
+    index = 1;
+    values = {};
 
-title('Population Scaling versus Expected PfPr_{2-10}');
-xlabel('Model Timestep (days)');
-ylabel('PfPr_{2-10} (Weighted Mean)');
+    for scale = scales
+        data = raw(raw(:, 1) == scale, :);
+        for district = districts
+            timestep = data(data(:, 4) == district, 3);
+            eir = data(data(:, 4) == district, 5);
+            pfpr = data(data(:, 4) == district, 7);
 
-plot = gca;
-plot.FontSize = 18;
+            plot(timestep, pfpr, 'Color', colors(index, :));
+        end
+        index = index + 1; 
+    end
 
-hold off;
+    xline(4000, '-.', 'Model Burn-in', 'FontSize', 18, 'LabelVerticalAlignment', 'middle');
+
+    addReference();
+    addLegend(scales, colors, 1);
+
+    title('Population Scaling versus Expected PfPr_{2-10}');
+    xlabel('Model Timestep (days)');
+    ylabel('PfPr_{2-10} (Weighted Mean)');
+
+    graphic = gca;
+    graphic.FontSize = 18;
+
+    hold off;
+end
     
 function [] = addReference()
     % Ganzourgou
@@ -53,13 +104,20 @@ function [] = addReference()
 end
 
 % Create a custom legend
-function [] = addLegend(labels, colors)
+function [] = addLegend(labels, colors, bottom)
     h = zeros(1, 1);
     index = 1;
     for label = labels
         h(index) = plot(NaN, NaN, 'Color', colors(index, :));
         index = index + 1;
     end
-    legend(h, cellstr(num2str(labels')), 'Orientation', 'horizontal', 'Location', 'south');
+    
+    if bottom
+        legend(h, cellstr(num2str(labels')), 'Orientation', 'horizontal', 'Location', 'south');
+    else
+        hleg = legend(h, cellstr(num2str(labels')));
+        htitle = get(hleg, 'Title');
+        set(htitle, 'String','Scaling Factor');
+    end
     legend boxoff;
 end
