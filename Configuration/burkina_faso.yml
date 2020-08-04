@@ -53,16 +53,18 @@ age_structure: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 15, 20, 60, 100]
 # Age structure used when initializing the model at T-0
 initial_age_structure: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 25, 35, 45, 55, 65, 100]
 
-# Scaling of the population in the model
-artificial_rescaling_of_population_size: 1.0
+# Scaling of the population in the model, 0.25 rate based upon scaling test
+artificial_rescaling_of_population_size: 0.25
 
 # ---------------------------------------------------------------
 # Rasters to be used in conjunction with the location_db, note 
 # that the paths are relative to the binary file for the simulation
 # ---------------------------------------------------------------
 raster_db:
+  # Adjusted population to account for burn-in up to 2017 start
+  population_raster: "raster/bf_pop_2011_raster.asc"
+
   # Raster files defining the country
-  population_raster: "raster/bf_pop_raster.asc"
   district_raster: "raster/bf_admin_raster.asc"
   travel_raster: "raster/bf_travel_raster.asc"
   
