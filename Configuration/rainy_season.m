@@ -8,13 +8,17 @@ clear all;
 
 hold on;
 
+% Reference settings for no seasonality adjustment (i.e., persistant)
+%[flat, flat_rain] = seasonality(0, 0, 1, 1, 1);
+%plot(1:365, flat);
+
 [short, short_rain] = seasonality(-0.9, -1.8, 140, 320, 0.1);
 item(1) = plot(1:365, short);
-%item(2) = plot(1:365, short_rain);
+item(2) = plot(1:365, short_rain);
 
 [long, long_rain] = seasonality(-0.9, -1.8, 132, 415, 0.1);
 item(3) = plot(1:365, long);
-%item(4) = plot(1:365, long_rain);
+item(4) = plot(1:365, long_rain);
 
 item(5) = xline(166, '-.', 'Approximate Start of Rainy Season', 'FontSize', 18);
 item(6) = xline(274, '-.', 'Approximate End of Short Rainy Season', 'FontSize', 18);
@@ -35,5 +39,5 @@ function [multiplier, rainy] = seasonality(a, b, phi, period, base)
     multiplier = a + b * sin((2 * pi * (phi - t)) / period);
     multiplier(multiplier < 0) = 0;
     multiplier = base + multiplier;
-    rainy = (multiplier > 0);
+    rainy = (multiplier > base);
 end
