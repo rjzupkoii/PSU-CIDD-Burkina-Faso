@@ -8,8 +8,8 @@ scales = sort(transpose(unique(raw(:, 1))));
 
 %scales = 0.25;
 
-plotError();
-%plotScaling();
+%plotError();
+plotScaling();
 
 function [] = plotError() 
     % Ganzourgou - Oubritenga - Sanmatenga

@@ -13,20 +13,21 @@ districts = unique(raw(:, 2));
 
 reference = csvread('data/weighted_pfpr.csv');
 
+colors = colormap(jet(size(districts, 1)));
+
 hold on;
-for day = transpose(dayselapsed)
-    data = raw(raw(:, 1) == day, :);
-    for district = transpose(districts)
-        expected = reference(reference(:, 1) == district, 2);
-        pfpr = data(data(:, 2) == district, 6);
-        error = 100 * (pfpr - expected) / expected;
-        scatter(district, error);
-    end
+for district = transpose(districts)
+    expected = reference(reference(:, 1) == district, 2);
+    pfpr = raw(raw(:, 2) == district, 6);
+    error = 100 * (pfpr - expected) / expected;
+    scatter(dayselapsed, error, 30, colors(district, :), 'Filled');
 end 
+
+yline(0, '-.');
 
 title('Expected PfPr_{2 to 10} versus Simulated');
 ylabel('Percent Error');
-xlabel('District Identification Value');
+xlabel('Days Elapsed');
 
 hold off;
 
