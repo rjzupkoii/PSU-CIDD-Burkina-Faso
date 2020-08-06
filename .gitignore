@@ -1,2 +1,8 @@
+# Common stuff to ignore
 *.pyc
 *.asv
+
+# Ingore input-output directories
+Analysis/PfPRMap/data/
+Analysis/PfPRMap/out/
+Analysis/Population/data/
