@@ -8,8 +8,8 @@ scales = sort(transpose(unique(raw(:, 1))));
 
 %scales = 0.25;
 
-%plotError();
-plotScaling();
+plotError();
+%plotScaling();
 
 function [] = plotError() 
     % Ganzourgou - Oubritenga - Sanmatenga
@@ -31,15 +31,19 @@ function [] = plotError()
         for district = districts
             expected = reference(reference(:, 1) == district, 2);
             values = (data(data(:, 4) == district, 7) - expected) / expected;
-            variance(end + 1) = var(values);
+            variance(end + 1) = 100 * var(values);
             error(end + 1) = 100 * (sum(values) / size(values, 1));
         end
 
-        scatter(error, variance, 50, colors(index, :), 'Filled');
+        if scale == 0.25
+            scatter(error, variance, 50, colors(index, :), 'Filled');    
+        else
+            scatter(error, variance, 50, colors(index, :));
+        end
         index = index + 1;
     end
 
-    addLegend(scales, colors, 0);
+    addLegend(scales, colors, 0, 0.25);
     title('Population Scaling versus Expected Values');
     xlabel('Mean Percent Error');
     ylabel('Variance');
@@ -74,7 +78,7 @@ function [] = plotScaling()
     xline(4000, '-.', 'Model Burn-in', 'FontSize', 18, 'LabelVerticalAlignment', 'middle');
 
     addReference();
-    addLegend(scales, colors, 1);
+    addLegend(scales, colors, 1, -1);
 
     title('Population Scaling versus Expected PfPr_{2-10}');
     xlabel('Model Timestep (days)');
@@ -104,11 +108,15 @@ function [] = addReference()
 end
 
 % Create a custom legend
-function [] = addLegend(labels, colors, bottom)
+function [] = addLegend(labels, colors, bottom, diff)
     h = zeros(1, 1);
     index = 1;
     for label = labels
-        h(index) = plot(NaN, NaN, 'Color', colors(index, :));
+        if diff == label
+            h(index) = scatter(NaN, NaN, [], colors(index, :), 'filled');
+        else 
+            h(index) = scatter(NaN, NaN, [], colors(index, :));
+        end
         index = index + 1;
     end
     

@@ -4,7 +4,7 @@ from ascFile import *
 
 [ ascheader, district ] = load_asc("../../GIS/bfa_admin.asc")
 [ ascheader, pfpr ] = load_asc("../../GIS/bfa_pfpr_2to10.asc")
-[ ascheader, population ] = load_asc("../../GIS/bfa_init_pop.asc")
+[ ascheader, population ] = load_asc("../../GIS/bfa_pop_2017.asc")
 
 WEIGHTEDPFPR = 'out/weighted_pfpr.csv'
 
@@ -12,6 +12,7 @@ NUMERATOR = 0
 DENOMINATOR = 1
 
 data = {}
+totalPopulation = 0
 
 for row in range(ascheader['nrows']):
     for col in range(ascheader['ncols']):
@@ -27,6 +28,7 @@ for row in range(ascheader['nrows']):
         # Update the running values
         data[key][NUMERATOR] += pfpr[row][col] * population[row][col]
         data[key][DENOMINATOR] += population[row][col]
+        totalPopulation += population[row][col]
 
 numerator = 0
 denominator = 0
@@ -43,3 +45,6 @@ with open(WEIGHTEDPFPR, 'w') as out:
 
 result = round(numerator * 100 / denominator, 2)
 print("\nFull Map, PfPR: {0}%".format(result))
+
+print("\nPopulation: {:,}".format(totalPopulation))
+

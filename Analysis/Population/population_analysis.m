@@ -7,30 +7,35 @@ global raw;
 raw = csvread('data/population-full.csv', 1, 0);
 
 %plot_population();
+plot_error();
 
-dayselapsed = unique(raw(:, 1));
-districts = unique(raw(:, 2));
+function [] = plot_error() 
+    global raw;
+    
+    dayselapsed = unique(raw(:, 1));
+    districts = unique(raw(:, 2));
 
-reference = csvread('data/weighted_pfpr.csv');
+    reference = csvread('data/weighted_pfpr.csv');
 
-colors = colormap(jet(size(districts, 1)));
+    colors = colormap(jet(size(districts, 1)));
 
-hold on;
-for district = transpose(districts)
-    expected = reference(reference(:, 1) == district, 2);
-    pfpr = raw(raw(:, 2) == district, 6);
-    error = 100 * (pfpr - expected) / expected;
-    scatter(dayselapsed, error, 30, colors(district, :), 'Filled');
-end 
+    hold on;
+    for district = transpose(districts)
+        expected = reference(reference(:, 1) == district, 2);
+        pfpr = raw(raw(:, 2) == district, 6);
+        error = ((pfpr - expected) / expected) * 100;
+        scatter(dayselapsed, error, 30, colors(district, :), 'Filled');    
+    end 
 
-yline(0, '-.');
+    yline(0, '-.');
+    xline(4000, '-.', 'Model Burn-in', 'FontSize', 18, 'LabelVerticalAlignment', 'bottom');
 
-title('Expected PfPr_{2 to 10} versus Simulated');
-ylabel('Percent Error');
-xlabel('Days Elapsed');
+    title('Expected PfPr_{2 to 10} versus Simulated');
+    ylabel('Percent Error');
+    xlabel('Days Elapsed');
 
-hold off;
-
+    hold off;
+end
 
 function [] = plot_population()
     global raw;
