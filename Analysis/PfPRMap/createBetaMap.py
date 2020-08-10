@@ -6,8 +6,8 @@
 
 import csv
 
-from ascFile import *
-from utility import *
+from include.ascFile import *
+from include.utility import *
 
 # Starting epsilon and delta to be used
 EPSILON = 0.00001

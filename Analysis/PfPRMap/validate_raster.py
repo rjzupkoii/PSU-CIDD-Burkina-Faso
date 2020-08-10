@@ -3,7 +3,7 @@
 # This script is intended to validate raster files to ensure they are aligned correctly.
 import os
 
-from ascFile import *
+from include.ascFile import *
 
 PATH = '../../GIS'
 

@@ -1,6 +1,6 @@
 # This module contains functions relevent to getting metrics from ASC files.
 
-from ascFile import *
+from include.ascFile import *
 
 [ ascheader, district ] = load_asc("../../GIS/bfa_admin.asc")
 [ ascheader, pfpr ] = load_asc("../../GIS/bfa_pfpr_2to10.asc")
