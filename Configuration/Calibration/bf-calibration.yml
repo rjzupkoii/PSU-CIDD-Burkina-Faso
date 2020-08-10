@@ -63,6 +63,9 @@ artificial_rescaling_of_population_size: 1.0
 raster_db:
   # Raster file that contains the site specific population data
   population_raster: "#POPULATION#.asc"
+
+  # Raster file that points at which climate zone to use
+  ecoclimatic_raster: "#ZONE#.asc"
   
   # transmission intensity
   beta_by_location: [#BETA#]
@@ -82,14 +85,17 @@ raster_db:
   # Will be overridden by beta_raster
   beta_by_location: [ -1 ]
 
-# TODO Find this for Burkina Faso
 # Seasonality of malaria in Burkina Faso
+# 0: Sahelian zone (Permanent)
+# 1: Sudano-Sahelian zone (Long)
+# 2: Sudanian zone (Short)
 seasonal_info:
-  enable: false
-  a: [1]
-  phi: [250]
-  min_value: [0.1]
-  period: 365
+  enable: true
+  raster: true
+  base: [1,  0.1,  0.1]
+  a:    [0, -0.9, -0.9]
+  b:    [1,  2.5,  2.3]
+  phi:  [0,  146,  155]
 
 # Effectively disable movement during the beta run
 spatial_model:
