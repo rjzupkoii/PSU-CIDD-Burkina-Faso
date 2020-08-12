@@ -3,20 +3,16 @@
 % This file contains settings and plots that can be used to fit the
 % seasonality for a given location. The seasonality works off the equation:
 %   
-%   multiplier = base + (a * sin?(b * pi * (phi - t) / 365))
+%   multiplier = base + (a * sin^+(b * pi * (phi - t) / 365))
 %
 % where base is the minimum multiplier to apply.
 clear;
 
 hold on;
 
-% MMC = 1 + sin(2 * pi * t / 365)
-%[mmc, mmc_rain] = seasonality(1, 1, 2, 0);
-%plot(1:365, mmc);
-
 % Reference settings for no seasonality adjustment (i.e., persistant)
-%[flat, flat_rain] = seasonality(1, 0, 1, 0);
-%plot(1:365, flat);
+% [flat, flat_rain] = seasonality(1, 0, 1, 0);
+% plot(1:365, flat);
 
 [short, short_rain] = seasonality(0.1, -0.9, 2.5, 146);
 item(1) = plot(1:365, short);
