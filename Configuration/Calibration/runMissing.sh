@@ -7,9 +7,9 @@
 FILENAME='missing.csv'
 LIMIT=100
 
-while IFS=, read -r population access beta
+while IFS=, read -r zone population access beta
 do
-    echo "Values $population, $access, $beta"
+    echo "Values $zone, $population, $access, $beta"
 
     # Get the current job count, note the overcount due to the delay.
     # Wait if there are currently too many jobs
@@ -22,15 +22,17 @@ do
     beta="$(echo "$beta"|tr -d '\r')"
 
     # Prepare the configuration file
-    sed 's/#BETA#/'"$beta"'/g' bf-calibration.yml > $population-$access-$beta-bfa.yml
-    sed -i 's/#POPULATION#/'"$population"'/g' $population-$access-$beta-bfa.yml  
-    sed -i 's/#ACCESS#/'"$access"'/g' $population-$access-$beta-bfa.yml
+    sed 's/#BETA#/'"$beta"'/g' bf-calibration.yml > $zone-$population-$access-$beta-bfa.yml
+    sed -i 's/#POPULATION#/'"$population"'/g' $zone-$population-$access-$beta-bfa.yml  
+    sed -i 's/#ACCESS#/'"$access"'/g' $zone-$population-$access-$beta-bfa.yml
+    sed -i 's/#ZONE#/'"$zone"'/g' $zone-$population-$access-$beta-bfa.yml
 
-    sed 's/#BETA#/'"$beta"'/g' template.job > $population-$access-$beta-bfa.pbs
-    sed -i 's/#POPULATION#/'"$population"'/g' $population-$access-$beta-bfa.pbs
-    sed -i 's/#ACCESS#/'"$access"'/g' $population-$access-$beta-bfa.pbs
+    sed 's/#BETA#/'"$beta"'/g' template.job > $zone-$population-$access-$beta-bfa.pbs
+    sed -i 's/#POPULATION#/'"$population"'/g' $zone-$population-$access-$beta-bfa.pbs
+    sed -i 's/#ACCESS#/'"$access"'/g' $zone-$population-$access-$beta-bfa.pbs
+    sed -i 's/#ZONE#/'"$zone"'/g' $zone-$population-$access-$beta-bfa.pbs
 
     # Queue the next item
-    qsub $population-$access-$beta-bfa.pbs
+    qsub $zone-$population-$access-$beta-bfa.pbs
 
 done < $FILENAME

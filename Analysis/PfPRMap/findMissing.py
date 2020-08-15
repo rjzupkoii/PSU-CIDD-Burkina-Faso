@@ -4,8 +4,7 @@
 
 import csv
 
-#BETAVALUES = 'data/calibration.csv'
-BETAVALUES = 'data/working.csv'
+BETAVALUES = 'data/calibration.csv'
 
 RESULTS = 'out/missing.csv'
 
