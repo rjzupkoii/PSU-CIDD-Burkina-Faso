@@ -63,9 +63,10 @@ artificial_rescaling_of_population_size: 0.25
 raster_db:
   # Adjusted population to account for burn-in up to 2017 start
   population_raster: "bfa_init_pop.asc"
-
+    
   # Raster files defining the country
   district_raster: "bfa_admin.asc"
+  ecoclimatic_raster: "bfa_ecozone.asc"
   travel_raster: "bfa_travel.asc"
 
   # Raster files defining treatments
