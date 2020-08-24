@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 # findMissing.py
 #
 # This script finds the combination that are missing from a calibration.

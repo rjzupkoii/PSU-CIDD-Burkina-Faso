@@ -1,5 +1,5 @@
 # This module generates information on the difference in results between the
-# refernece PfPR 2 to 10 values and those of the model.
+# reference PfPR 2 to 10 values and those of the model.
 
 import csv
 

@@ -1,8 +1,9 @@
+#!/usr/bin/python
+
 # createBetaMap.py
 #
 # This module reads an ASC file that contains the PfPR for the two to ten age
-# bracket and generates three ASC files with beta values that represent the
-# high, median, and low values.
+# bracket and generates three ASC files with beta values.
 
 import csv
 
@@ -14,9 +15,11 @@ EPSILON = 0.00001
 MAX_EPSILON = 0.25
 
 BETAVALUES = 'data/calibration.csv'
-PFPRVALUES = 'data/bf_pfpr_raster.asc'
-POPULATIONVALUES = 'data/bf_pop_raster.asc'
-TREATMENTVALUES = 'data/bf_treatment_raster.asc'
+
+PFPRVALUES = 'data/bfa_pfpr_2to10.asc'
+POPULATIONVALUES = 'data/bfa_pop.asc'
+TREATMENTVALUES = 'data/bfa_treatment.asc'
+ZONEVALUES = 'data/bfa_ecozone.asc'
 
 # Read the relevent data from the CSV file into a dictionary
 def load_betas():
@@ -25,28 +28,33 @@ def load_betas():
         reader = csv.DictReader(csvfile)
         for row in reader:
 
+            # Add a new entry for the zone
+            zone = int(row['zone'])
+            if not zone in lookup:
+                lookup[zone] = {}
+
             # Add a new entry for the population
             population = float(row['population'])
-            if not population in lookup:
-                lookup[population] = {}
+            if not population in lookup[zone]:
+                lookup[zone][population] = {}
             
             # Add a new entry for the treatment
             treatment = float(row['access'])
-            if not treatment in lookup[population]:
-                lookup[population][treatment] = []
+            if not treatment in lookup[zone][population]:
+                lookup[zone][population][treatment] = []
 
             # Ignore the zeros
             if float(row['pfpr2to10']) == 0: continue
 
             # Append the beta and PfPR
-            lookup[population][treatment].append([ float(row['pfpr2to10']) / 100, float(row['beta']) ])
+            lookup[zone][population][treatment].append([ float(row['pfpr']) / 100, float(row['beta']) ])
 
     return lookup
 
 # Get the beta values that generate the PfPR for the given population and 
 # treatment level, this function will start with the lowest epsilon value 
 # and increase it until at least one value is found to be returned
-def get_betas(pfpr, population, treatment, lookup):
+def get_betas(zone, pfpr, population, treatment, lookup):
     # Inital values
     epsilon = 0
     betas = []
@@ -54,7 +62,7 @@ def get_betas(pfpr, population, treatment, lookup):
     # Increase the epsilon until at least one value is found
     while len(betas) == 0:
         epsilon += EPSILON
-        betas = get_betas_scan(pfpr, population, treatment, lookup, epsilon)
+        betas = get_betas_scan(zone, pfpr, population, treatment, lookup, epsilon)
 
         # Prevent an infinite loop, will result in an error
         if epsilon == MAX_EPSILON:
@@ -67,11 +75,15 @@ def get_betas(pfpr, population, treatment, lookup):
 
 # Get the beta values that generate the PfPR for the given population and 
 # treatment level, within the given margin of error.
-def get_betas_scan(pfpr, population, treatment, lookup, epsilon):
+def get_betas_scan(zone, pfpr, population, treatment, lookup, epsilon):
+
+    # The zone is a bin, so it should just be there
+    if not zone in lookup:
+        raise ValueError("Zone {} was not found in lookup".format(zone))
 
     # Determine the population and treatment bin we are working with
-    populationBin = get_bin(population, lookup.keys())
-    treatmentBin = get_bin(treatment, lookup[populationBin].keys())
+    populationBin = get_bin(population, lookup[zone].keys())
+    treatmentBin = get_bin(treatment, lookup[zone][populationBin].keys())
     
     # Note the bounds
     low = pfpr - epsilon
@@ -80,7 +92,7 @@ def get_betas_scan(pfpr, population, treatment, lookup, epsilon):
     # Scan the PfPR values for the population and treatment level that are 
     # within the margin
     betas = []
-    for value in lookup[populationBin][treatmentBin]:
+    for value in lookup[zone][populationBin][treatmentBin]:
             
         # Add the value if it is in the bounds
         if low <= value[0] and value[0] <= high:
@@ -112,6 +124,7 @@ def get_bin(value, bins):
 
 def main():               
     # Load the relevent data
+    [ ascheader, zones ] = load_asc(ZONEVALUES)
     [ ascheader, pfpr ] = load_asc(PFPRVALUES)
     [ ascheader, population ] = load_asc(POPULATIONVALUES)
     [ ascheader, treatment ] = load_asc(TREATMENTVALUES)
@@ -141,7 +154,7 @@ def main():
 
             # Get the beta values
             [values, epsilon] = get_betas( \
-                pfpr[row][col], population[row][col], treatment[row][col] / 100, lookup)
+                zones[row][col], pfpr[row][col], population[row][col], treatment[row][col] / 100, lookup)
 
             # Was nothing returned?
             if len(values) == 0:
