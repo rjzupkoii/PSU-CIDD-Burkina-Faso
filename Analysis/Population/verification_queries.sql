@@ -1,4 +1,20 @@
 
+-- This query returns the data that is used to generate the Matlab plots
+select dayselapsed,
+  district,
+  sum(population) as popuation,
+  avg(msd.eir) as eir,
+  sum(population * pfprunder5) / sum(population) as pfprunder5,
+  sum(population * pfpr2to10) / sum(population) as pfpr2to10,
+  sum(population * pfprall) / sum(population) as pfprall
+from sim.replicate r
+  inner join sim.configuration c on c.id = r.configurationid
+  inner join sim.monthlydata md on md.replicateid = r.id
+  inner join sim.monthlysitedata msd on msd.monthlydataid = md.id
+  inner join sim.location l on l.id = msd.locationid
+where r.id = 56653 and eir != 0
+group by dayselapsed, district
+
 -- Weighted average for bounded model calibration
 select cast(substr(filename, 9, 4) as float) scaling,
   dayselapsed,
