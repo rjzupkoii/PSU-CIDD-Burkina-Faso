@@ -38,7 +38,7 @@ def addBeta(lookup, zone, beta, population, treatment):
     global parameters
     
     # Determine the population and treatment bin we are working with
-    populationBin = get_bin(population, lookup[zone].keys())
+    populationBin = int(get_bin(population, lookup[zone].keys()))
     treatmentBin = get_bin(treatment, lookup[zone][populationBin].keys())
 
     # Update the dictionary
@@ -73,7 +73,7 @@ def writeBetas(lookup):
     reduced = []
     for zone in sorted(parameters.keys()):
         for population in sorted(parameters[zone].keys()):
-            populationAsc.add(int(population))
+            populationAsc.add(population)
             for treatment in sorted(parameters[zone][population]):
                 betas = getLookupBetas(lookup, zone, population, treatment)
                 for beta in sorted(parameters[zone][population][treatment]):
