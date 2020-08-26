@@ -26,7 +26,7 @@ function run() {
   eval treatment_list=$3
 
   echo "Running zone, $zone"
-  sed 's/#POPULATION#/'"$ZONE"'/g' zone.asc > $ZONE.asc
+  sed 's/#ZONE#/'"$ZONE"'/g' zone.asc > $ZONE.asc
   for population in $population_list; do
     for access in $treatment_list; do
       for beta in `seq 0.05 0.05 1.20`; do

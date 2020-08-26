@@ -8,11 +8,12 @@
 import csv
 
 from include.ascFile import *
+from include.calibrationLib import *
 from include.utility import *
 
 # Starting epsilon and delta to be used
 EPSILON = 0.00001
-MAX_EPSILON = 0.25
+MAX_EPSILON = 0.1
 
 BETAVALUES = 'data/calibration.csv'
 
@@ -20,36 +21,6 @@ PFPRVALUES = 'data/bfa_pfpr_2to10.asc'
 POPULATIONVALUES = 'data/bfa_pop.asc'
 TREATMENTVALUES = 'data/bfa_treatment.asc'
 ZONEVALUES = 'data/bfa_ecozone.asc'
-
-# Read the relevent data from the CSV file into a dictionary
-def load_betas():
-    lookup = {}
-    with open(BETAVALUES) as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-
-            # Add a new entry for the zone
-            zone = int(row['zone'])
-            if not zone in lookup:
-                lookup[zone] = {}
-
-            # Add a new entry for the population
-            population = float(row['population'])
-            if not population in lookup[zone]:
-                lookup[zone][population] = {}
-            
-            # Add a new entry for the treatment
-            treatment = float(row['access'])
-            if not treatment in lookup[zone][population]:
-                lookup[zone][population][treatment] = []
-
-            # Ignore the zeros
-            if float(row['pfpr2to10']) == 0: continue
-
-            # Append the beta and PfPR
-            lookup[zone][population][treatment].append([ float(row['pfpr']) / 100, float(row['beta']) ])
-
-    return lookup
 
 # Get the beta values that generate the PfPR for the given population and 
 # treatment level, this function will start with the lowest epsilon value 
@@ -104,22 +75,6 @@ def get_betas_scan(zone, pfpr, population, treatment, lookup, epsilon):
 
     # Return the betas collected
     return(betas)
-
-
-# Get the bin that the value belongs to
-def get_bin(value, bins):
-    # Sort the bins and step through them
-    bins.sort()
-    for item in bins:
-        if value < item:
-            return item
-
-    # For values greater than the largest bin, return that one
-    if item >= max(bins):
-        return max(bins)
-
-    # Throw an error if we couldn't find a match (shouldn't happen)
-    raise Exception("Matching bin not found for value: " + str(value))
     
 
 def main():               
@@ -128,7 +83,7 @@ def main():
     [ ascheader, pfpr ] = load_asc(PFPRVALUES)
     [ ascheader, population ] = load_asc(POPULATIONVALUES)
     [ ascheader, treatment ] = load_asc(TREATMENTVALUES)
-    lookup = load_betas()
+    lookup = load_betas(BETAVALUES)
 
     # Prepare for the ASC data
     epsilons = []

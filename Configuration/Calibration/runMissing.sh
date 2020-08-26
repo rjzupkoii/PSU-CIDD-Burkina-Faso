@@ -4,18 +4,34 @@
 # combinations that appear in a CSV file. The filenames will encode the values based using
 # the name POPUATION-ACCESS-BETA-bfa.yml although a fixed study id is in place as well.
 
-FILENAME='missing.csv'
-LIMIT=100
+LIMIT=90
 
-while IFS=, read -r zone population access beta
-do
+function generatePopulationAsc() {
+  eval populations=$1
+  for population in $populations; do
+    sed 's/#POPULATION#/'"$population"'/g' population.asc > $population.asc
+  done
+}
+
+function generateZoneAsc() {
+  eval zones=$1
+  for zone in $zones; do
+    sed 's/#ZONE#/'"$zone"'/g' zone.asc > $zone.asc
+  done
+}
+
+function run() {
+  filename=$1
+
+  while IFS=, read -r zone population access beta
+  do
     echo "Values $zone, $population, $access, $beta"
 
     # Get the current job count, note the overcount due to the delay.
     # Wait if there are currently too many jobs
     while [ `qstat -u rbz5100 | grep rbz5100 | wc -l` -gt $LIMIT ]
     do
-        sleep 10s
+      sleep 10s
     done
 
     # Trim the return
@@ -35,4 +51,9 @@ do
     # Queue the next item
     qsub $zone-$population-$access-$beta-bfa.pbs
 
-done < $FILENAME
+  done < $filename
+}
+
+generatePopulationAsc "\"797 1417 2279 3668 6386 12627 25584 53601 117418\""
+generateZoneAsc "\"0 1 2\""
+run 'missing.csv'
