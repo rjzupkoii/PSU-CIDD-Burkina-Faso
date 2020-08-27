@@ -44,10 +44,10 @@ def addBeta(lookup, step, zone, beta, population, treatment):
         parameters[zone][populationBin][treatmentBin] = set()
 
     # Add the stepped betas to the set
-    value = round(beta - (step * 10), 3)
+    value = round(beta - (step * 10), 4)
     while value < beta + (step * 10):
         parameters[zone][populationBin][treatmentBin].add(value)
-        value = round(value + step, 3)
+        value = round(value + step, 4)
   
 
 def getLookupBetas(lookup, zone, population, treatment):
@@ -87,16 +87,12 @@ def writeBetas(lookup):
     print "Preparing script, {}".format(SCRIPT)
     with open(SCRIPT, "w") as script:
         script.write("#!/bin/bash\n")
-        script.write("source ./runMissing.sh")
-        script.write("generatePopulationAsc \"\\\"")
-        for value in sorted(populationAsc):
-            script.write("{} ".format(value))
-        script.write("\\\"\"\n")
-        script.write("generateZoneAsc \"\\\"")
-        for value in sorted(parameters.keys()):
-            script.write("{} ".format(value))
-        script.write("\\\"\"\n")
-        script.write("run 'reduced.csv'\n")
+        script.write("source ./runMissing.sh\n")
+        value = " ".join([str(x) for x in sorted(populationAsc)])
+        script.write("generatePopulationAsc \"\\\"{}\\\"\"\n".format(value.strip()))
+        value = " ".join([str(x) for x in sorted(parameters.keys())])
+        script.write("generateZoneAsc \"\\\"{}\\\"\"\n".format(value.strip()))
+        script.write("run '{}'\n".format(RESULTS[4:]))
         
 
 def main(tolerance, step):
@@ -143,7 +139,15 @@ if __name__ == "__main__":
         print "Usage: ./reduceEpsilons.py [tolerance] [step]"
         print "tolerance - float, maximum epsilon"
         print "step - float, increment +/- 10x around known beta"
-    else:
-        tolerance = float(sys.argv[1])
-        step = float(sys.argv[2])
-        main(tolerance, step)
+        exit
+
+    # Parse the parameters
+    tolerance = float(sys.argv[1])
+    step = float(sys.argv[2])
+
+    # Can only go out to four decimal places
+    if round(step, 4) != step:
+        print "{} exceeds maximum step of 0.0001"
+        exit(1)
+
+    main(tolerance, step)
