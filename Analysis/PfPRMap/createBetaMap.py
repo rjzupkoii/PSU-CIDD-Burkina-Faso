@@ -87,6 +87,7 @@ def main():
 
     # Prepare for the ASC data
     epsilons = []
+    maxEpsilon = 0
     meanBeta = []
 
     print "Determining betas for {} rows, {} columns".format(ascheader['nrows'], ascheader['ncols'])
@@ -119,12 +120,14 @@ def main():
 
             # Note the epsilon and the mean
             epsilons[row].append(epsilon)
+            if epsilon > maxEpsilon: maxEpsilon = epsilon
             meanBeta[row].append(sum(values) / len(values))
 
         # Note the progress
         progressBar(row + 1, ascheader['nrows'])
                 
     # Write the results
+    print "Max epsilon: {}".format(maxEpsilon)
     print "Saving {}".format('out/bf_epsilons_beta.asc')
     write_asc(ascheader, epsilons, 'out/bf_epsilons_beta.asc')
     print "Saving {}".format('out/bf_mean_beta.asc')

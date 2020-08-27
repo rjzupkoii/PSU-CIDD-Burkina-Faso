@@ -13,9 +13,9 @@ def progressBar(current, total, barLength = 20):
     spaces = ' ' * (barLength - len(arrow))
 
     if int(percent) != 1:
-        sys.stdout.write("\rPercent: [{0}] {1}%".format(arrow + spaces, int(round(percent * 100))))
+        sys.stdout.write("\Progress: [{0}] {1}%".format(arrow + spaces, int(round(percent * 100))))
         sys.stdout.flush()
     else:
-        print "\rPercent: [{0}] {1}%".format('-' * barLength, int(round(percent * 100)))
+        print "\Progress: [{0}] {1}%".format('-' * barLength, int(round(percent * 100)))
 
     
