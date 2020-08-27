@@ -9,13 +9,7 @@ import csv
 
 from include.ascFile import *
 from include.calibrationLib import *
-
-# TODO Migrate these to command line parameters
-# The maximum epsilon value that we are comforable with
-MAXIMUM = 0.01
-
-# The step value to use to fill the gap between this beta and the next
-STEP = 0.001
+from include.utility import *
 
 # TODO Figure out a better way to store these locations, maybe a library that finds them?
 # Country specific inputs
@@ -34,7 +28,7 @@ SCRIPT = 'out/script.sh'
 
 parameters = {}
 
-def addBeta(lookup, zone, beta, population, treatment):
+def addBeta(lookup, step, zone, beta, population, treatment):
     global parameters
     
     # Determine the population and treatment bin we are working with
@@ -50,10 +44,10 @@ def addBeta(lookup, zone, beta, population, treatment):
         parameters[zone][populationBin][treatmentBin] = set()
 
     # Add the stepped betas to the set
-    value = round(beta - (STEP * 10), 3)
-    while value < beta + (STEP * 10):
+    value = round(beta - (step * 10), 3)
+    while value < beta + (step * 10):
         parameters[zone][populationBin][treatmentBin].add(value)
-        value = round(value + STEP, 3)
+        value = round(value + step, 3)
   
 
 def getLookupBetas(lookup, zone, population, treatment):
@@ -79,6 +73,11 @@ def writeBetas(lookup):
                 for beta in sorted(parameters[zone][population][treatment]):
                     if beta not in betas: reduced.append([zone, population, treatment, beta])
 
+    # Double check to see if the list was cleared out
+    if len(reduced) == 0:
+        print "Nothing to reduce!"
+        return
+
     # Save the missing values as a CSV file
     print "Preparing inputs, {}".format(RESULTS)
     with open(RESULTS, "wb") as csvfile:
@@ -88,6 +87,7 @@ def writeBetas(lookup):
     print "Preparing script, {}".format(SCRIPT)
     with open(SCRIPT, "w") as script:
         script.write("#!/bin/bash\n")
+        script.write("source ./runMissing.sh")
         script.write("generatePopulationAsc \"\\\"")
         for value in sorted(populationAsc):
             script.write("{} ".format(value))
@@ -99,7 +99,7 @@ def writeBetas(lookup):
         script.write("run 'reduced.csv'\n")
         
 
-def main():
+def main(tolerance, step):
     global parameters
 
     # Load the relevent data
@@ -122,10 +122,14 @@ def main():
             if value == ascheader['nodata']: continue
 
             # Pass when value is less than maximum
-            if value < MAXIMUM: continue
+            if value < tolerance: continue
 
             # Update the running list
-            addBeta(lookup, int(zones[row][col]), beta[row][col], population[row][col], treatment[row][col] / 100)
+            addBeta(lookup, step, int(zones[row][col]), \
+                beta[row][col], population[row][col], treatment[row][col] / 100)
+
+        # Note the progress
+        progressBar(row + 1, ascheader['nrows'])
 
     # Check to see if we are done
     if len(parameters) == 0:
@@ -135,4 +139,11 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) != 3:
+        print "Usage: ./reduceEpsilons.py [tolerance] [step]"
+        print "tolerance - float, maximum epsilon"
+        print "step - float, increment +/- 10x around known beta"
+    else:
+        tolerance = float(sys.argv[1])
+        step = float(sys.argv[2])
+        main(tolerance, step)
