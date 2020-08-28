@@ -2,71 +2,43 @@
 %
 % Generate plots that allow us to compare how the model performs at scale 
 % when working with seasonal and non-seasonal data.
+addpath('include');
 clear;
 
-% Load the data and prepare the dates
-global raw reference;
-start_date = '2006-1-1';
-raw = csvread('data/population-seasonal.csv', 1, 0);
-reference = csvread('data/weighted_pfpr.csv');
-dn = prepare_dates(start_date);
+%FILENAME = 'data/population-full.csv';
 
-%plot_population(dn);
-%plot_error(start_date, dn);
-plot_seasonal_error(start_date, dn);
-%plot_error_summary(dn);
+STARTDATE = '2006-1-1';
+FILENAME = 'data/population-seasonal-ii.csv';
 
-function [dn] = prepare_dates(start)
-    global raw;
-    
-    dn = [];
-    for days = unique(raw(:, 1))'
-        dn(end+1) = addtodate(datenum(start), days, 'day');
-    end
-end
+%plotPopulation(FILENAME, STARTDATE);
 
-function [] = plot_error_summary(dn) 
-    global raw reference;
+% Seasonal exposure
+%seasonalError(FILENAME, STARTDATE);
+seasonalErrorSummary(FILENAME);
 
-    % Trim off all of the data prior to burn-in
-    data = raw(raw(:, 1) >= 4000, :);
-    districts = unique(data(:, 2));
+% Constant exposure
+%perennialError(FILENAME, STARTDATE);
+%perennialErrorSummary(FILENAME);
+
+
+function [] = perennialError(filename, startDate) 
+    % Load the data and reference data
+    data = csvread(filename, 1, 0);
+    reference = csvread('data/weighted_pfpr.csv');
+    dn = prepareDates(filename, 1, startDate);
 
     hold on;
+    districts = unique(data(:, 2));
+    colors = colormap(parula(size(districts, 1)));
     for district = transpose(districts)
         expected = reference(reference(:, 1) == district, 2);
         pfpr = data(data(:, 2) == district, 6);
-        values = (pfpr - expected) / expected;
-        variance = var(values) * 100;
-        error = sum(values) / size(values, 1) * 100;
-        scatter(error, variance, 'filled');
-        text(error + 0.025, variance + 0.0005, cellstr(num2str(district)));
-    end
-
-    title('Population Scaling versus Expected Values (Post-Burn-in)');
-    xlabel('Mean Percent Error');
-    ylabel('Error Variance');
-
-    graphic = gca;
-    graphic.FontSize = 18;
-    hold off;
-end
-
-function [] = plot_error(start_date, dn) 
-    global raw reference;
-
-    hold on;
-    districts = unique(raw(:, 2));
-    colors = colormap(parula(size(districts, 1)));
-    for district = transpose(filtered)
-        expected = reference(reference(:, 1) == district, 2);
-        pfpr = raw(raw(:, 2) == district, 6);
         error = ((pfpr - expected) / expected) * 100;
         scatter(dn, error, 50, colors(district, :), 'Filled');    
     end 
 
     yline(0, '-.');
-    start = addtodate(datenum(start_date), 4000, 'day');
+    start = addtodate(datenum(startDate), 4000, 'day');
     xline(start, '-.', 'Model Burn-in', 'FontSize', 18, 'LabelVerticalAlignment', 'bottom');
 
     datetick('x', 'yyyy');
@@ -79,14 +51,47 @@ function [] = plot_error(start_date, dn)
     hold off;
 end
 
-function [] = plot_seasonal_error(start_date, dn)
-    global raw reference;
-           
+function [] = perennialErrorSummary(filename) 
+    % Load reference data
+    reference = csvread('data/weighted_pfpr.csv');
+    
+    % Load and trim the evaluation data to post-burn-in
+    data = csvread(filename, 1, 0);
+    data = data(data(:, 1) >= 4000, :);
+    districts = unique(data(:, 2));
+
+    hold on;
+    for district = transpose(districts)
+        expected = reference(reference(:, 1) == district, 2);
+        pfpr = data(data(:, 2) == district, 6);
+        values = (pfpr - expected) / expected;
+        sd = std(values) * 100;
+        error = sum(values) / size(values, 1) * 100;
+        scatter(error, sd, 'filled');
+        name = getLocationName('include/bfa_locations.csv', district);
+        text(error + 0.025, sd + 0.0005, name);
+    end
+
+    title('Simulated vs. Expected PfPR on a Perennial Basis (Post-Burn-in)');
+    xlabel('Mean Percent Error');
+    ylabel('Standard Deviation');
+
+    graphic = gca;
+    graphic.FontSize = 18;
+    hold off;
+end
+
+function [] = seasonalError(filename, startDate)
+    % Load the data and reference data
+    data = csvread(filename, 1, 0);
+    reference = csvread('data/weighted_pfpr.csv');
+    dn = prepareDates(filename, 1, startDate);
+
     % Prepare the color map
-    colors = colormap(parula(size(unique(raw(:, 2)), 1)));
+    colors = colormap(parula(size(unique(data(:, 2)), 1)));
     
     % Prepare the burn-in marker point
-    start = addtodate(datenum(start_date), 4000, 'day');
+    start = addtodate(datenum(startDate), 4000, 'day');
     
     % Iterate over the zones
     zones = unique(reference(:, 3));
@@ -98,7 +103,7 @@ function [] = plot_seasonal_error(start_date, dn)
         hold on;
         for district = transpose(districts)
             expected = reference(reference(:, 1) == district, 2);
-            pfpr = raw(raw(:, 2) == district, 6);
+            pfpr = data(data(:, 2) == district, 6);
             error = ((pfpr - expected) / expected) * 100;
             scatter(dn, error, 50, colors(district, :), 'Filled');    
         end 
@@ -113,18 +118,52 @@ function [] = plot_seasonal_error(start_date, dn)
         xlabel('Model Year');
         hold off;
     end
-
-%    
 end
 
-function [] = plot_population(dn)
-    global raw;
+function [] = seasonalErrorSummary(filename)
+    % Load reference data
+    reference = csvread('data/weighted_pfpr.csv');
+    
+    % Load and trim the evaluation data to post-burn-in
+    data = csvread(filename, 1, 0);
+    data = data(data(:, 1) >= 4000, :);
+    districts = unique(data(:, 2));
+    
+    hold on;
+    for district = transpose(districts)
+        expected = reference(reference(:, 1) == district, 2);
+        pfpr = data(data(:, 2) == district, 6);
+        
+        % We want the seasonal maxima
+        peaks = findpeaks(pfpr);
+        peaks = peaks(peaks > mean(peaks));
+        
+        % Find the MPE and SD
+        values = (peaks - expected) / expected;
+        sd = std(values) * 100;
+        error = sum(values) / size(values, 1) * 100;
+        scatter(error, sd, 'filled');
+        name = getLocationName('include/bfa_locations.csv', district);
+        text(error + 0.05, sd + 0.01, name);
+    end
+    
+    title('Simulated vs. Expected PfPR on a Seasonal Basis (Post Burn-in)');
+    xlabel('Mean Percent Error');
+    ylabel('Standard Deviation');
+    
+    graphic = gca;
+    graphic.FontSize = 18;
+    hold off;
+end
 
-    % Extract the relevent raw
-    dayselapsed = unique(raw(:, 1));
+function [] = plotPopulation(filename, startDate)
+    
+    % Extract the relevent data
+    data = csvread(filename, 1, 0);
+    dayselapsed = unique(data(:, 1));
     population = [];
     for day = transpose(dayselapsed)
-        population = [population, sum(raw(raw(:, 1) == day, 3))];
+        population = [population, sum(data(data(:, 1) == day, 3))];
     end
 
     % Scale the raw back to full population
@@ -134,6 +173,7 @@ function [] = plot_population(dn)
     population = population ./ 1000000;
 
     % Generate the population plot
+    dn = prepareDates(filename, 1, startDate);
     plot(dn, population);
     
     % Format the plot
