@@ -139,7 +139,7 @@ if __name__ == "__main__":
         print "Usage: ./reduceEpsilons.py [tolerance] [step]"
         print "tolerance - float, maximum epsilon"
         print "step - float, increment +/- 10x around known beta"
-        exit
+        exit(0)
 
     # Parse the parameters
     tolerance = float(sys.argv[1])
