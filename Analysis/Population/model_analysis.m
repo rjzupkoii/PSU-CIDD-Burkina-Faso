@@ -5,10 +5,8 @@
 addpath('include');
 clear;
 
-%FILENAME = 'data/population-full.csv';
-
 STARTDATE = '2006-1-1';
-FILENAME = 'data/population-seasonal-ii.csv';
+FILENAME = 'data/population-seasonal-iii.csv';
 
 %plotPopulation(FILENAME, STARTDATE);
 
@@ -19,7 +17,6 @@ seasonalErrorSummary(FILENAME);
 % Constant exposure
 %perennialError(FILENAME, STARTDATE);
 %perennialErrorSummary(FILENAME);
-
 
 function [] = perennialError(filename, startDate) 
     % Load the data and reference data
@@ -114,7 +111,7 @@ function [] = seasonalError(filename, startDate)
 
         datetick('x', 'yyyy');
         title(sprintf('Expected PfPr_{2 to 10} versus Simulated (Zone {%d})', zone));
-        ylabel('Percent Error');
+        ylabel('Percent Error Realative to Peak');
         xlabel('Model Year');
         hold off;
     end
@@ -136,7 +133,7 @@ function [] = seasonalErrorSummary(filename)
         
         % We want the seasonal maxima
         peaks = findpeaks(pfpr);
-        peaks = peaks(peaks > mean(peaks));
+        peaks = peaks(peaks > (mean(peaks) - std(peaks)));
         
         % Find the MPE and SD
         values = (peaks - expected) / expected;
@@ -148,7 +145,7 @@ function [] = seasonalErrorSummary(filename)
     end
     
     title('Simulated vs. Expected PfPR on a Seasonal Basis (Post Burn-in)');
-    xlabel('Mean Percent Error');
+    xlabel('Mean Percent Error Realative to Peak');
     ylabel('Standard Deviation');
     
     graphic = gca;
