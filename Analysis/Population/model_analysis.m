@@ -6,17 +6,71 @@ addpath('include');
 clear;
 
 STARTDATE = '2006-1-1';
-FILENAME = 'data/population-seasonal-iii.csv';
+FILENAME = 'data/population-seasonal-final.csv';
 
 %plotPopulation(FILENAME, STARTDATE);
 
+% Common to all types
+monthlyPfPR(FILENAME, STARTDATE, true);
+
 % Seasonal exposure
 %seasonalError(FILENAME, STARTDATE);
-seasonalErrorSummary(FILENAME);
+%seasonalErrorSummary(FILENAME);
 
 % Constant exposure
 %perennialError(FILENAME, STARTDATE);
 %perennialErrorSummary(FILENAME);
+
+function [] = monthlyPfPR(filename, startDate, single)
+    % Load the data and reference data
+    data = csvread(filename, 1, 0);
+    reference = csvread('data/weighted_pfpr.csv');
+    dn = prepareDates(filename, 1, startDate);
+
+    % Prepare the color map
+    colors = colormap(parula(size(unique(data(:, 2)), 1)));
+    
+    % Prepare the burn-in marker point
+    start = addtodate(datenum(startDate), 4000, 'day');
+    
+    % Iterate over the zones
+    zones = unique(reference(:, 3));
+    for zone = transpose(zones)
+    
+        % Filter and iterate over the districts
+        districts = unique(reference(reference(:, 3) == zone, 1));
+        if size(zones, 1) > 1 && not(single)
+            subplot(size(zones, 1), 1, zone + 1);
+        end
+        
+        % Select the correct plot format
+        hold on;
+        for district = transpose(districts)
+            pfpr = data(data(:, 2) == district, 6);
+            scatter(dn, pfpr, 50, colors(district, :), 'Filled');    
+        end 
+        
+        % Add the plot features
+        yline(0, '-.');
+        xline(start, '-.', 'Model Burn-in', 'LabelVerticalAlignment', 'bottom');
+        
+        datetick('x', 'yyyy');
+        xlim([min(dn) max(dn)])                
+        ylabel('PfPR_{2 to 10}');
+        xlabel('Model Year');
+
+        % Adjust the title, fonts as needed
+        if size(zones, 1) > 1 && not(single)
+            title(sprintf('Simulated Monthly PfPr_{2 to 10} Over Time (Zone {%d})', zone));
+        else
+            title('Simulated Monthly PfPr_{2 to 10} Over Time');
+            graphic = gca;
+            graphic.FontSize = 18;
+        end        
+
+        hold off;
+    end
+end
 
 function [] = perennialError(filename, startDate) 
     % Load the data and reference data
@@ -110,6 +164,7 @@ function [] = seasonalError(filename, startDate)
         xline(start, '-.', 'Model Burn-in', 'LabelVerticalAlignment', 'bottom');
 
         datetick('x', 'yyyy');
+        xlim([min(dn) max(dn)])
         title(sprintf('Expected PfPr_{2 to 10} versus Simulated (Zone {%d})', zone));
         ylabel('Percent Error Realative to Peak');
         xlabel('Model Year');
