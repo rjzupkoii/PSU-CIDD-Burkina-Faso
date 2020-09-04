@@ -9,4 +9,4 @@
 #PBS -M rbz5100@psu.edu
 
 cd $PBS_O_WORKDIR
-./MaSim -i #RATE#-bfa.yml -s 12
+./MaSim -i #RATE#-bfa.yml -s 15
