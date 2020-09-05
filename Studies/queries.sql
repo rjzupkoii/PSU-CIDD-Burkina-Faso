@@ -43,3 +43,15 @@ from sim.replicate r
   inner join sim.genotype g on mgd.genomeid = g.id
 where c.studyid = 16
 group by filename, dayselapsed, g.name
+
+-- Grid of resistance frequency post model burn-in
+select dayselapsed, l.x, l.y,
+  sum(mgd.weightedfrequency) as resistancefrequency
+from sim.monthlydata md
+  inner join sim.monthlygenomedata mgd on mgd.monthlydataid = md.id
+  inner join sim.location l on l.id = mgd.locationid
+  inner join sim.genotype g on g.id = mgd.genomeid
+where md.replicateid = 62248
+  and md.dayselapsed > (365 * 11)
+  and g.name ~ '^.....Y..'
+group by dayselapsed, x, y
