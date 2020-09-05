@@ -196,9 +196,15 @@ circulation_info:
 initial_parasite_info:
   - location_id: -1
     parasite_info:
-      #TNY__C1x
+      # TNY--C1x / 
+      # T - CQ resistance (everywhere)
+      # NY-- - N (diversity at 86 locus), Y (184 locus)
+      # C - Artemisinin (ART) sensitive
+      # 1 - PPQ sensitive
       - parasite_type_id: 64
         prevalence: 0.05
+
+      # TYY--C1x
       - parasite_type_id: 72
         prevalence: 0.05
         
@@ -206,8 +212,45 @@ initial_parasite_info:
 events:
   - name: annual_coverage_update_event
     info:
-      - date: 2019/1/1
+      - day: 2019/1/1
         rate: #RATE#
+  - name: turn_off_mutation
+    info:
+      - day: 2007/1/1
+  - name: turn_on_mutation
+    info:
+      # Artemisinin
+      - day: 2018/1/1
+        drug_id: 0
+        mutation_probability: 0.005
+      # Amodiaquine
+      - day: 2018/1/1
+        drug_id: 1
+        mutation_probability: 0.005
+      # Sulfadoxine/pyrimethamine
+      - day: 2018/1/1
+        drug_id: 2
+        mutation_probability: 0.0      
+      # Chloroquine
+      - day: 2018/1/1
+        drug_id: 3
+        mutation_probability: 0.005
+      # Lumefantrine
+      - day: 2018/1/1
+        drug_id: 4
+        mutation_probability: 0.005  
+      # Piperaquine
+      - day: 2018/1/1
+        drug_id: 5
+        mutation_probability: 0.005
+      # Mefloquine
+      - day: 2018/1/1
+        drug_id: 6
+        mutation_probability: 0.005
+      # Quinine
+      - day: 2018/1/1
+        drug_id: 7
+        mutation_probability: 0.0                 
 
 # Drug Information
 #
