@@ -3,6 +3,7 @@
 *.asv
 
 # Ingore input-output directories
+Analysis/Loader/out/
 Analysis/PfPRMap/data/
 Analysis/PfPRMap/out/
 Analysis/Population/data/
