@@ -18,13 +18,13 @@ CONNECTION = "host=masimdb.vmhost.psu.edu dbname=burkinafaso user=sim password=s
 
 # Check to see if data exists for the given replicate after the burn-in period
 def checkGetFrequency(replicateId, startDay):
-    #  AND g.name ~ '^.....Y..'
     sql = """
         SELECT exists(SELECT 1 FROM sim.monthlydata md
             INNER JOIN sim.monthlygenomedata mgd ON mgd.monthlydataid = md.id
             INNER JOIN sim.location l ON l.id = mgd.locationid
             INNER JOIN sim.genotype g ON g.id = mgd.genomeid
-        WHERE md.replicateid = %(replicateId)s AND md.dayselapsed > %(startDay)s
+        WHERE md.replicateid = %(replicateId)s AND md.dayselapsed > %(startDay)s 
+          AND g.name ~ '^.....Y..'
         )"""
     
     # Open the connection
@@ -43,7 +43,6 @@ def checkGetFrequency(replicateId, startDay):
 
 # Return the frequency data for each cell after the burn-in period is complete
 def getFrequency(replicateId, startDay):
-    # AND g.name ~ '^.....Y..'
     sql = """
         SELECT dayselapsed, l.x, l.y, sum(mgd.weightedfrequency) AS resistancefrequency
         FROM sim.monthlydata md
@@ -51,6 +50,7 @@ def getFrequency(replicateId, startDay):
             INNER JOIN sim.location l ON l.id = mgd.locationid
             INNER JOIN sim.genotype g ON g.id = mgd.genomeid
         WHERE md.replicateid = %(replicateId)s  AND md.dayselapsed > %(startDay)s
+          AND g.name ~ '^.....Y..'
         GROUP BY dayselapsed, x, y"""
 
     # Open the connection

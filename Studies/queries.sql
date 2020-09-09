@@ -1,3 +1,12 @@
+-- Basic monitoring query
+select filename, replicateid, starttime, max(dayselapsed)
+from sim.replicate r
+  inner join sim.configuration c on c.id = r.configurationid
+  inner join sim.monthlydata md on md.replicateid = r.id
+where r.endtime is null
+group by filename, replicateid, starttime
+order by filename
+
 -- Select country level summary across all districts and studies
 select cast((regexp_matches(filename, '^(\d\.\d*)-bfa\.yml'))[1] as float) as rate,
   dayselapsed,
@@ -12,6 +21,8 @@ from sim.replicate r
   inner join sim.monthlydata md on md.replicateid = r.id
   inner join sim.monthlysitedata msd on msd.monthlydataid = md.id
 where c.studyid = 16
+  and msd.eir != 0 
+  and md.treatmentfailures != 0
 group by filename, dayselapsed
 
 -- Select country level summary genome data across all districts and studies
