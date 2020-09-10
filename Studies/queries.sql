@@ -25,6 +25,20 @@ where c.studyid = 16
   and md.treatmentfailures != 0
 group by filename, dayselapsed
 
+select cast((regexp_matches(filename, '^(\d\.\d*)-bfa\.yml'))[1] as float) as rate, 
+  dayselapsed, 
+  sum(msd.population) as population, 
+  sum(msd.treatments) as treatments, 
+  sum(msd.treatmentfailures) as treatmentfailures
+from sim.configuration c
+  inner join sim.replicate r on c.id = r.configurationid
+  inner join sim.monthlydata md on r.id = md.replicateid
+  inner join sim.monthlysitedata msd on msd.monthlydataid = md.id
+where c.studyid = 16
+  and md.treatmentfailures != 0
+  and msd.eir != 0
+group by rate, dayselapsed
+
 -- Select country level summary genome data across all districts and studies
 select cast((regexp_matches(filename, '^(\d\.\d*)-bfa\.yml'))[1] as float) as rate,
   dayselapsed,

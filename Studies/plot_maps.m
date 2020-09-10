@@ -1,45 +1,123 @@
 % plot_maps.m
 %
-% Generate heatmaps based upon the loaded data.
+% Generate heatmaps and 580Y frequency plot based upon the data downloaded
+% by the Python loader script.
+addpath('../Analysis/Population/include');
 clear;
 
-FILENAME = 'data/rate-0.005-resistancefrequency.csv';
-STARTDATE = '2007/1/1';
-RATE = 0.005;
+STARTDATE = '2007-1-1';
+DIRECTORY = '../Analysis/Loader/out/*.csv';
 
-raw = csvread(FILENAME, 1, 0);
-days = unique(raw(:, 1));
+heatmaps(DIRECTORY, STARTDATE);
+plotFrequency(DIRECTORY, STARTDATE);
 
-subplot(2, 2, 1);
-generate(raw, days(1), STARTDATE);
+% Scan the loader directory to generate a single frequency plot from all of
+% the files
+function [] = plotFrequency(directory, startdate)
+    hold on;
+    files = dir(directory);
+    rates = {};
+    for ndx = 1:length(files)
+        filename = fullfile(files(ndx).folder, files(ndx).name);
+        rate = char(extractBetween(files(ndx).name, 1, 5));
+        rates{end + 1} = strrep(rate, '-', '');
+        generateFrequency(filename, startdate);
+    end
+    hold off;
+    
+    % Add labels, apply formatting
+    title('Burkina Faso, increase in 580Y frequency over time');
+    ylabel('580Y frequency (average of all cells)');
+    datetick('x', 'yyyy');
+    set(gca, 'XLimSpec', 'Tight');
+    
+    % Format the legend
+    hleg = legend(cellstr(rates), 'Location', 'NorthWest', 'NumColumns', 2);
+    title(hleg, 'Increase in Treatment Coverage');
+    legend boxoff;
 
-subplot(2, 2, 2);
-generate(raw, days(30), STARTDATE);
+    graphic = gca;
+    graphic.FontSize = 18;
+    
+    % Save and close
+    set(gcf, 'Position', get(0, 'Screensize'));
+    saveas(gcf, 'out/frequencies.png');
+    clf;
+    close;
+end
 
-subplot(2, 2, 3);
-generate(raw, days(60), STARTDATE);
+% Add a single frequency plot to the current GCF
+function [] = generateFrequency(filename, startdate)
+    raw = csvread(filename, 1, 0);
+    days = unique(raw(:, 1));
+    values = [];
+    for day = transpose(days)
+        data = raw(raw(:, 1) == day, :);
+        values(end + 1) = sum(data(:, 4)) / size(data, 1);
+    end
+    dn = prepareDates(filename, 1, startdate);
+    plot(dn, values);
+end
 
-subplot(2, 2, 4);
-generate(raw, days(90), STARTDATE);
+% Scan the loader directory to generate heatmaps for all of the files
+function [] = heatmaps(directory, startdate)
+    files = dir(directory);
+    for ndx = 1:length(files)
+        filename = fullfile(files(ndx).folder, files(ndx).name);
+        rate = char(extractBetween(files(ndx).name, 1, 5));
+        rate = strrep(rate, '-', '');    
+        plotHeatmaps(filename, rate, startdate);
+        set(gcf, 'Position', get(0, 'Screensize'));
+        saveas(gcf, sprintf('out/%s-heatmap.png', rate));
+        clf;
+    end
+    close;
+end
 
-sgtitle(["Burkina Faso, artemisinin resistance frequency", sprintf("%g%% increase in coverage", RATE)]);
+% Generate multiple subplots that contain heatmaps at fixed intervals
+function [] = plotHeatmaps(filename, rate, startdate) 
+    raw = csvread(filename, 1, 0);
+    days = unique(raw(:, 1));
 
-function [hm] = generate(raw, date, startDate)
-    % Prepare the map
-    rows = max(raw(:, 2) + 1);
-    cols = max(raw(:, 3) + 1);
+    subplot(2, 2, 1);
+    generateHeatmap(raw, days(1), startdate);
+
+    subplot(2, 2, 2);
+    generateHeatmap(raw, days(60), startdate);
+
+    subplot(2, 2, 3);
+    generateHeatmap(raw, days(120), startdate);
+
+    subplot(2, 2, 4);
+    if size(days, 1) < 180
+        generateHeatmap(raw, days(end), startdate);
+    else
+        generateHeatmap(raw, days(180), startdate);
+    end
+
+    sgtitle(["Burkina Faso, 580Y frequency", sprintf("%s%% increase in coverage", rate)]);
+end
+
+% Generate a single heatmap for the given date
+function [hm] = generateHeatmap(raw, date, startDate)
+    % Prepare the data structure
+    rows = max(raw(:, 3) + 1);
+    cols = max(raw(:, 2) + 1);
     map = zeros(rows, cols);
 
+    % Load the data on to the map structure
     data = raw(raw(:, 1) == date, :);
     for values = transpose(data)
-        row = values(2) + 1;
-        col = values(3) + 1;
+        row = values(3) + 1;
+        col = values(2) + 1;
         map(row, col) = values(4);    
     end
     
+    % Covert the data, prepare the title
     days = addtodate(datenum(startDate), date, 'day');
     title = datestr(datetime(days, 'ConvertFrom', 'datenum'), 'mmmm yyyy');
 
+    % Apply the formatting
     hm = heatmap(map);
     hm.Title = title;
     hm.XDisplayLabels = repmat(' ', cols, 1); 
@@ -47,4 +125,3 @@ function [hm] = generate(raw, date, startDate)
     hm.Colormap = colormap(flipud(hot));
     grid off;
 end
-

@@ -117,7 +117,7 @@ def main(studyId, burnIn):
     
     # Note the progress
     total = 0
-    progressBar(total, len(replicates))
+    progressBar(total, len(replicates) + 1)
 
     # Iterate through all of the rows
     currentRate = None
@@ -143,7 +143,11 @@ def main(studyId, burnIn):
 
         # Note the progress
         total = total + 1
-        progressBar(total, len(replicates))
+        progressBar(total, len(replicates) + 1)
+
+    # Save the last data set
+    saveFrequencies(data, currentRate)
+    progressBar(total + 1, len(replicates) + 1)
 
 
 if __name__ == '__main__':
