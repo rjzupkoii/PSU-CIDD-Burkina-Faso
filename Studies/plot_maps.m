@@ -8,7 +8,7 @@ clear;
 STARTDATE = '2007-1-1';
 DIRECTORY = '../Analysis/Loader/out/*.csv';
 
-heatmaps(DIRECTORY, STARTDATE);
+%heatmaps(DIRECTORY, STARTDATE);
 plotFrequency(DIRECTORY, STARTDATE);
 
 % Scan the loader directory to generate a single frequency plot from all of
@@ -21,7 +21,7 @@ function [] = plotFrequency(directory, startdate)
         filename = fullfile(files(ndx).folder, files(ndx).name);
         rate = char(extractBetween(files(ndx).name, 1, 5));
         rates{end + 1} = strrep(rate, '-', '');
-        generateFrequency(filename, startdate);
+        generateFrequency(filename, rates{end}, startdate);
     end
     hold off;
     
@@ -47,7 +47,7 @@ function [] = plotFrequency(directory, startdate)
 end
 
 % Add a single frequency plot to the current GCF
-function [] = generateFrequency(filename, startdate)
+function [] = generateFrequency(filename, rate, startdate)
     raw = csvread(filename, 1, 0);
     days = unique(raw(:, 1));
     values = [];
@@ -57,6 +57,9 @@ function [] = generateFrequency(filename, startdate)
     end
     dn = prepareDates(filename, 1, startdate);
     plot(dn, values);
+   
+    % Uncommon to show rate label
+    %text(max(dn), max(values), rate)
 end
 
 % Scan the loader directory to generate heatmaps for all of the files
@@ -80,19 +83,19 @@ function [] = plotHeatmaps(filename, rate, startdate)
     days = unique(raw(:, 1));
 
     subplot(2, 2, 1);
-    generateHeatmap(raw, days(1), startdate);
+    generateHeatmap(raw, days(24), startdate);
 
     subplot(2, 2, 2);
-    generateHeatmap(raw, days(60), startdate);
+    generateHeatmap(raw, days(84), startdate);
 
     subplot(2, 2, 3);
-    generateHeatmap(raw, days(120), startdate);
+    generateHeatmap(raw, days(144), startdate);
 
     subplot(2, 2, 4);
-    if size(days, 1) < 180
+    if size(days, 1) < 204
         generateHeatmap(raw, days(end), startdate);
     else
-        generateHeatmap(raw, days(180), startdate);
+        generateHeatmap(raw, days(204), startdate);
     end
 
     sgtitle(["Burkina Faso, 580Y frequency", sprintf("%s%% increase in coverage", rate)]);

@@ -1,3 +1,8 @@
+% comparisons.m
+%
+% This script contains various functions for generating basic plots that
+% are useful for assessing the model calibration, or other useful
+% comparisons.
 addpath('../Analysis/Population/include');
 clear;
 
