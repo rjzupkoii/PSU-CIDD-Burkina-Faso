@@ -80,7 +80,7 @@ raster_db:
   cell_size: 5
 
   # Approximate national age distribution for Burkina Faso
-  age_distribution_by_location: [[0.0359, 0.0359, 0.0359, 0.0359, 0.0315, 0.0315, 0.0315, 0.0315, 0.0315, 0.0268, 0.0268, 0.0268, 0.0268, 0.0268, 0.1990, 0.1251, 0.0855, 0.0560, 0.0346, 0.0289, 0]]
+  age_distribution_by_location: [[0.0449, 0.0449, 0.0449, 0.0449, 0.0315, 0.0315, 0.0315, 0.0315, 0.0315, 0.0268, 0.0268, 0.0268, 0.0268, 0.0268, 0.1990, 0.1251, 0.0855, 0.0560, 0.0346, 0.0289, 0.0000]]
 
   # probability that a symptomatic and infected individual seeks and receives antimalarial treatment
   #if the number of values less than number of locations, the first value will be applied for all locations
@@ -113,11 +113,11 @@ spatial_model:
     capital: 14
     penalty: 12
 
-# Crude Birth Rate: 37.5 based upon UN data
-birth_rate: 0.0375
+# Crude Birth Rate: 41.2 based upon INSD 2018 data
+birth_rate: 0.0412
 
 # Malaria adjusted, all-causes death rate for Burkina Faso
-death_rate_by_age_class: [0.0382, 0.03019, 0.02027, 0.01525, 0.01248, 0.00359, 0.00361, 0.00365, 0.00379, 0.00379, 0.00386, 0.0059, 0.00664, 0.0174, 0.0174]
+death_rate_by_age_class: [0.0382, 0.03019, 0.02027, 0.01525, 0.01248, 0.00359, 0.00361, 0.00365, 0.00379, 0.00379, 0.00386, 0.00504, 0.0055, 0.0174, 0.0174]
 
 # TODO
 # probability of death for patients who are not treated or patients who experience a treatment failure (due to drug resistance, or otherwise)
