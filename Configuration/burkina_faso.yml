@@ -117,7 +117,7 @@ spatial_model:
 birth_rate: 0.0375
 
 # Malaria adjusted, all-causes death rate for Burkina Faso
-death_rate_by_age_class: [0.0382, 0.03019, 0.02027, 0.01525, 0.01248, 0.00359, 0.00361, 0.00365, 0.00379, 0.00379, 0.00386, 0.0059, 0.00664, 0.01727, 0.36621]
+death_rate_by_age_class: [0.0382, 0.03019, 0.02027, 0.01525, 0.01248, 0.00076, 0.00077, 0.00077, 0.0008, 0.0008, 0.00082, 0.00106, 0.0055, 0.00603, 0.0174]
 
 # TODO
 # probability of death for patients who are not treated or patients who experience a treatment failure (due to drug resistance, or otherwise)
