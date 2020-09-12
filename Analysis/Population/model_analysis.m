@@ -11,11 +11,11 @@ FILENAME = 'data/population-seasonal-final.csv';
 %plotPopulation(FILENAME, STARTDATE);
 
 % Common to all types
-monthlyPfPR(FILENAME, STARTDATE, true);
+%monthlyPfPR(FILENAME, STARTDATE, true);
 
 % Seasonal exposure
 %seasonalError(FILENAME, STARTDATE);
-%seasonalErrorSummary(FILENAME);
+seasonalErrorSummary(FILENAME);
 
 % Constant exposure
 %perennialError(FILENAME, STARTDATE);
@@ -156,7 +156,8 @@ function [] = seasonalError(filename, startDate)
             expected = reference(reference(:, 1) == district, 2);
             pfpr = data(data(:, 2) == district, 6);
             error = ((pfpr - expected) / expected) * 100;
-            scatter(dn, error, 50, colors(district, :), 'Filled');    
+            %scatter(dn, error, 50, colors(district, :), 'Filled');    
+            plot(dn, error, 50, colors(district, :));    
         end 
         
         % At the plot features
@@ -178,27 +179,28 @@ function [] = seasonalErrorSummary(filename)
     
     % Load and trim the evaluation data to post-burn-in
     data = csvread(filename, 1, 0);
-    data = data(data(:, 1) >= 4000, :);
+    data = data(data(:, 1) >= (11 * 365), :);
     districts = unique(data(:, 2));
-    
+        
     hold on;
     for district = transpose(districts)
         expected = reference(reference(:, 1) == district, 2);
         pfpr = data(data(:, 2) == district, 6);
         
         % We want the seasonal maxima
-        peaks = findpeaks(pfpr);
-        peaks = peaks(peaks > (mean(peaks) - std(peaks)));
+        peaks = pfpr(pfpr > mean(pfpr));
+        peaks = findpeaks(peaks);
         
         % Find the MPE and SD
-        values = (peaks - expected) / expected;
-        sd = std(values) * 100;
-        error = sum(values) / size(values, 1) * 100;
-        scatter(error, sd, 'filled');
+        percentError = ((peaks - expected) / expected) * 100;
+        sd = std(percentError);
+        mpe = sum(percentError) / size(percentError, 1);
+        total = total + mpe;
+        scatter(mpe, sd, 'filled');
         name = getLocationName('include/bfa_locations.csv', district);
-        text(error + 0.05, sd + 0.01, name);
+        text(mpe + 0.05, sd + 0.01, name);
     end
-    
+        
     title('Simulated vs. Expected PfPR on a Seasonal Basis (Post Burn-in)');
     xlabel('Mean Percent Error Realative to Peak');
     ylabel('Standard Deviation');
