@@ -6,13 +6,126 @@ addpath('../Analysis/Population/include');
 clear;
 
 STARTDATE = '2007-1-1';
-DIRECTORY = '../Analysis/Loader/out/*.csv';
+FREQUENCY = '../Analysis/Loader/out/*frequency*.csv';
+SUMMARY = '../Analysis/Loader/out/*summary*.csv';
 
-%heatmaps(DIRECTORY, STARTDATE);
-plotFrequency(DIRECTORY, STARTDATE);
+global locationPath;
+locationPath = '../Analysis/Population/include/bfa_locations.csv';
 
-% Scan the loader directory to generate a single frequency plot from all of
-% the files
+%heatmaps(FREQUENCY, STARTDATE);
+%plotFrequency(FREQUENCY, STARTDATE);
+plotSummary(SUMMARY, STARTDATE);
+
+% Scan the directory to generate summary frequency plots from the data
+function [] = plotSummary(directory, startDate)
+    files = dir(directory);
+    for ndx = 1:length(files)
+        filename = fullfile(files(ndx).folder, files(ndx).name);
+        rate = char(extractBetween(files(ndx).name, 1, 9));
+        rate = strrep(rate, '-', '');
+        plotFrequencySummary(filename, rate, startDate);
+        plotDistrictFrequencies(filename, rate, startDate);
+    end
+end
+
+function [] = plotDistrictFrequencies(filename, rate, startDate)
+    global locationPath;
+
+    raw = csvread(filename, 1, 0);
+    
+    % Load the replicates to the subplots
+    districts = transpose(unique(raw(:, 3)));    
+    for replicate = transpose(unique(raw(:, 1)))
+        filtered = raw(raw(:, 1) == replicate, :);
+        for district = districts
+            subplot(5, 9, district);
+            hold on;
+            data = filtered(filtered(:, 3) == district, :);
+            plot(data(:, 2), data(:, 6));
+            hold off;
+        end        
+    end   
+    
+    % Covert the xticks to years, these should be the same for all
+    xt = {};
+    for tick = get(gca, 'XTick')
+        xt{end + 1} = datestr(addtodate(datenum(startDate), tick, 'day'), 'yyyy');
+    end
+
+    % Label the sub plots
+    for district = districts
+        subplot(5, 9, district);
+        hold on;
+        set(gca, 'XTickLabel', xt);
+        title(getLocationName(locationPath, district));
+        hold off;
+    end
+        
+    % Apply the common labels
+    handle = axes(gcf, 'visible', 'off'); 
+    handle.XLabel.Visible = 'on';
+    handle.YLabel.Visible = 'on';
+	handle.FontSize = 18;
+    ylabel(handle, '580Y Frequency');
+    xlabel(handle, 'Model Year');
+    sgtitle(sprintf('580Y Frequency Development with %s Mutation Rate', rate), 'FontSize', 24);
+    
+    % Save and close
+    set(gcf, 'Position', get(0, 'Screensize'));
+	saveas(gcf, sprintf('out/%s-frequency-districts.png', rate));
+    clf;
+    close;  
+end
+
+% Generate a single freqeuncy plot that contains all of the replicates in
+% the provided file
+function [] = plotFrequencySummary(filename, rate, startDate)
+    raw = csvread(filename, 1, 0);
+
+    % Load the data, since the model might not be done running, spend a bit
+    % extra to generate the correct years
+    hold on;
+    for replicate = transpose(unique(raw(:, 1)))
+        days = []; frequnecy = []; occurances = [];
+        
+        data = raw(raw(:, 1) == replicate, :);
+        for day = transpose(unique(data(:, 2)))
+            days(end + 1) = addtodate(datenum(startDate), day, 'day');
+            frequnecy(end + 1) = mean(data(data(:, 2) == day, 6));
+            occurances(end + 1) = sum(data(data(:, 2) == day, 4));
+        end
+        yyaxis left;
+        plot(days, frequnecy, '-');
+        
+        yyaxis right;
+        plot(days, log10(occurances), '-');
+    end
+    hold off;
+
+    % Add labels, apply formatting
+    datetick('x', 'yyyy');
+    xlabel('Model Year');
+    
+    yyaxis left;
+    ylabel('580Y Frequency');
+    yyaxis right;
+    ylabel('Occurances (log10)');    
+        
+    replicates = size(unique(raw(:, 1)), 1);
+    title({sprintf('580Y Frequency Development with %s Mutation Rate', rate), ...
+        sprintf('3%% increase in treatment, %d replicates', replicates)});
+
+    graphic = gca;
+    graphic.FontSize = 18;
+    
+    % Save and close
+    set(gcf, 'Position', get(0, 'Screensize'));
+    saveas(gcf, sprintf('out/%s-frequency-replicates.png', rate));
+    clf;
+    close;    
+end
+
+% Scan the directory to generate a single frequency plot from the files
 function [] = plotFrequency(directory, startdate)
     hold on;
     files = dir(directory);
