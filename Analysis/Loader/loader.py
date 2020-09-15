@@ -75,15 +75,14 @@ def getSummary(replicateId, startDay):
     sql = """
         SELECT md.dayselapsed,
             l.district,
-            SUM(mgd.occurrences) AS occurrences, 
-            SUM(mgd.clinicaloccurrences) AS clinicaloccurrrences, 
-            SUM(mgd.weightedfrequency) / COUNT(mgd.weightedfrequency) AS meanweightedfrequency
+            SUM(CASE WHEN g.name ~ '^.....Y..' THEN mgd.occurrences ELSE 0 END) AS occurrences, 
+            SUM(CASE WHEN g.name ~ '^.....Y..' THEN mgd.clinicaloccurrences ELSE 0 END) AS clinicaloccurrrences, 
+            SUM(CASE WHEN g.name ~ '^.....Y..' THEN mgd.occurrences ELSE 0 END) / CAST(SUM(mgd.occurrences) AS FLOAT) AS frequency
         FROM sim.monthlydata md
             INNER JOIN sim.monthlygenomedata mgd ON mgd.monthlydataid = md.id
             INNER JOIN sim.location l on l.id = mgd.locationid
             INNER JOIN sim.genotype g ON g.id = mgd.genomeid
         WHERE md.replicateid = %(replicateId)s  AND md.dayselapsed > %(startDay)s
-          AND g.name ~ '^.....Y..'
         GROUP BY md.dayselapsed, district"""
     return select(sql, {'replicateId':replicateId, 'startDay':startDay})
 
