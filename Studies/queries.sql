@@ -1,11 +1,13 @@
 -- Basic monitoring query
-select filename, replicateid, starttime, max(dayselapsed)
+select filename, replicateid, 
+  starttime, now() - starttime as runningtime, 
+  max(dayselapsed)
 from sim.replicate r
   inner join sim.configuration c on c.id = r.configurationid
   inner join sim.monthlydata md on md.replicateid = r.id
 where r.endtime is null
 group by filename, replicateid, starttime
-order by filename
+order by starttime
 
 -- Select country level summary across all districts and studies
 select cast((regexp_matches(filename, '^(\d\.\d*)-bfa\.yml'))[1] as float) as rate,
