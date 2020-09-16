@@ -45,17 +45,19 @@ def checkGetFrequency(replicateId, startDay):
     return result[0]
 
 
-# Return the frequency data for each cell after the burn-in period is complete
+# Return the components of the frequency data for each cell after the burn-in period is complete
 def getFrequency(replicateId, startDay):
     sql = """
-        SELECT dayselapsed, l.x, l.y, sum(mgd.weightedfrequency) AS resistancefrequency
+        SELECT md.dayselapsed, l.x, l.y, msd.infectedindividuals,
+            SUM(CASE WHEN g.name ~ '^.....Y..' THEN mgd.clinicaloccurrences ELSE 0 END) AS clinicaloccurrences,
+            SUM(CASE WHEN g.name ~ '^.....Y..' THEN mgd.weightedoccurrences ELSE 0 END) AS weightedoccurrences
         FROM sim.monthlydata md
-            INNER JOIN sim.monthlygenomedata mgd ON mgd.monthlydataid = md.id
-            INNER JOIN sim.location l ON l.id = mgd.locationid
+            INNER JOIN sim.monthlysitedata msd ON msd.monthlydataid = md.id
+            INNER JOIN sim.monthlygenomedata mgd ON mgd.monthlydataid = md.id AND msd.locationid = mgd.locationid
             INNER JOIN sim.genotype g ON g.id = mgd.genomeid
-        WHERE md.replicateid = %(replicateId)s  AND md.dayselapsed > %(startDay)s
-          AND g.name ~ '^.....Y..'
-        GROUP BY dayselapsed, x, y"""
+            INNER JOIN sim.location l ON l.id = msd.locationid
+        WHERE md.replicateid = %(replicateId)s AND md.dayselapsed > %(startDay)s 
+        GROUP BY md.dayselapsed, l.x, l.y, msd.infectedindividuals"""
     return select(sql, {'replicateId':replicateId, 'startDay':startDay})
 
 
@@ -73,15 +75,16 @@ def getReplicates(studyId):
 # Get the summary data for the given replicate after the burn-in period is complete
 def getSummary(replicateId, startDay):
     sql = """
-        SELECT md.dayselapsed,
-            l.district,
-            SUM(CASE WHEN g.name ~ '^.....Y..' THEN mgd.occurrences ELSE 0 END) AS occurrences, 
-            SUM(CASE WHEN g.name ~ '^.....Y..' THEN mgd.clinicaloccurrences ELSE 0 END) AS clinicaloccurrrences, 
-            SUM(CASE WHEN g.name ~ '^.....Y..' THEN mgd.occurrences ELSE 0 END) / CAST(SUM(mgd.occurrences) AS FLOAT) AS frequency
+        SELECT md.dayselapsed, l.district,
+            SUM(msd.infectedindividuals) as infectedindividuals,
+            SUM(CASE WHEN g.name ~ '^.....Y..' THEN mgd.occurrences ELSE 0 END) as occurrences,
+            SUM(CASE WHEN g.name ~ '^.....Y..' THEN mgd.clinicaloccurrences ELSE 0 END) AS clinicaloccurrrences,
+            SUM(CASE WHEN g.name ~ '^.....Y..' THEN mgd.weightedoccurrences ELSE 0 END) AS weightedoccurrences
         FROM sim.monthlydata md
-            INNER JOIN sim.monthlygenomedata mgd ON mgd.monthlydataid = md.id
-            INNER JOIN sim.location l on l.id = mgd.locationid
+            INNER JOIN sim.monthlysitedata msd ON msd.monthlydataid = md.id
+            INNER JOIN sim.monthlygenomedata mgd ON mgd.monthlydataid = md.id AND msd.locationid = mgd.locationid
             INNER JOIN sim.genotype g ON g.id = mgd.genomeid
+            INNER JOIN sim.location l ON l.id = msd.locationid
         WHERE md.replicateid = %(replicateId)s  AND md.dayselapsed > %(startDay)s
         GROUP BY md.dayselapsed, district"""
     return select(sql, {'replicateId':replicateId, 'startDay':startDay})
@@ -118,7 +121,7 @@ def processFrequencies(replicates, burnIn):
                 if days not in data: data[days] = [[[] for _ in range(nrows)] for _ in range(ncols)]
                 c = row[1]
                 r = row[2]
-                data[days][r][c].append(row[3])
+                data[days][r][c].append((row[3], row[5]))
 
         # Note the progress
         total = total + 1
@@ -132,7 +135,7 @@ def processFrequencies(replicates, burnIn):
 # Process the summary data by appending it for each complete replicate and day
 def processSummaries(replicates, burnIn):
     # Update the user
-    print("Processing {} replicate frequencies...".format(len(replicates)))
+    print("Processing {} replicate summaries...".format(len(replicates)))
 
     # Note the progress
     total = 0
@@ -162,8 +165,18 @@ def saveFrequencies(data, rate):
             for row in range(len(data[day])):
                 for col in range(len(data[day][row])):
                     if len(data[day][row][col]) == 0: continue
+
+                    # Calculate the mean weighted frequency for this cell based upon 
+                    # the individual replicates
+                    infectedindividuals = 0
+                    weightedoccurrences = 0
+                    for item in data[day][row][col]:
+                        infectedindividuals += item[0]
+                        weightedoccurrences += item[1]
+
                     # Save the average of the frequencies recorded
-                    frequency = sum(data[day][row][col]) / len(data[day][row][col])
+                    count = len(data[day][row][col])
+                    frequency = (weightedoccurrences / count) / (infectedindividuals / count)
                     writer.writerow([day, row, col, frequency])
 
 
@@ -172,7 +185,7 @@ def saveSummary(data, rate, replicateId):
     exists = os.path.exists(filename)
     with open(filename, "ab") as csvfile:
         writer = csv.writer(csvfile)
-        if not exists: writer.writerow(["replicateId", "days", "district", "occurrences", "clinicaloccurrrences", "meanweightedfrequency"])
+        if not exists: writer.writerow(["replicateId", "days", "district", "infectedindividuals", "occurrences", "clinicaloccurrrences", "weightedoccurrences"])
         for row in data:
             data = [replicateId] + list(row)
             writer.writerow(data)
@@ -186,7 +199,7 @@ def main(studyId, burnIn):
         return
 
     # Run the functions
-#    processFrequencies(replicates, burnIn)
+    processFrequencies(replicates, burnIn)
     processSummaries(replicates, burnIn)
 
 

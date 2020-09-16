@@ -22,9 +22,9 @@ function [] = plotSummary(directory, startDate)
     for ndx = 1:length(files)
         filename = fullfile(files(ndx).folder, files(ndx).name);
         rate = char(extractBetween(files(ndx).name, 1, 9));
-        rate = strrep(rate, '-', '');
+        rate = strrep(rate, '-', '');        
         plotFrequencySummary(filename, rate, startDate);
-        plotDistrictFrequencies(filename, rate, startDate);
+%        plotDistrictFrequencies(filename, rate, startDate);
     end
 end
 
@@ -41,26 +41,31 @@ function [] = plotDistrictFrequencies(filename, rate, startDate)
             subplot(5, 9, district);
             hold on;
             data = filtered(filtered(:, 3) == district, :);
-            plot(data(:, 2), data(:, 6));
+            plot(data(:, 2), data(:, 7) ./ data(:, 4));
             hold off;
         end        
     end   
-    
-    % Covert the xticks to years, these should be the same for all
-    xt = {};
-    for tick = get(gca, 'XTick')
-        xt{end + 1} = datestr(addtodate(datenum(startDate), tick, 'day'), 'yyyy');
-    end
-
-    % Label the sub plots
+        
+    % Iterate through the subplots to covert the xticks to years
     for district = districts
+        
+        % Grab the correct plot
         subplot(5, 9, district);
         hold on;
-        set(gca, 'XTickLabel', xt);
+        axis tight;
+        
+        % Determine the next labels
+        xt = []; xtl = {};
+        for tick = get(gca, 'XTick')
+            xtl{end + 1} = datestr(addtodate(datenum(startDate), tick, 'day'), 'yyyy');
+        end
+
+        % Set the labels for this plot
+        set(gca, 'XTickLabel', xtl);
         title(getLocationName(locationPath, district));
         hold off;
     end
-        
+
     % Apply the common labels
     handle = axes(gcf, 'visible', 'off'); 
     handle.XLabel.Visible = 'on';
@@ -71,7 +76,7 @@ function [] = plotDistrictFrequencies(filename, rate, startDate)
     sgtitle(sprintf('580Y Frequency Development with %s Mutation Rate', rate), 'FontSize', 24);
     
     % Save and close
-    set(gcf, 'Position', get(0, 'Screensize'));
+    set(gcf, 'Position', get(0, 'Screensize'));    
 	saveas(gcf, sprintf('out/%s-frequency-districts.png', rate));
     clf;
     close;  
@@ -81,24 +86,26 @@ end
 % the provided file
 function [] = plotFrequencySummary(filename, rate, startDate)
     raw = csvread(filename, 1, 0);
+    
 
     % Load the data, since the model might not be done running, spend a bit
     % extra to generate the correct years
     hold on;
     for replicate = transpose(unique(raw(:, 1)))
-        days = []; frequnecy = []; occurances = [];
+        days = []; frequency = []; occurrences = [];
         
         data = raw(raw(:, 1) == replicate, :);
         for day = transpose(unique(data(:, 2)))
             days(end + 1) = addtodate(datenum(startDate), day, 'day');
-            frequnecy(end + 1) = mean(data(data(:, 2) == day, 6));
-            occurances(end + 1) = sum(data(data(:, 2) == day, 4));
+            frequency(end + 1) = sum(data(data(:, 2) == day, 7)) / sum(data(data(:, 2) == day, 4));
+            occurrences(end + 1) = sum(data(data(:, 2) == day, 5));
         end
+        
         yyaxis left;
-        plot(days, frequnecy, '-');
+        plot(days, frequency, '-');
         
         yyaxis right;
-        plot(days, log10(occurances), '-');
+        plot(days, log10(occurrences), '.-');
     end
     hold off;
 
@@ -109,7 +116,7 @@ function [] = plotFrequencySummary(filename, rate, startDate)
     yyaxis left;
     ylabel('580Y Frequency');
     yyaxis right;
-    ylabel('Occurances (log10)');    
+    ylabel('Occurances of 580Y (log10)');    
         
     replicates = size(unique(raw(:, 1)), 1);
     title({sprintf('580Y Frequency Development with %s Mutation Rate', rate), ...
@@ -180,8 +187,8 @@ function [] = heatmaps(directory, startdate)
     files = dir(directory);
     for ndx = 1:length(files)
         filename = fullfile(files(ndx).folder, files(ndx).name);
-        rate = char(extractBetween(files(ndx).name, 1, 5));
-        rate = strrep(rate, '-', '');    
+        indicies = strfind(files(ndx).name, '-');        
+        rate = string(extractBetween(files(ndx).name, 1, indicies(1) - 1));
         plotHeatmaps(filename, rate, startdate);
         set(gcf, 'Position', get(0, 'Screensize'));
         saveas(gcf, sprintf('out/%s-heatmap.png', rate));
@@ -195,23 +202,22 @@ function [] = plotHeatmaps(filename, rate, startdate)
     raw = csvread(filename, 1, 0);
     days = unique(raw(:, 1));
 
+    % Since we may run while early, only show plots we have data for
+    count = size(days, 1);
+    
     subplot(2, 2, 1);
-    generateHeatmap(raw, days(24), startdate);
+    if count > 24, generateHeatmap(raw, days(24), startdate); end
 
     subplot(2, 2, 2);
-    generateHeatmap(raw, days(84), startdate);
+    if count > 84, generateHeatmap(raw, days(84), startdate); end
 
     subplot(2, 2, 3);
-    generateHeatmap(raw, days(144), startdate);
+    if count > 144, generateHeatmap(raw, days(144), startdate); end
 
     subplot(2, 2, 4);
-    if size(days, 1) < 204
-        generateHeatmap(raw, days(end), startdate);
-    else
-        generateHeatmap(raw, days(204), startdate);
-    end
+    if count > 204, generateHeatmap(raw, days(204), startdate); end
 
-    sgtitle(["Burkina Faso, 580Y frequency", sprintf("%s%% increase in coverage", rate)]);
+    sgtitle(["Burkina Faso, 580Y frequency", sprintf("%s mutation rate", rate)]);
 end
 
 % Generate a single heatmap for the given date
