@@ -9,6 +9,15 @@ where r.endtime is null
 group by filename, replicateid, starttime
 order by starttime
 
+-- Select country level treatment faliures
+SELECT cast((regexp_matches(filename, '^(\d\.\d*)-bfa\.yml'))[1] as float) as rate,
+  md.replicateid, md.dayselapsed, md.treatmentfailures
+FROM sim.configuration c 
+  inner join sim.replicate r on r.configurationid = c.id
+  inner join sim.monthlydata md on md.replicateid = r.id
+WHERE c.studyid = 18
+  and md.dayselapsed > 4015
+
 -- Select country level summary across all districts and studies
 select cast((regexp_matches(filename, '^(\d\.\d*)-bfa\.yml'))[1] as float) as rate,
   dayselapsed,

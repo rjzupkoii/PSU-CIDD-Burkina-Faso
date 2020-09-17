@@ -12,9 +12,11 @@ SUMMARY = '../Analysis/Loader/out/*summary*.csv';
 global locationPath;
 locationPath = '../Analysis/Population/include/bfa_locations.csv';
 
-%heatmaps(FREQUENCY, STARTDATE);
-%plotFrequency(FREQUENCY, STARTDATE);
+heatmaps(FREQUENCY, STARTDATE);
 plotSummary(SUMMARY, STARTDATE);
+
+% Skip the frequency plot since it presumes that the data is not a subset
+%plotFrequency(FREQUENCY, STARTDATE);
 
 % Scan the directory to generate summary frequency plots from the data
 function [] = plotSummary(directory, startDate)
@@ -24,7 +26,7 @@ function [] = plotSummary(directory, startDate)
         rate = char(extractBetween(files(ndx).name, 1, 9));
         rate = strrep(rate, '-', '');        
         plotFrequencySummary(filename, rate, startDate);
-%        plotDistrictFrequencies(filename, rate, startDate);
+        plotDistrictFrequencies(filename, rate, startDate);
     end
 end
 
@@ -86,7 +88,6 @@ end
 % the provided file
 function [] = plotFrequencySummary(filename, rate, startDate)
     raw = csvread(filename, 1, 0);
-    
 
     % Load the data, since the model might not be done running, spend a bit
     % extra to generate the correct years
@@ -205,17 +206,21 @@ function [] = plotHeatmaps(filename, rate, startdate)
     % Since we may run while early, only show plots we have data for
     count = size(days, 1);
     
+    % Janurary 2021
     subplot(2, 2, 1);
-    if count > 24, generateHeatmap(raw, days(24), startdate); end
+    if count >= 1, generateHeatmap(raw, days(1), startdate); end
 
+    % Janurary 2026
     subplot(2, 2, 2);
-    if count > 84, generateHeatmap(raw, days(84), startdate); end
+    if count >= 2, generateHeatmap(raw, days(2), startdate); end
 
+    % Janurary 2031
     subplot(2, 2, 3);
-    if count > 144, generateHeatmap(raw, days(144), startdate); end
+    if count >= 3, generateHeatmap(raw, days(3), startdate); end
 
+    % Janurary 2036
     subplot(2, 2, 4);
-    if count > 204, generateHeatmap(raw, days(204), startdate); end
+    if count >= 4, generateHeatmap(raw, days(4), startdate); end
 
     sgtitle(["Burkina Faso, 580Y frequency", sprintf("%s mutation rate", rate)]);
 end
