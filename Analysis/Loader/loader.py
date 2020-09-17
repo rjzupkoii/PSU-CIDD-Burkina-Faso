@@ -118,10 +118,16 @@ def processFrequencies(replicates, burnIn):
         if checkGetFrequency(replicate[REPLICATEID], burnIn):
             for row in getFrequency(replicate[REPLICATEID], burnIn):
                 days = row[0]
-                if days not in data: data[days] = [[[] for _ in range(nrows)] for _ in range(ncols)]
+                if days not in data: data[days] = [[[0, 0, 0] for _ in range(nrows)] for _ in range(ncols)]
                 c = row[1]
                 r = row[2]
-                data[days][r][c].append((row[3], row[5]))
+
+                # Array formatted as: 0 - infectedindividuals (query index 3)
+                #                     1 - weightedoccurrences (query index 5)
+                #                     3 - count
+                data[days][r][c][0] += row[3]
+                data[days][r][c][1] += row[5]
+                data[days][r][c][2] += 1
 
         # Note the progress
         total = total + 1
@@ -164,18 +170,19 @@ def saveFrequencies(data, rate):
         for day in sorted(data.keys()):
             for row in range(len(data[day])):
                 for col in range(len(data[day][row])):
-                    if len(data[day][row][col]) == 0: continue
 
-                    # Calculate the mean weighted frequency for this cell based upon 
-                    # the individual replicates
-                    infectedindividuals = 0
-                    weightedoccurrences = 0
-                    for item in data[day][row][col]:
-                        infectedindividuals += item[0]
-                        weightedoccurrences += item[1]
+                    # Array formatted as: 0 - infectedindividuals (query index 3)
+                    #                     1 - weightedoccurrences (query index 5)
+                    #                     3 - count
+
+                    # If the count is still zero, press on
+                    count = data[day][row][col][2]
+                    if count == 0: continue
+
+                    infectedindividuals = data[day][row][col][0]
+                    weightedoccurrences = data[day][row][col][1]                   
 
                     # Save the average of the frequencies recorded
-                    count = len(data[day][row][col])
                     frequency = (weightedoccurrences / count) / (infectedindividuals / count)
                     writer.writerow([day, row, col, frequency])
 
