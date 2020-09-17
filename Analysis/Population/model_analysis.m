@@ -155,7 +155,7 @@ function [] = seasonalError(filename, startDate)
         for district = transpose(districts)
             expected = reference(reference(:, 1) == district, 2);
             pfpr = data(data(:, 2) == district, 6);
-            error = ((pfpr - expected) / expected) * 100;
+            error = pfpr - expected;
             %scatter(dn, error, 50, colors(district, :), 'Filled');    
             plot(dn, error, 50, colors(district, :));    
         end 
@@ -181,7 +181,7 @@ function [] = seasonalErrorSummary(filename)
     data = csvread(filename, 1, 0);
     data = data(data(:, 1) >= (11 * 365), :);
     districts = unique(data(:, 2));
-        
+            
     hold on;
     for district = transpose(districts)
         expected = reference(reference(:, 1) == district, 2);
@@ -191,22 +191,21 @@ function [] = seasonalErrorSummary(filename)
         peaks = pfpr(pfpr > mean(pfpr));
         peaks = findpeaks(peaks);
         
-        % Find the MPE and SD
-        percentError = ((peaks - expected) / expected) * 100;
-        sd = std(percentError);
-        mpe = sum(percentError) / size(percentError, 1);
-        total = total + mpe;
-        scatter(mpe, sd, 'filled');
+        % Find the real error and SD
+        error = peaks - expected;
+        sd = std(error);
+        mre = sum(error) / size(error, 1);
+        scatter(mre, sd, 45, 'filled');
         name = getLocationName('include/bfa_locations.csv', district);
-        text(mpe + 0.05, sd + 0.01, name);
+        text(mre + 0.02, sd + 0.01, name, 'FontSize', 18);
     end
-        
-    title('Simulated vs. Expected PfPR on a Seasonal Basis (Post Burn-in)');
-    xlabel('Mean Percent Error Realative to Peak');
+            
+    title('Simulated vs. Expected {\it PfPR_{2 to 10}} on a Seasonal Basis (Post Burn-in)', 'FontSize', 28);
+    xlabel('Mean Difference in Peak {\it PfPr_{2 to 10}} Relative to Reference Value');
     ylabel('Standard Deviation');
     
     graphic = gca;
-    graphic.FontSize = 18;
+    graphic.FontSize = 24;
     hold off;
 end
 

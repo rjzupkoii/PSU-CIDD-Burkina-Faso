@@ -4,15 +4,19 @@
 addpath('include');
 clear;
 
-FILENAME = 'data/population/population_data_38.txt';  % Population 37.5 
+FILENAME = 'data/population_data_1.txt';
+SCALING = 0.005;
+
+%FILENAME = 'data/population/population_data_38.txt';  % Population 37.5 
 %FILENAME = 'data/population/population_data_42.txt';  % Population 41.2
-SCALING = 0.02;
+%SCALING = 0.02;
 STARTDATE = '2007-01-01';
 
 
 %plotIncrease(FILENAME, STARTDATE);
 %plotRatio(FILENAME);
-plotSummary(FILENAME, SCALING);
+%plotSummary(FILENAME, SCALING);
+plotPopulation(FILENAME, STARTDATE, SCALING);
 
 
 function [] = plotIncrease(filename, startdate)
@@ -51,6 +55,28 @@ function [] = plotIncrease(filename, startdate)
     graphic.FontSize = 18;
 end
 
+function [] = plotPopulation(filename, startdate, scaling)
+    % Load the data, delete the first entry since births/deaths is zero
+    data = csvread(filename, 1, 0);
+    data(1, :) = [];
+
+    dn = prepareDates(filename, 1, startdate);
+    dn(1) = [];
+    
+    population = (data(:, 2) ./ scaling) ./ 1000000;
+    plot(dn, population);
+
+    ylabel('Population (Millions)');
+    datetick('x', 'yyyy');
+    set(gca, 'XLimSpec', 'Tight');
+
+    title(sprintf('Burkina Faso - Simulated Population from %s to %s', datestr(dn(1), 'yyyy'), datestr(dn(end), 'yyyy')), 'FontSize', 28);
+
+    graphic = gca;
+    graphic.FontSize = 24;
+end
+
+
 function [] = plotRatio(filename)
     data = csvread(filename, 1, 0);
     data(1, :) = [];
@@ -88,6 +114,7 @@ function [] = plotRatio(filename)
 	graphic = gca;
     graphic.FontSize = 18;
 end
+
 
 function [] = plotSummary(filename, scaling)
     % Load the data, delete the first entry since births/deaths is zero
