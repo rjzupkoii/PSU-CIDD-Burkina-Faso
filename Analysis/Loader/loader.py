@@ -20,34 +20,9 @@ CONNECTION = "host=masimdb.vmhost.psu.edu dbname=burkinafaso user=sim password=s
 REPLICATEID = 4
 
 
-# Check to see if data exists for the given replicate after the burn-in period
-def checkGetFrequency(replicateId, startDay):
-    sql = """
-        SELECT exists(SELECT 1 FROM sim.monthlydata md
-            INNER JOIN sim.monthlygenomedata mgd ON mgd.monthlydataid = md.id
-            INNER JOIN sim.location l ON l.id = mgd.locationid
-            INNER JOIN sim.genotype g ON g.id = mgd.genomeid
-        WHERE md.replicateid = %(replicateId)s AND md.dayselapsed > %(startDay)s 
-          AND g.name ~ '^.....Y..'
-        )"""
-    
-    # Open the connection
-    connection = psycopg2.connect(CONNECTION)
-    cursor = connection.cursor()
-
-    # Execute the query, note the rows
-    cursor.execute(sql, {'replicateId':replicateId, 'startDay':startDay})
-    result = cursor.fetchone()
-
-    # Clean-up and return
-    cursor.close()
-    connection.close()
-    return result[0]
-
-
 # Return the components of the frequency data for each cell after the burn-in period is complete
-def getFrequency(replicateId, startDay):
-    sql = """
+def getFrequencySubset(replicateId, subset):
+    sql = """   
         SELECT md.dayselapsed, l.x, l.y, msd.infectedindividuals,
             SUM(CASE WHEN g.name ~ '^.....Y..' THEN mgd.clinicaloccurrences ELSE 0 END) AS clinicaloccurrences,
             SUM(CASE WHEN g.name ~ '^.....Y..' THEN mgd.weightedoccurrences ELSE 0 END) AS weightedoccurrences
@@ -56,8 +31,8 @@ def getFrequency(replicateId, startDay):
             INNER JOIN sim.monthlygenomedata mgd ON mgd.monthlydataid = md.id AND msd.locationid = mgd.locationid
             INNER JOIN sim.genotype g ON g.id = mgd.genomeid
             INNER JOIN sim.location l ON l.id = msd.locationid
-        WHERE md.replicateid = %(replicateId)s AND md.dayselapsed > %(startDay)s 
-        GROUP BY md.dayselapsed, l.x, l.y, msd.infectedindividuals"""
+        WHERE md.replicateid = %(replicateId)s AND md.dayselapsed in ({})
+        GROUP BY md.dayselapsed, l.x, l.y, msd.infectedindividuals""".format(subset)
     return select(sql, {'replicateId':replicateId, 'startDay':startDay})
 
 
@@ -91,7 +66,7 @@ def getSummary(replicateId, startDay):
 
 
 # Process the frequency data by aggregating it together across all cells and replicates for each rate
-def processFrequencies(replicates, burnIn):
+def processFrequencies(replicates, subset):
     # Update the user and note common data
     print("Processing {} replicate frequencies...".format(len(replicates)))
     nrows = replicates[0][1]
@@ -115,19 +90,18 @@ def processFrequencies(replicates, burnIn):
             data = {}
 
         # Run a short query to see if we have anything to work with
-        if checkGetFrequency(replicate[REPLICATEID], burnIn):
-            for row in getFrequency(replicate[REPLICATEID], burnIn):
-                days = row[0]
-                if days not in data: data[days] = [[[0, 0, 0] for _ in range(nrows)] for _ in range(ncols)]
-                c = row[1]
-                r = row[2]
+        for row in getFrequencySubset(replicate[REPLICATEID], subset):
+            days = row[0]
+            if days not in data: data[days] = [[[0, 0, 0] for _ in range(nrows)] for _ in range(ncols)]
+            c = row[1]
+            r = row[2]
 
-                # Array formatted as: 0 - infectedindividuals (query index 3)
-                #                     1 - weightedoccurrences (query index 5)
-                #                     3 - count
-                data[days][r][c][0] += row[3]
-                data[days][r][c][1] += row[5]
-                data[days][r][c][2] += 1
+            # Array formatted as: 0 - infectedindividuals (query index 3)
+            #                     1 - weightedoccurrences (query index 5)
+            #                     3 - count
+            data[days][r][c][0] += row[3]
+            data[days][r][c][1] += row[5]
+            data[days][r][c][2] += 1
 
         # Note the progress
         total = total + 1
@@ -198,7 +172,7 @@ def saveSummary(data, rate, replicateId):
             writer.writerow(data)
 
 
-def main(studyId, burnIn):
+def main(studyId, burnIn, subset):
     # Get the configurations, replicates, and do some bookkeeping
     replicates = getReplicates(studyId)
     if len(replicates) == 0:
@@ -206,7 +180,7 @@ def main(studyId, burnIn):
         return
 
     # Run the functions
-    processFrequencies(replicates, burnIn)
+    processFrequencies(replicates, subset)
     processSummaries(replicates, burnIn)
 
 
@@ -242,5 +216,6 @@ if __name__ == '__main__':
     else:
         for filename in glob.glob("out/*summary*.csv"): os.remove(filename)
 
-    main(studyId, startDay)
+    # TODO Find a better way of getting the subset
+    main(studyId, startDay, "5114, 6940, 8766, 10950")
 
