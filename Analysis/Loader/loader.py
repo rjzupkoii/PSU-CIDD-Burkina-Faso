@@ -13,11 +13,19 @@ import sys
 
 from utility import *
 
-
+# Connection string for the database
 CONNECTION = "host=masimdb.vmhost.psu.edu dbname=burkinafaso user=sim password=sim"
 
+# Default path template for downloaded replicates
+PATH_TEMPLATE = "out/{}"
+
+# Default filename path template for downloaded replicates
+FILE_TEMPLATE = "out/{}/{}-summary.csv"
+
 # Indices in getReplicates query
+RATE = 0
 REPLICATEID = 4
+COMPLETE = 5
 
 
 # Return the components of the frequency data for each cell after the burn-in period is complete
@@ -124,16 +132,20 @@ def processSummaries(replicates, burnIn):
     # Iterate through all of the rows
     for replicate in replicates:
 
-        # Load and save the data
-        data = getSummary(replicate[REPLICATEID], burnIn)
-        saveSummary(data, replicate[0], replicate[REPLICATEID])
+        # Only download complete summaries
+        if replicate[COMPLETE] == False: continue
+
+        # Check to see if the work has already been done
+        filename = FILE_TEMPLATE.format(replicate[RATE], replicate[REPLICATEID])
+        if not os.path.exists(filename):
+            saveSummary(replicate[0], replicate[REPLICATEID], burnIn)
         
         # Note the progress
         total = total + 1
         progressBar(total, len(replicates) + 1)
 
-    # Save the last data set
-    progressBar(total + 1, len(replicates) + 1) 
+    # Note that we are done
+    progressBar(len(replicates) + 1, len(replicates) + 1) 
 
 
 def saveFrequencies(data, rate):
@@ -161,12 +173,21 @@ def saveFrequencies(data, rate):
                     writer.writerow([day, row, col, frequency])
 
 
-def saveSummary(data, rate, replicateId):
-    filename = "out/{}-summary-data.csv".format(rate)
-    exists = os.path.exists(filename)
-    with open(filename, "ab") as csvfile:
+# Query for the summary information and save it to disk
+def saveSummary(rate, replicateId, burnIn):
+    # Create the path if it doesn't exist
+    path = PATH_TEMPLATE.format(rate)
+    if not os.path.exists(path): os.makedirs(path)
+
+    # Load the data
+    data = getSummary(replicateId, burnIn)   
+
+    # Save the data to disk as a CSV file, replicateid is redundant, but useful
+    # when scripting to avoid messing around with the filename in Matlab
+    filename = FILE_TEMPLATE.format(rate, replicateId) 
+    with open(filename, "wb") as csvfile:
         writer = csv.writer(csvfile)
-        if not exists: writer.writerow(["replicateId", "days", "district", "infectedindividuals", "occurrences", "clinicaloccurrrences", "weightedoccurrences"])
+        writer.writerow(["replicateId", "days", "district", "infectedindividuals", "occurrences", "clinicaloccurrrences", "weightedoccurrences"])
         for row in data:
             data = [replicateId] + list(row)
             writer.writerow(data)
@@ -217,5 +238,5 @@ if __name__ == '__main__':
         for filename in glob.glob("out/*summary*.csv"): os.remove(filename)
 
     # TODO Find a better way of getting the subset
-    main(studyId, startDay, "5114, 6940, 8766, 10950")
+    main(studyId, startDay, "5114, 6940, 8766, 10592")
 
