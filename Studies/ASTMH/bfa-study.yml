@@ -599,32 +599,6 @@ update_frequency: 7
 # parasite clone, this setting allows the new infection to cause symptoms
 allow_new_coinfection_to_cause_symtoms: true
 
-# Email NG - how to do importation!
-# TODO, is this used elsewhere in the code?
-# this functionality works, but it was not used in any analyses for the 2015 LGH paper
-external_population_circulation_information:
-  max_relative_moving_value: 35
-  number_of_moving_levels: 100
-  moving_level_distribution:
-    #  distribution: Exponential
-    distribution: Gamma
-    Exponential:
-      scale: 0.17
-    Gamma:
-      mean: 5
-      sd: 10
-  circulation_percent: [0.0, 0.01, 0.01, 0.01, 0.01 ]
-  length_of_stay:
-    # drawn from gamma distribution?
-    mean: 5
-    sd: 10
-  daily_EIR: [0.01,0.01,0.01,0.01,0.1]
-  seasonal_EIR:
-    a: [1]
-    phi: [180]
-    period: 360
-    min_value: 0.1
-
 # free recombination among the drug resistance loci
 using_free_recombination: true
 
