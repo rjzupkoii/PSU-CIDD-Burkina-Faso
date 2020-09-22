@@ -2,7 +2,7 @@
 #
 # Boni Lab
 #
-# BURKINA FASO model configuration.
+# BURKINA FASO model configuration for ASTMH.
 #
 # PfPR data for calibration comes from the Malaria Atlas Project
 # projections for 2017.
@@ -119,7 +119,6 @@ birth_rate: 0.0412
 # Malaria adjusted, all-causes death rate for Burkina Faso
 death_rate_by_age_class: [0.0382, 0.03019, 0.02027, 0.01525, 0.01248, 0.00359, 0.00361, 0.00365, 0.00379, 0.00379, 0.00386, 0.00504, 0.0055, 0.0174, 0.0174]
 
-# TODO
 # probability of death for patients who are not treated or patients who experience a treatment failure (due to drug resistance, or otherwise)
 # when received treatment, this rate drop by factor of 10 in code
 mortality_when_treatment_fail_by_age_class: [0.040, 0.020, 0.020, 0.020, 0.020, 0.004, 0.004, 0.004, 0.004, 0.004, 0.004, 0.001, 0.001, 0.001, 0.001]
@@ -213,7 +212,7 @@ events:
   - name: annual_coverage_update_event
     info:
       - day: 2019/1/1
-        rate: 0.3
+        rate: 0.03
   - name: turn_off_mutation
     info:
       - day: 2007/1/1
