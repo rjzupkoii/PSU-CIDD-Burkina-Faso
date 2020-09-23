@@ -31,16 +31,25 @@ COMPLETE = 5
 # Return the components of the frequency data for each cell after the burn-in period is complete
 def getFrequencySubset(replicateId, subset):
     sql = """   
-        SELECT md.dayselapsed, l.x, l.y, msd.infectedindividuals,
-            SUM(CASE WHEN g.name ~ '^.....Y..' THEN mgd.clinicaloccurrences ELSE 0 END) AS clinicaloccurrences,
-            SUM(CASE WHEN g.name ~ '^.....Y..' THEN mgd.weightedoccurrences ELSE 0 END) AS weightedoccurrences
-        FROM sim.monthlydata md
-            INNER JOIN sim.monthlysitedata msd ON msd.monthlydataid = md.id
-            INNER JOIN sim.monthlygenomedata mgd ON mgd.monthlydataid = md.id AND msd.locationid = mgd.locationid
-            INNER JOIN sim.genotype g ON g.id = mgd.genomeid
-            INNER JOIN sim.location l ON l.id = msd.locationid
-        WHERE md.replicateid = %(replicateId)s AND md.dayselapsed in ({})
-        GROUP BY md.dayselapsed, l.x, l.y, msd.infectedindividuals""".format(subset)
+        SELECT dayselapsed, l.x, l.y, infectedindividuals,
+            sum(clinicaloccurrences) AS clinicaloccurrences,
+            sum(weightedoccurrences) AS weightedoccurrences
+        FROM (
+            SELECT md.replicateid, md.id, mgd.locationid, md.dayselapsed,
+                sum(CASE WHEN g.name ~ '^.....Y..' THEN mgd.clinicaloccurrences ELSE 0 END) AS clinicaloccurrences,
+                sum(CASE WHEN g.name ~ '^.....Y..' THEN mgd.weightedoccurrences ELSE 0 END) AS weightedoccurrences
+            FROM sim.monthlydata md
+                INNER JOIN sim.monthlygenomedata mgd ON mgd.monthlydataid = md.id
+                INNER JOIN sim.genotype g ON g.id = mgd.genomeid
+            WHERE md.replicateid = %(replicateId)s AND md.dayselapsed in ({})
+            GROUP BY md.id, mgd.locationid) one
+        INNER JOIN (
+            SELECT md.id, msd.locationid, msd.infectedindividuals 
+            FROM sim.monthlydata md
+                INNER JOIN sim.monthlysitedata msd ON msd.monthlydataid = md.id
+            WHERE md.replicateid = %(replicateId)s AND md.dayselapsed in ({})) two ON one.id = two.id AND one.locationid = two.locationid
+        INNER JOIN sim.location l on l.id = one.locationid
+        GROUP BY dayselapsed, l.x, l.y, infectedindividuals""".format(subset, subset)
     return select(sql, {'replicateId':replicateId, 'startDay':startDay})
 
 
@@ -58,18 +67,28 @@ def getReplicates(studyId):
 # Get the summary data for the given replicate after the burn-in period is complete
 def getSummary(replicateId, startDay):
     sql = """
-        SELECT md.dayselapsed, l.district,
-            SUM(msd.infectedindividuals) as infectedindividuals,
-            SUM(CASE WHEN g.name ~ '^.....Y..' THEN mgd.occurrences ELSE 0 END) as occurrences,
-            SUM(CASE WHEN g.name ~ '^.....Y..' THEN mgd.clinicaloccurrences ELSE 0 END) AS clinicaloccurrrences,
-            SUM(CASE WHEN g.name ~ '^.....Y..' THEN mgd.weightedoccurrences ELSE 0 END) AS weightedoccurrences
-        FROM sim.monthlydata md
-            INNER JOIN sim.monthlysitedata msd ON msd.monthlydataid = md.id
-            INNER JOIN sim.monthlygenomedata mgd ON mgd.monthlydataid = md.id AND msd.locationid = mgd.locationid
-            INNER JOIN sim.genotype g ON g.id = mgd.genomeid
-            INNER JOIN sim.location l ON l.id = msd.locationid
-        WHERE md.replicateid = %(replicateId)s  AND md.dayselapsed > %(startDay)s
-        GROUP BY md.dayselapsed, district"""
+        SELECT dayselapsed, l.district,
+            sum(infectedindividuals) AS infectedindividuals,
+            sum(occurrences) AS occurrences,
+            sum(clinicaloccurrences) AS clinicaloccurrences,
+            sum(weightedoccurrences) AS weightedoccurrences
+        FROM (
+            SELECT md.replicateid, md.id, mgd.locationid, md.dayselapsed,
+                sum(CASE WHEN g.name ~ '^.....Y..' THEN mgd.occurrences ELSE 0 END) AS occurrences,
+                sum(CASE WHEN g.name ~ '^.....Y..' THEN mgd.clinicaloccurrences ELSE 0 END) AS clinicaloccurrences,
+                sum(CASE WHEN g.name ~ '^.....Y..' THEN mgd.weightedoccurrences ELSE 0 END) AS weightedoccurrences
+            FROM sim.monthlydata md
+                INNER JOIN sim.monthlygenomedata mgd ON mgd.monthlydataid = md.id
+                INNER JOIN sim.genotype g ON g.id = mgd.genomeid
+            WHERE md.replicateid = %(replicateId)s AND md.dayselapsed > %(startDay)s
+            GROUP BY md.id, mgd.locationid) one
+        INNER JOIN (
+            SELECT md.id, msd.locationid, msd.infectedindividuals 
+            FROM sim.monthlydata md
+                INNER JOIN sim.monthlysitedata msd ON msd.monthlydataid = md.id
+            WHERE md.replicateid = %(replicateId)s AND md.dayselapsed > %(startDay)s) two ON one.id = two.id AND one.locationid = two.locationid
+        INNER JOIN sim.location l on l.id = one.locationid
+        GROUP BY dayselapsed, l.district"""
     return select(sql, {'replicateId':replicateId, 'startDay':startDay})
 
 
