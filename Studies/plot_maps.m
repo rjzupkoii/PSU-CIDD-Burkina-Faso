@@ -3,17 +3,14 @@
 % Generate heatmaps and 580Y frequency plot based upon the data downloaded
 % by the Python loader script.
 addpath('include');
-addpath('../Analysis/Population/include');
+addpath('../Analysis/Common');
 clear;
 
 STARTDATE = '2007-1-1';
 FREQUENCY = '../Analysis/Loader/out/*frequency*.csv';
 
-summary('../Analysis/Loader/out/', '2007-1-1');
-
-
 %heatmaps(FREQUENCY, STARTDATE);
-%plotSummary(SUMMARY, STARTDATE);
+summary('../Analysis/Loader/out', STARTDATE);
 
 % Skip the frequency plot since it presumes that the data is not a subset
 %plotFrequency(FREQUENCY, STARTDATE);

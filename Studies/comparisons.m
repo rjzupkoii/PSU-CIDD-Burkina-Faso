@@ -3,15 +3,65 @@
 % This script contains various functions for generating basic plots that
 % are useful for assessing the model calibration, or other useful
 % comparisons.
-addpath('../Analysis/Population/include');
+addpath('../Analysis/Common');
 clear;
 
-FILENAME = 'data/comparison-treatmentfailures.csv';
+STARTDATE = '2007-1-1';
+SUMMARY = '../Analysis/Loader/out/*summary*.csv';
+
 STARTDATE = '2007-01-01';
 SCALING = 0.25;
 
-plotPopulation(FILENAME, STARTDATE, SCALING);
+
+%plotPopulation(FILENAME, STARTDATE, SCALING);
 %plotTreatmentFailures(FILENAME, STARTDATE, SCALING);
+
+function [] = plotClinical(directory, startDate)
+    files = dir(directory);
+    
+    hold on;
+    for ndx = 1:length(files)
+        filename = fullfile(files(ndx).folder, files(ndx).name);
+        rate = char(extractBetween(files(ndx).name, 1, 9));
+        rate = strrep(rate, '-', '');        
+        
+        raw = csvread(filename, 1, 0);
+        dn = prepareDates(filename, 2, startDate);
+        
+        cases = zeros(1, size(dn, 2));
+        prevlence = zeros(1, size(dn, 2));
+        
+        for replicate = transpose(unique(raw(:, 1)))
+            data = raw(raw(:, 1) == replicate, :);
+            ndx = 1;
+            for date = transpose(unique(data(:, 2)))
+                cases(ndx) = sum(data(data(:, 2) == date, 6));
+                prevlence(ndx) = cases(ndx) / sum(data(data(:, 2) == date, 4));
+                ndx = ndx + 1;
+            end
+            yyaxis left;
+            plot(dn, log10(cases));
+            
+            yyaxis right;
+            plot(dn, prevlence);
+        end           
+    end
+    hold off;
+    
+    yyaxis left;
+    ylabel('Clinical Episodes (log 10)')
+    
+    yyaxis right;
+    ylabel('Prevelence of 580Y clincial cases vs. all infections')
+    
+    datetick('x', 'yyyy');
+    
+    % Save and close
+    set(gcf, 'Position', get(0, 'Screensize'));    
+	saveas(gcf, sprintf('out/%s-clinical.png', rate));
+    clf;
+    close;      
+end
 
 function [] = plotPopulation(filename, startdate, scaling)
     raw = csvread(filename, 1, 0);

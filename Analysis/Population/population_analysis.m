@@ -1,7 +1,7 @@
 % population_analysis.m
 %
 % Plot the basic metrics for the model popuation.
-addpath('include');
+addpath('../Common');
 clear;
 
 FILENAME = 'data/population_data_1.txt';

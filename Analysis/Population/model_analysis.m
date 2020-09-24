@@ -2,7 +2,7 @@
 %
 % Generate plots that allow us to compare how the model performs at scale 
 % when working with seasonal and non-seasonal data.
-addpath('include');
+addpath('../Common');
 clear;
 
 STARTDATE = '2006-1-1';
