@@ -1,9 +1,9 @@
-% getLocationName.m
+% getLocationRegion.m
 %
-% Get the location name from the file.
-function [name, sort] = getLocationName(index)
+% Get the region name and sort order / id from the file.
+function [name, sort] = getLocationRegion(index)
     % Determine where the location file is
-    filename = strrep(mfilename('fullpath'), mfilename, 'bfa_districts.csv');
+    filename = strrep(mfilename('fullpath'), mfilename, 'bfa_regions.csv');
     
     % Open and return the name and sort order
     data = readtable(filename);
