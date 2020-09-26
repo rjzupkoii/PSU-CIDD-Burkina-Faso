@@ -43,7 +43,7 @@ function [] = parse_file(filename, rate, startdate)
     subplot(2, 2, 4);
     if count >= 4, generate(raw, days(4), startdate); end
 
-    sgtitle(sprintf("580Y Frequency Development with %s Mutation Rate", rate));
+    sgtitle(sprintf("580Y Frequency with %s Mutation Rate", rate), 'FontSize', 24);
 end
 
 % Generate a single heatmap for the given date
@@ -67,6 +67,8 @@ function [hm] = generate(raw, date, startDate)
 
     % Apply the formatting
     hm = heatmap(map);
+    graphic = gca;
+    graphic.FontSize = 18;    
     hm.Title = title;
     hm.XDisplayLabels = repmat(' ', cols, 1); 
     hm.YDisplayLabels = repmat(' ', rows, 1);

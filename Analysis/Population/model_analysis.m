@@ -187,8 +187,11 @@ function [] = seasonalErrorSummary(filename)
         expected = reference(reference(:, 1) == district, 2);
         pfpr = data(data(:, 2) == district, 6);
         
-        % We want the seasonal maxima
+        % We want the seasonal maxima, filter out the local maxima, once
+        % this is done we should only have ten points left (i.e., number of
+        % years)
         peaks = pfpr(pfpr > mean(pfpr));
+        peaks = peaks(peaks > peaks - std(peaks));
         peaks = findpeaks(peaks);
         
         % Find the real error and SD
@@ -196,13 +199,13 @@ function [] = seasonalErrorSummary(filename)
         sd = std(error);
         mre = sum(error) / size(error, 1);
         scatter(mre, sd, 45, 'filled');
-        name = getLocationName('include/bfa_locations.csv', district);
+        name = getLocationName(district);
         text(mre + 0.02, sd + 0.01, name, 'FontSize', 18);
     end
             
-    title('Simulated vs. Expected {\it PfPR_{2 to 10}} on a Seasonal Basis (Post Burn-in)', 'FontSize', 28);
-    xlabel('Mean Difference in Peak {\it PfPr_{2 to 10}} Relative to Reference Value');
-    ylabel('Standard Deviation');
+    title('Simulated vs. Expected {\it Pf}PR_{2 to 10} on a Seasonal Basis (Post Burn-in)', 'FontSize', 28);
+    xlabel('Mean Difference in Peak {\it Pf}Pr_{2 to 10} Relative to Reference Value');
+    ylabel('Standard Deviation for Ten Years');
     
     graphic = gca;
     graphic.FontSize = 24;

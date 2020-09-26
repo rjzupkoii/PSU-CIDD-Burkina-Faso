@@ -64,7 +64,7 @@ function [] = generate(directory, rate, startDate)
 	handle.FontSize = 18;
     ylabel(handle, '580Y Frequency');
     xlabel(handle, 'Model Year');
-    sgtitle({sprintf('580Y Frequency Development with %s Mutation Rate (%d Replicates)', ...
+    sgtitle({sprintf('580Y Frequency with %s Mutation Rate (%d Replicates)', ...
         rate, length(files))}, 'FontSize', 24);
     
     % Save and close

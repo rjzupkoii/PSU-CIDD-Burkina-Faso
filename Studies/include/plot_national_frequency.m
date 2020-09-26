@@ -63,7 +63,7 @@ function [] = generate(directory, rate, startDate)
     yyaxis right;
     ylabel('Occurances of 580Y (log10)');    
 
-    title({sprintf('580Y Frequency Development with %s Mutation Rate', rate), ...
+    title({sprintf('580Y Frequency with %s Mutation Rate', rate), ...
         sprintf('3%% increase in treatment, %d replicates', replicates)});
 
     graphic = gca;
