@@ -79,7 +79,7 @@ raster_db:
 
   # Will be overridden by beta_raster
   # TODO look up a good one for each district
-  beta_by_location: [ 0.5 ]
+  beta_by_location: [ 0.25 ]
 
 # Seasonality of malaria in Burkina Faso
 # 0: Sahelian zone (Short)  / 0.1, -0.9, 2.5, 146
@@ -89,9 +89,9 @@ seasonal_info:
   enable: true
   raster: true
   base: [ 0.1,  0.1, 1]
-  a:    [-0.9, -0.9, 0]
-  b:    [ 2.5,  2.3, 1]
-  phi:  [ 146,  155, 0]
+  a:    [-0.7, -0.7, 0]
+  b:    [ 2.0,  1.8, 1]
+  phi:  [  90,  80, 0]
   
 # Country specific movement model and calibration
 spatial_model:
