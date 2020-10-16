@@ -49,8 +49,7 @@ def calculate(populationFile):
 
     result = round(numerator * 100 / denominator, 2)
     print("\nFull Map, PfPR: {0}%".format(result))
-
-    print("\nPopulation: {:,}".format(totalPopulation))
+    print("Population: {:,}\n".format(totalPopulation))
 
 
 def simulatePopulation(fileName, rate, years, start):
@@ -84,5 +83,6 @@ def simulatePopulation(fileName, rate, years, start):
 
 if __name__ == '__main__':
     #calculate("../../GIS/bfa_init_pop.asc")
-    #calculate("../../GIS/bfa_pop_2017.asc")
-    simulatePopulation("../../GIS/bfa_init_pop.asc", 0.0296, 11, 2007)
+    calculate("../../GIS/bfa_pop_2017.asc")
+    #simulatePopulation("../../GIS/bfa_init_pop.asc", 0.0296, 11, 2007)
+    #simulatePopulation("../../GIS/bfa_init_26adj.asc", 0.026, 12, 2007)

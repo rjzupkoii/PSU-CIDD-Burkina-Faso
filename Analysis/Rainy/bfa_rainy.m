@@ -6,7 +6,7 @@ clear;
 
 hold on;
 
-plot_seasonality('data/bfa-testing.csv', 'Short', '12,627 population, 85% access to treatment, Beta 0.50');
+plot_seasonality('data/bfa-short.csv', 'Short', '12,627 population, 85% access to treatment, Beta 0.50');
 
 hold off;
 
