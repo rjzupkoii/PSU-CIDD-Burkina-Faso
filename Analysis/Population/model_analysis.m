@@ -8,6 +8,9 @@ clear;
 STARTDATE = '2006-1-1';
 FILENAME = 'data/population-seasonal-final.csv';
 
+% Figure one plot
+plotSimuatedVsReferencePfPR(FILENAME)
+
 %plotPopulation(FILENAME, STARTDATE);
 
 % Common to all types
@@ -15,7 +18,7 @@ FILENAME = 'data/population-seasonal-final.csv';
 
 % Seasonal exposure
 %seasonalError(FILENAME, STARTDATE);
-seasonalErrorSummary(FILENAME);
+%seasonalErrorSummary(FILENAME);
 
 % Constant exposure
 %perennialError(FILENAME, STARTDATE);
@@ -130,6 +133,53 @@ function [] = perennialErrorSummary(filename)
     graphic = gca;
     graphic.FontSize = 18;
     hold off;
+end
+
+% Generate the simuated versus reference PfPR values, which can be used as
+% figure one for a manuscript.
+function [] = plotSimuatedVsReferencePfPR(filename)
+    % Load the reference data
+    reference = csvread('data/weighted_pfpr.csv');
+
+    % Load and trim the evaluation data to post-burn-in
+    data = csvread(filename, 1, 0);
+    data = data(data(:, 1) >= (11 * 365), :);
+    districts = unique(data(:, 2));
+
+    % Prepare the color map
+    colors = colormap(parula(size(districts, 1)));
+
+    hold on;
+    for district = transpose(districts)
+        expected = reference(reference(:, 1) == district, 2);
+        pfpr = data(data(:, 2) == district, 6); 
+
+        % We want the seasonal maxima, filter out the local maxima, once
+        % this is done we should only have ten points left (i.e., number of
+        % years)
+        maxima = pfpr(pfpr > mean(pfpr));
+        maxima = maxima(maxima > maxima - std(maxima));
+        maxima = findpeaks(maxima);
+
+        pfpr = pfpr .* -1;
+        minima = pfpr(pfpr > mean(pfpr));
+        minima = minima(minima > minima - std(minima));
+        minima = findpeaks(minima);
+
+        % Plot from the maxima to the minima, connected by a line
+        scatter(expected, mean(maxima), 45, colors(district, :), 'filled', 'MarkerEdgeColor', 'black');
+        line([expected expected], [mean(maxima) abs(mean(minima))], 'color', colors(district, :), 'LineStyle', '--');
+        scatter(expected, abs(mean(minima)), 45, colors(district, :));
+    end
+    hold off;
+
+    ylabel('Simulated {\it Pf}PR_{2 to 10}, mean of peaks');
+    xlabel('Reference {\it Pf}PR_{2 to 10}');
+
+    title('Burkina Faso, Simuated versus Reference {\it Pf}PR_{2 to 10} values');
+
+    graphic = gca;
+    graphic.FontSize = 18;
 end
 
 function [] = seasonalError(filename, startDate)
