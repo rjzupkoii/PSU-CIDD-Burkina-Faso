@@ -167,9 +167,9 @@ function [] = plotSimuatedVsReferencePfPR(filename)
         minima = findpeaks(minima);
 
         % Plot from the maxima to the minima, connected by a line
-        line([expected expected], [mean(maxima) abs(mean(minima))], 'color', [99 99 99] / 255, 'LineStyle', '--');
+        line([expected expected], [mean(maxima) abs(mean(minima))], 'color', [0, 0, 0, 0.25]);
         scatter(expected, mean(maxima), 75, colors(district, :), 'filled', 'MarkerEdgeColor', 'black');
-        scatter(expected, abs(mean(minima)), 37.5, colors(district, :), 'filled');
+        scatter(expected, abs(mean(minima)), 37.5, [99 99 99] / 255, 'filled');
     end
     hold off;
 
