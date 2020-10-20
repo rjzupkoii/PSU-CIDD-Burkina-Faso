@@ -167,12 +167,15 @@ function [] = plotSimuatedVsReferencePfPR(filename)
         minima = findpeaks(minima);
 
         % Plot from the maxima to the minima, connected by a line
-        scatter(expected, mean(maxima), 45, colors(district, :), 'filled', 'MarkerEdgeColor', 'black');
-        line([expected expected], [mean(maxima) abs(mean(minima))], 'color', colors(district, :), 'LineStyle', '--');
-        scatter(expected, abs(mean(minima)), 45, colors(district, :));
+        line([expected expected], [mean(maxima) abs(mean(minima))], 'color', [99 99 99] / 255, 'LineStyle', '--');
+        scatter(expected, mean(maxima), 75, colors(district, :), 'filled', 'MarkerEdgeColor', 'black');
+        scatter(expected, abs(mean(minima)), 37.5, colors(district, :), 'filled');
     end
     hold off;
 
+    data = get(gca, 'YLim');
+    line([data(1) data(2)], [data(1) data(2)], 'Color', 'black', 'LineStyle', '-.');
+    
     ylabel('Simulated {\it Pf}PR_{2 to 10}, mean of peaks');
     xlabel('Reference {\it Pf}PR_{2 to 10}');
 
