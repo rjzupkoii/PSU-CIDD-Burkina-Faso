@@ -42,3 +42,24 @@ from sim.replicate r
   inner join sim.monthlysitedata msd on msd.monthlydataid = md.id
   inner join sim.location l on l.id = msd.locationid
 where r.id = 35877 and eir != 0
+
+-- PfPR 2 to 10 for a single year (2025) for the country
+select dayselapsed,
+  district, l.x, l.y,
+  sum(population * pfpr2to10) / sum(population) as pfpr2to10
+--  avg(pfpr2to10) as pfpr2to10
+from sim.configuration c
+  inner join sim.replicate r on r.configurationid = c.id
+  inner join sim.monthlydata md on md.replicateid = r.id
+  inner join sim.monthlysitedata msd on msd.monthlydataid = md.id
+  inner join sim.location l on l.id = msd.locationid
+where c.id = 59798
+  and md.dayselapsed between 8401 and 8766
+group by dayselapsed, district, l.x, l.y
+
+-- Days elapsed to dates for a replicate
+select md.dayselapsed,
+  to_date('2007-01-01', 'yyyy-mm-dd') + interval '1' day * md.dayselapsed as date
+from sim.replicate r
+  inner join sim.monthlydata md on md.replicateid = r.id
+where r.id = 62554
