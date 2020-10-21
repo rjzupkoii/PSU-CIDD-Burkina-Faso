@@ -65,13 +65,16 @@ function [hm] = generate(raw, date, startDate)
     days = addtodate(datenum(startDate), date, 'day');
     title = datestr(datetime(days, 'ConvertFrom', 'datenum'), 'mmmm yyyy');
 
-    % Apply the formatting
+    % Plot the heatmap and color bar
     hm = heatmap(map);
+    hm.Colormap = colormap(flipud(hot));
+	caxis(hm, [min(raw(:, 4)) max(raw(:, 4))]);
+    
+    % Apply the formatting
     graphic = gca;
     graphic.FontSize = 18;    
     hm.Title = title;
     hm.XDisplayLabels = repmat(' ', cols, 1); 
     hm.YDisplayLabels = repmat(' ', rows, 1);
-    hm.Colormap = colormap(flipud(hot));
     grid off;
 end
