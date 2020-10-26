@@ -9,10 +9,7 @@ Analysis/PfPRMap/data/
 Analysis/PfPRMap/out/
 Analysis/Population/data/
 Analysis/Rainy/data
-Studies/data/
-Studies/out/
-Studies/Single/data/
-Studies/cellular/data
+Studies/*/data/
 Plots/data/
 Plots/out/
 Plots/Single/data/
