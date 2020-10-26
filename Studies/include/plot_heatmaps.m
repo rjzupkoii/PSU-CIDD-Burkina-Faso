@@ -12,8 +12,8 @@ function [] = plot_heatmaps(directory, startdate)
         indicies = strfind(files(ndx).name, '-');        
         rate = string(extractBetween(files(ndx).name, 1, indicies(1) - 1));
         parse_file(filename, rate, startdate);
-        set(gcf, 'Position', get(0, 'Screensize'));
-        saveas(gcf, sprintf('out/%s-heatmap.png', rate));
+        set(gcf, 'Position',  [0, 0, 2560, 1440]);
+        print('-dtiff', '-r300', sprintf('out/%s-heatmap.png', rate));
         clf;
         close;
     end

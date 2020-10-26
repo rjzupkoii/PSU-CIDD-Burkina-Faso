@@ -70,8 +70,8 @@ function [] = generate(directory, rate, startDate)
     graphic.FontSize = 18;
     
     % Save and close
-    set(gcf, 'Position', get(0, 'Screensize'));
-    saveas(gcf, sprintf('out/%s-frequency-replicates.png', rate));
+    set(gcf, 'Position',  [0, 0, 2560, 1440]);
+    print('-dtiff', '-r300', sprintf('out/%s-frequency-replicates.png', rate));
     clf;
     close;    
 end

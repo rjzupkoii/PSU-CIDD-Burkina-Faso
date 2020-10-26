@@ -68,8 +68,8 @@ function [] = generate(directory, rate, startDate)
         rate, length(files))}, 'FontSize', 24);
     
     % Save and close
-    set(gcf, 'Position', get(0, 'Screensize'));    
-	saveas(gcf, sprintf('out/%s-frequency-districts.png', rate));
+    set(gcf, 'Position',  [0, 0, 2560, 1440]);
+    print('-dtiff', '-r300', sprintf('out/%s-frequency-districts.png', rate));
     clf;
     close;  
 end

@@ -20,8 +20,8 @@ function plot_pfpr_heatmap(filename, startDate)
     sgtitle("Projected {\it Pf}PR_{2 to 10} in 2030", 'FontSize', 24);
     
     % Save the file
-    set(gcf, 'Position', get(0, 'Screensize'));
-    saveas(gcf, 'out/pfpr-heatmap.png');
+    set(gcf, 'Position',  [0, 0, 2560, 1440]);
+    print('-dtiff', '-r300', 'out/pfpr-heatmap.tiff');
     clf;
     close;
 end
