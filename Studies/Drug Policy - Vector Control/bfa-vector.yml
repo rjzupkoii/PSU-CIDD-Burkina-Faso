@@ -2,8 +2,9 @@
 #
 # Boni Lab
 #
-# BURKINA FASO model configuration for status quo, de novo 
-# emergence which was also used for ASTMH.
+# BURKINA FASO model configuration to test to see if vector 
+# control (i.e., preventing infection) is more important than 
+# drug policy interventions.
 #
 # PfPR data for calibration comes from the Malaria Atlas Project
 # projections for 2017.
@@ -217,19 +218,23 @@ events:
     info:
       - day: 2019/1/1
         rate: 0.03
+  - name: annual_beta_update_event
+    info:
+      - day: 2008/1/1
+        rate: -0.03
   - name: turn_off_mutation
     info:
-      - day: 2007/1/1
+      - day: 2018/1/1
   - name: turn_on_mutation
     info:
       # Artemisinin
       - day: 2018/1/1
         drug_id: 0
-        mutation_probability: #MUTATION#
+        mutation_probability: 0.001983
       # Amodiaquine
       - day: 2018/1/1
         drug_id: 1
-        mutation_probability: #MUTATION# 
+        mutation_probability: 0.001983
       # Sulfadoxine/pyrimethamine
       - day: 2018/1/1
         drug_id: 2
@@ -237,19 +242,19 @@ events:
       # Chloroquine
       - day: 2018/1/1
         drug_id: 3
-        mutation_probability: #MUTATION#
+        mutation_probability: 0.001983
       # Lumefantrine
       - day: 2018/1/1
         drug_id: 4
-        mutation_probability: #MUTATION#  
+        mutation_probability: 0.001983
       # Piperaquine
       - day: 2018/1/1
         drug_id: 5
-        mutation_probability: #MUTATION#
+        mutation_probability: 0.001983
       # Mefloquine
       - day: 2018/1/1
         drug_id: 6
-        mutation_probability: #MUTATION#
+        mutation_probability: 0.001983
       # Quinine
       - day: 2018/1/1
         drug_id: 7
