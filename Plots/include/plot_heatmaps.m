@@ -19,30 +19,19 @@ function [] = plot_heatmaps(directory, startdate)
     end
 end
 
-% Generate multiple subplots that contain heatmaps at fixed intervals
+% Generate multiple subplots that contain heatmaps at fixed intervals, note
+% that the dates are controled by the loader
 function [] = parse_file(filename, rate, startdate) 
     raw = csvread(filename, 1, 0);
     days = unique(raw(:, 1));
 
-    % Since we may run while early, only show plots we have data for
-    count = size(days, 1);
+    ndx = 1;
+    for day = transpose(days)
+        subplot(2, 3, ndx);
+        generate(raw, day, startdate);
+        ndx = ndx + 1;
+    end
     
-    % Janurary 2021
-    subplot(2, 2, 1);
-    if count >= 1, generate(raw, days(1), startdate); end
-
-    % Janurary 2026
-    subplot(2, 2, 2);
-    if count >= 2, generate(raw, days(2), startdate); end
-
-    % Janurary 2031
-    subplot(2, 2, 3);
-    if count >= 3, generate(raw, days(3), startdate); end
-
-    % Janurary 2036
-    subplot(2, 2, 4);
-    if count >= 4, generate(raw, days(4), startdate); end
-
     sgtitle(sprintf("580Y Frequency with %s Mutation Rate", rate), 'FontSize', 24);
 end
 

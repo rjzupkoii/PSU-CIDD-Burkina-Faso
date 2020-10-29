@@ -257,5 +257,6 @@ if __name__ == '__main__':
         for filename in glob.glob("out/*summary*.csv"): os.remove(filename)
 
     # TODO Find a better way of getting the subset
-    main(studyId, startDay, "5114, 6940, 8766, 10592")
+    # October every three years starting in 2020 - 5022, 6117, 7213, 8309, 9405, 10866
+    main(studyId, startDay, "5022, 6117, 7213, 8309, 9405, 10866")
 
