@@ -54,14 +54,25 @@ def getFrequencySubset(replicateId, subset):
 
 
 # Return all of the replicates and their rate associated with the given study
-def getReplicates(studyId):
+def getReplicates(studyId, label):
+    # Return the list without the label applied
+    if label is None:
+        sql = """
+            SELECT cast((regexp_matches(filename, '^(\d\.\d*)-bfa\.yml'))[1] as float) AS rate, 
+                nrows, ncols, c.id AS configurationid, r.id AS replicateid,
+                CASE WHEN r.endtime IS NULL THEN 0 ELSE 1 END As complete
+            FROM sim.configuration c INNER JOIN sim.replicate r ON r.configurationid = c.id
+            WHERE c.studyid = %(studyId)s ORDER BY rate"""
+        return select(sql, {'studyId':studyId})
+
+    # Return the list with the label applied
     sql = """
-        SELECT cast((regexp_matches(filename, '^(\d\.\d*)-bfa\.yml'))[1] as float) AS rate, 
+        SELECT %(label)s as label,
             nrows, ncols, c.id AS configurationid, r.id AS replicateid,
             CASE WHEN r.endtime IS NULL THEN 0 ELSE 1 END As complete
         FROM sim.configuration c INNER JOIN sim.replicate r ON r.configurationid = c.id
-        WHERE c.studyid = %(studyId)s ORDER BY rate"""
-    return select(sql, {'studyId':studyId})
+        WHERE c.studyid = %(studyId)s"""
+    return select(sql, {'studyId':studyId, 'label':label})
 
 
 # Get the summary data for the given replicate after the burn-in period is complete
@@ -212,9 +223,9 @@ def saveSummary(rate, replicateId, burnIn):
             writer.writerow(data)
 
 
-def main(studyId, burnIn, subset):
+def main(studyId, burnIn, subset, label):
     # Get the configurations, replicates, and do some bookkeeping
-    replicates = getReplicates(studyId)
+    replicates = getReplicates(studyId, label)
     if len(replicates) == 0:
         print("No replicates to process!")
         return
@@ -240,15 +251,12 @@ def select(sql, parameters):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        print "Usage: ./loader.py [studyId] [startDay]"
+    if len(sys.argv) not in (3, 4):
+        print "Usage: ./loader.py [studyId] [startDay] [label]"
         print "studyId - database id of the study"
         print "startDay - the first model day to start processing data for"
+        print "label - optional, set the label for the study"
         exit(0)
-
-    # Parse the parameters
-    studyId = int(sys.argv[1])
-    startDay = int(sys.argv[2])
 
     # Prepare the environment
     if not os.path.exists("out"): 
@@ -256,7 +264,14 @@ if __name__ == '__main__':
     else:
         for filename in glob.glob("out/*summary*.csv"): os.remove(filename)
 
+    # Parse the parameters
+    studyId = int(sys.argv[1])
+    startDay = int(sys.argv[2])
+    label = None
+    if len(sys.argv) == 4:
+        label = str(sys.argv[3])
+
     # TODO Find a better way of getting the subset
     # October every three years starting in 2020 - 5022, 6117, 7213, 8309, 9405, 10866
-    main(studyId, startDay, "5022, 6117, 7213, 8309, 9405, 10866")
+    main(studyId, startDay, "5022, 6117, 7213, 8309, 9405, 10866", label)
 
