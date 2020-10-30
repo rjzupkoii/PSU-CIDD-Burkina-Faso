@@ -10,7 +10,7 @@ STARTDATE = '2007-1-1';
 
 %plot_october_pfpr('data/0.001983-summary-pfpr.csv', STARTDATE);
 
-%plot_october_pfpr('data/fig7/fig7-october-pfpr.csv', STARTDATE);
+plot_october_pfpr('data/fig7/fig7-october-pfpr.csv', STARTDATE);
 %plot_treatment_failures('data/fig7/fig7-treatment-failures.csv', STARTDATE);
 
 % Plot the data set for the treatment failures
@@ -30,7 +30,7 @@ function [] = plot_treatment_failures(filename, startdate)
     datetick('x', 'yyyy');
 
     title('Burkina Faso - de novo mutation versus vector control');
-    ylabel('Percent Treatment Failures');
+    ylabel('Treatment Failures');
     xlabel('Model Year');
 
     graphic = gca;
