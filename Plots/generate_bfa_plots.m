@@ -6,15 +6,14 @@ addpath('include');
 addpath('../Analysis/Common');
 clear;
 
-STARTDATE = '2007-1-1';
 DIRECTORY = '../Analysis/Loader/out';
 FREQUENCY = '../Analysis/Loader/out/*frequency*.csv';
 
+STARTDATE = '2007-1-1';
 if ~exist('out', 'dir'), mkdir('out'); end
 
 % NOTE for most of these the default image size is 2560 x 1440 at 300 DPI
 %      exact sizes can be changed though
-
 plot_heatmaps(FREQUENCY, STARTDATE);
 plot_pfpr_heatmap('data/0.001983-bfa-pfpr2_10-average.csv', STARTDATE);
 

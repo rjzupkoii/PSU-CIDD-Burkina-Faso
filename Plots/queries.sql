@@ -9,6 +9,35 @@ where r.endtime is null
 group by filename, replicateid, starttime
 order by modeldays desc
 
+-- October peaks
+select dayselapsed, 
+  cast(to_date('2007-1-1', 'yyyy-mm-dd') + dayselapsed*INTERVAL'1 day' as varchar) date,
+  ROUND(cast(sum(population * pfpr2to10) / sum(population) as decimal), 3) as pfpr2to10,
+  ROUND((sum(msd.infectedindividuals) / cast(sum(msd.population) as decimal)) * 100, 3) as pfprall
+from sim.replicate r
+  inner join sim.monthlydata md on md.replicateid = r.id
+  inner join sim.monthlysitedata msd on msd.monthlydataid = md.id
+where r.configurationid = 59797
+  and dayselapsed > 4000
+--  and dayselapsed in (5022, 6117, 7213, 8309, 9405, 10866)
+  and cast(to_date('2007-1-1', 'yyyy-mm-dd') + dayselapsed*INTERVAL'1 day' as varchar) ~ '^....-10-.*'
+group by dayselapsed
+order by dayselapsed asc
+
+-- Treatment failure comparison
+-- 59797 - de novo emergence
+-- 59801 - vector control
+select c.id,
+  md.dayselapsed, 
+  sum(md.treatmentfailures) / count(md.treatmentfailures) tfaverage
+from sim.configuration c
+  inner join sim.replicate r on r.configurationid = c.id
+  inner join sim.monthlydata md on md.replicateid = r.id
+where (c.id = 59797 or c.id = 59801)
+  and md.treatmentfailures != 0
+group by c.id, dayselapsed
+order by c.id, dayselapsed
+
 -- Select country level treatment faliures
 SELECT cast((regexp_matches(filename, '^(\d\.\d*)-bfa\.yml'))[1] as float) as rate,
   md.replicateid, md.dayselapsed, md.treatmentfailures

@@ -63,9 +63,15 @@ function [] = generate(directory, rate, startDate)
     yyaxis right;
     ylabel('Occurances of 580Y (log10)');    
 
-    title({sprintf('580Y Frequency with %s Mutation Rate', rate), ...
-        sprintf('3%% increase in treatment, %d replicates', replicates)});
-
+    % Apply the relevent title if there is a rate or a label
+    if isnan(str2double(rate))
+        sgtitle({sprintf('580Y Frequency with %s (%d Replicates)', ...
+            rate, length(files))}, 'FontSize', 24);
+    else
+        sgtitle({sprintf('580Y Frequency with %s Mutation Rate (%d Replicates)', ...
+            rate, length(files))}, 'FontSize', 24);
+    end    
+    
     graphic = gca;
     graphic.FontSize = 18;
     

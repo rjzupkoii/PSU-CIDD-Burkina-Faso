@@ -12,9 +12,9 @@ function [] = plot_district_frequency(directory, startDate)
         % Skip anything that is not the directories we are looking for
         if ~files(ndx).isdir, continue; end
         if strcmp(files(ndx).name(1), '.'), continue; end
-
+        
         % Plot the national summary and district summary
-        filename = fullfile(files(ndx).folder, files(ndx).name);
+        filename = fullfile(files(ndx).folder, files(ndx).name);        
         generate(filename, files(ndx).name, startDate);
     end
 end
@@ -64,8 +64,15 @@ function [] = generate(directory, rate, startDate)
 	handle.FontSize = 18;
     ylabel(handle, '580Y Frequency');
     xlabel(handle, 'Model Year');
-    sgtitle({sprintf('580Y Frequency with %s Mutation Rate (%d Replicates)', ...
-        rate, length(files))}, 'FontSize', 24);
+    
+    % Apply the relevent title if there is a rate or a label
+    if isnan(str2double(rate))
+        sgtitle({sprintf('580Y Frequency with %s (%d Replicates)', ...
+            rate, length(files))}, 'FontSize', 24);
+    else
+        sgtitle({sprintf('580Y Frequency with %s Mutation Rate (%d Replicates)', ...
+            rate, length(files))}, 'FontSize', 24);
+    end
     
     % Save and close
     set(gcf, 'Position',  [0, 0, 2560, 1440]);
