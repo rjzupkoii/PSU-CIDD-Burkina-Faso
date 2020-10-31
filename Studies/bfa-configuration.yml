@@ -21,6 +21,9 @@ initial_seed_number: 0
 # Connection string for the PostgreSQL database
 connection_string: "host=masimdb.vmhost.psu.edu dbname=burkinafaso user=sim password=sim connect_timeout=60"
 
+# Record the genomic data
+record_genome_db: true
+
 # Report to GUI and console every 30 days
 report_frequency: 30
 
@@ -119,7 +122,6 @@ birth_rate: 0.0412
 # Malaria adjusted, all-causes death rate for Burkina Faso
 death_rate_by_age_class: [0.0382, 0.03019, 0.02027, 0.01525, 0.01248, 0.00359, 0.00361, 0.00365, 0.00379, 0.00379, 0.00386, 0.00504, 0.0055, 0.0174, 0.0174]
 
-# TODO
 # probability of death for patients who are not treated or patients who experience a treatment failure (due to drug resistance, or otherwise)
 # when received treatment, this rate drop by factor of 10 in code
 mortality_when_treatment_fail_by_age_class: [0.040, 0.020, 0.020, 0.020, 0.020, 0.004, 0.004, 0.004, 0.004, 0.004, 0.004, 0.001, 0.001, 0.001, 0.001]
@@ -532,11 +534,12 @@ therapy_db:
 # Drug-deployment strategy - baseline represents the survey data for Burkina Faso
 strategy_db:
   0:
-    # AL, ASAQ, ASMQ, DP, ADQ, AS, CQ, QUIN, SP
+    # AL (1), ASAQ (0), ASMQ (2), DP (3), ADQ (4), AS (5), CQ (6), QUIN (7), SP (8)
+    #   0.68,    0.025,    0.013,  0.049,   0.124,  0.022,  0.015,    0.056,  0.016
     name: BurkinaFaso-Baseline
     type: MFT
-    therapy_ids: [0, 1, 2, 3, 4, 5, 6, 7, 8]
-    distribution: [0.68, 0.025, 0.013, 0.049, 0.124, 0.022, 0.015, 0.056, 0.017]
+    therapy_ids: [1, 0, 2, 3, 4, 5, 6, 7, 8]
+    distribution: [0.68, 0.025, 0.013, 0.049, 0.124, 0.022, 0.015, 0.056, 0.016]
 initial_strategy_id: 0
 
 # This number use to determine whether a therapy is "useful" or not and it is used to calculate 
