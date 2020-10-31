@@ -21,6 +21,9 @@ initial_seed_number: 0
 # Connection string for the PostgreSQL database
 connection_string: "host=masimdb.vmhost.psu.edu dbname=burkinafaso user=sim password=sim connect_timeout=60"
 
+# Record the genomic data
+record_genome_db: false
+
 # Report to GUI and console every 30 days
 report_frequency: 30
 
@@ -28,13 +31,13 @@ report_frequency: 30
 # Items controlling the behavior of the model
 # ---------------------------------------------------------------
 # Starting date is calibration year minus 11 years of burn-in
-starting_date: 2006/1/1
+starting_date: 2007/1/1
 
-# Start recording 5 years before 2017 so we can double-check data
-start_of_comparison_period: 2012/1/1
+# 2018 is the target calibration year
+start_of_comparison_period: 2018/1/1
 
-# Ending date is 2017 since we are looking at the calibration
-ending_date: 2017/12/31
+# Ending date is 2023 so we have some extra data to check
+ending_date: 2023/12/31
 
 # Date to start collecting data, 1 year before start of comparison
 start_collect_data_day: 1826 
@@ -74,8 +77,8 @@ raster_db:
   cell_size: 5
 
   # Approximate national age distribution for Burkina Faso
-  age_distribution_by_location: [[0.0346, 0.0346, 0.0346, 0.0346, 0.034, 0.034, 0.034, 0.034, 0.034, 0.0294, 0.0294, 0.0294, 0.0294, 0.0294, 0.158, 0.122, 0.094, 0.062, 0.043, 0.031, 0]]
-
+  age_distribution_by_location: [[0.0449, 0.0449, 0.0449, 0.0449, 0.0315, 0.0315, 0.0315, 0.0315, 0.0315, 0.0268, 0.0268, 0.0268, 0.0268, 0.0268, 0.1990, 0.1251, 0.0855, 0.0560, 0.0346, 0.0289, 0.0000]]
+  
   # probability that a symptomatic and infected individual seeks and receives antimalarial treatment
   #if the number of values less than number of locations, the first value will be applied for all locations
   # this is the initial value, the modification values can be change by setting in events node
@@ -110,7 +113,7 @@ spatial_model:
 birth_rate: 0.0375
 
 # Malaria adjusted, all-causes death rate for Burkina Faso
-death_rate_by_age_class: [0.0382, 0.03019, 0.02027, 0.01525, 0.01248, 0.00359, 0.00361, 0.00365, 0.00379, 0.00379, 0.00386, 0.0059, 0.00664, 0.01727, 0.36621]
+death_rate_by_age_class: [0.0382, 0.03019, 0.02027, 0.01525, 0.01248, 0.00359, 0.00361, 0.00365, 0.00379, 0.00379, 0.00386, 0.00504, 0.0055, 0.0174, 0.0174]
 
 # TODO
 # probability of death for patients who are not treated or patients who experience a treatment failure (due to drug resistance, or otherwise)
@@ -180,18 +183,18 @@ circulation_info:
     sd: 10
 
 # Definition for initial parasite
-#
-# 1. loc 
-# 2. id (this is the resistance type of the parasite) 
-# 3. prevalence unweighted by biting rate
-#
-# location id is -1 results in all locations having the same initial parasites
 initial_parasite_info:
   - location_id: -1
     parasite_info:
-      #TNY__C1x
+      # TNY--C1x / 
+      # T - CQ resistance (everywhere)
+      # NY-- - N (diversity at 86 locus), Y (184 locus)
+      # C - Artemisinin (ART) sensitive
+      # 1 - PPQ sensitive
       - parasite_type_id: 64
         prevalence: 0.05
+
+      # TYY--C1x
       - parasite_type_id: 72
         prevalence: 0.05
 
@@ -479,11 +482,12 @@ therapy_db:
 # Drug-deployment strategy - baseline represents the survey data for Burkina Faso
 strategy_db:
   0:
-    # AL, ASAQ, ASMQ, DP, ADQ, AS, CQ, QUIN, SP
+    # AL (1), ASAQ (0), ASMQ (2), DP (3), ADQ (4), AS (5), CQ (6), QUIN (7), SP (8)
+    #   0.68,    0.025,    0.013,  0.049,   0.124,  0.022,  0.015,    0.056,  0.016
     name: BurkinaFaso-Baseline
     type: MFT
-    therapy_ids: [0, 1, 2, 3, 4, 5, 6, 7, 8]
-    distribution: [0.68, 0.025, 0.013, 0.049, 0.124, 0.022, 0.015, 0.056, 0.017]
+    therapy_ids: [1, 0, 2, 3, 4, 5, 6, 7, 8]
+    distribution: [0.68, 0.025, 0.013, 0.049, 0.124, 0.022, 0.015, 0.056, 0.016]
 initial_strategy_id: 0
 
 # This number use to determine whether a therapy is "useful" or not and it is used to calculate 
