@@ -109,8 +109,8 @@ spatial_model:
     beta:  0
     gamma: 0
 
-# Crude Birth Rate: 37.5 based upon UN data
-birth_rate: 0.0375
+# Crude Birth Rate: 41.2 based upon INSD 2018 data
+birth_rate: 0.0412
 
 # Malaria adjusted, all-causes death rate for Burkina Faso
 death_rate_by_age_class: [0.0382, 0.03019, 0.02027, 0.01525, 0.01248, 0.00359, 0.00361, 0.00365, 0.00379, 0.00379, 0.00386, 0.00504, 0.0055, 0.0174, 0.0174]
