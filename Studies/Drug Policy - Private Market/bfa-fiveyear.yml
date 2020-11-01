@@ -221,7 +221,15 @@ events:
   - name: change_treatment_strategy
     info:
       - day: 2021/1/1
-        strategy_id: 1        
+        strategy_id: 1   
+      - day: 2022/1/1
+        strategy_id: 2   
+      - day: 2023/1/1
+        strategy_id: 3   
+      - day: 2024/1/1
+        strategy_id: 4   
+      - day: 2025/1/1
+        strategy_id: 5                                   
   - name: turn_off_mutation
     info:
       - day: 2007/1/1
@@ -546,11 +554,35 @@ strategy_db:
     therapy_ids: [0, 1, 2, 3, 4, 5, 6, 7, 8]
     distribution: [0.68, 0.025, 0.013, 0.049, 0.124, 0.022, 0.015, 0.056, 0.017]
   1:
-    # AL, DP, AS, QUIN
-    name: BurkinaFaso-Rapid
+    # AL, DP, AS, QUIN, ASMQ, ADQ, CQ, SP
+    name: BurkinaFaso-Year1
+    type: MFT
+    therapy_ids: [1, 3, 5, 7, 2, 4, 6, 8]
+    distribution: [0.735, 0.053, 0.022, 0.056, 0.01, 0.099, 0.012, 0.013]
+  2:
+    # AL, DP, AS, QUIN, ASMQ, ADQ, CQ, SP
+    name: BurkinaFaso-Year2
+    type: MFT
+    therapy_ids: [1, 3, 5, 7, 2, 4, 6, 8]
+    distribution: [0.0766, 0.055, 0.022, 0.056, 0.008, 0.074, 0.009, 0.001]
+  3:
+    # AL, DP, AS, QUIN, ASMQ, ADQ, CQ, SP
+    name: BurkinaFaso-Year3
+    type: MFT
+    therapy_ids: [1, 3, 5, 7, 2, 4, 6, 8]
+    distribution: [0.797, 0.057, 0.022, 0.056, 0.005, 0.05, 0.006, 0.006]
+  4:
+    # AL, DP, AS, QUIN, ASMQ, ADQ, CQ, SP
+    name: BurkinaFaso-Year4
+    type: MFT
+    therapy_ids: [1, 3, 5, 7, 2, 4, 6, 8]
+    distribution: [0.829, 0.06, 0.022, 0.056, 0.003, 0.025, 0.003, 0.003]
+  5:
+    # AL, DP, AS, QUIN, ASMQ, ADQ, CQ, SP
+    name: BurkinaFaso-Year5
     type: MFT
     therapy_ids: [1, 3, 5, 7]
-    distribution: [ 0.86, 0.062, 0.022, 0.056]
+    distribution: [0.86, 0.062, 0.022, 0.056]    
 initial_strategy_id: 0
 
 # Days from end of liver-stage infection to appearance of symptoms
