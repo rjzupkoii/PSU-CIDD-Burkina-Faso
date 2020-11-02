@@ -5,11 +5,11 @@
 addpath('../Common');
 clear;
 
-STARTDATE = '2006-1-1';
-FILENAME = 'data/population-seasonal-final.csv';
+STARTDATE = '2007-1-1';
+FILENAME = 'data/population-pfpr.csv';
 
 % Figure one plot
-plotSimuatedVsReferencePfPR(FILENAME)
+%plotSimuatedVsReferencePfPR(FILENAME)
 
 %plotPopulation(FILENAME, STARTDATE);
 
@@ -18,7 +18,7 @@ plotSimuatedVsReferencePfPR(FILENAME)
 
 % Seasonal exposure
 %seasonalError(FILENAME, STARTDATE);
-%seasonalErrorSummary(FILENAME);
+seasonalErrorSummary(FILENAME);
 
 % Constant exposure
 %perennialError(FILENAME, STARTDATE);
@@ -27,7 +27,7 @@ plotSimuatedVsReferencePfPR(FILENAME)
 function [] = monthlyPfPR(filename, startDate, single)
     % Load the data and reference data
     data = csvread(filename, 1, 0);
-    reference = csvread('data/weighted_pfpr.csv');
+    reference = csvread('../Common/weighted_pfpr.csv');
     dn = prepareDates(filename, 1, startDate);
 
     % Prepare the color map
@@ -78,7 +78,7 @@ end
 function [] = perennialError(filename, startDate) 
     % Load the data and reference data
     data = csvread(filename, 1, 0);
-    reference = csvread('data/weighted_pfpr.csv');
+    reference = csvread('../Common/weighted_pfpr.csv');
     dn = prepareDates(filename, 1, startDate);
 
     hold on;
@@ -107,7 +107,7 @@ end
 
 function [] = perennialErrorSummary(filename) 
     % Load reference data
-    reference = csvread('data/weighted_pfpr.csv');
+    reference = csvread('../Common/weighted_pfpr.csv');
     
     % Load and trim the evaluation data to post-burn-in
     data = csvread(filename, 1, 0);
@@ -139,7 +139,7 @@ end
 % figure one for a manuscript.
 function [] = plotSimuatedVsReferencePfPR(filename)
     % Load the reference data
-    reference = csvread('data/weighted_pfpr.csv');
+    reference = csvread('../Common/weighted_pfpr.csv');
 
     % Load and trim the evaluation data to post-burn-in
     data = csvread(filename, 1, 0);
@@ -188,7 +188,7 @@ end
 function [] = seasonalError(filename, startDate)
     % Load the data and reference data
     data = csvread(filename, 1, 0);
-    reference = csvread('data/weighted_pfpr.csv');
+    reference = csvread('../Common/weighted_pfpr.csv');
     dn = prepareDates(filename, 1, startDate);
 
     % Prepare the color map
@@ -228,7 +228,7 @@ end
 
 function [] = seasonalErrorSummary(filename)
     % Load reference data
-    reference = csvread('data/weighted_pfpr.csv');
+    reference = csvread('../Common/weighted_pfpr.csv');
     
     % Load and trim the evaluation data to post-burn-in
     data = csvread(filename, 1, 0);
