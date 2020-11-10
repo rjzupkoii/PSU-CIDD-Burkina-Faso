@@ -88,6 +88,7 @@ def main():
     # Prepare for the ASC data
     epsilons = []
     maxEpsilon = 0
+    maxValues = None
     meanBeta = []
 
     print "Determining betas for {} rows, {} columns".format(ascheader['nrows'], ascheader['ncols'])
@@ -110,7 +111,7 @@ def main():
 
             # Get the beta values
             [values, epsilon] = get_betas( \
-                zones[row][col], pfpr[row][col], population[row][col], treatment[row][col] / 100, lookup)
+                zones[row][col], pfpr[row][col], population[row][col], treatment[row][col], lookup)
 
             # Was nothing returned?
             if len(values) == 0:
@@ -120,7 +121,11 @@ def main():
 
             # Note the epsilon and the mean
             epsilons[row].append(epsilon)
-            if epsilon > maxEpsilon: maxEpsilon = epsilon
+            if epsilon > maxEpsilon: 
+                maxEpsilon = epsilon
+                maxValues = "Zone: {}, PfPR: {}, Population: {}, Treatment: {}".format( \
+                    zones[row][col], pfpr[row][col], population[row][col], treatment[row][col])
+
             meanBeta[row].append(sum(values) / len(values))
 
         # Note the progress
@@ -128,6 +133,7 @@ def main():
                 
     # Write the results
     print "Max epsilon: {}".format(maxEpsilon)
+    print maxValues
     print "Saving {}".format('out/bf_epsilons_beta.asc')
     write_asc(ascheader, epsilons, 'out/bf_epsilons_beta.asc')
     print "Saving {}".format('out/bf_mean_beta.asc')
