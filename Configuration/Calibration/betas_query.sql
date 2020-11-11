@@ -18,7 +18,8 @@ FROM (
     INNER JOIN sim.replicate r on r.configurationid = c.id
     INNER JOIN sim.monthlydata md on md.replicateid = r.id
     INNER JOIN sim.monthlysitedata msd on msd.monthlydataid = md.id
-  WHERE studyid = 10
+  WHERE studyid = 1
     AND md.dayselapsed >= (4352 - 366)
   GROUP BY replicateid, filename) iq
+WHERE (beta = 0 and pfpr2to10 = 0) OR (beta != 0 and min != 0)       
 ORDER BY zone, population, access, pfpr
