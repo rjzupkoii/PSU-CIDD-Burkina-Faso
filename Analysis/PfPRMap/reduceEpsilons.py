@@ -123,8 +123,7 @@ def main(tolerance, step):
             if value < tolerance: continue
 
             # Update the running list
-            addBeta(lookup, step, int(zones[row][col]), \
-                beta[row][col], population[row][col], treatment[row][col] / 100)
+            addBeta(lookup, step, int(zones[row][col]), beta[row][col], population[row][col], treatment[row][col])
 
         # Note the progress
         progressBar(row + 1, ascheader['nrows'])
