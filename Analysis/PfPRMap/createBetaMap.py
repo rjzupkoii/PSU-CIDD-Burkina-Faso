@@ -93,6 +93,8 @@ def main():
 
     print "Determining betas for {} rows, {} columns".format(ascheader['nrows'], ascheader['ncols'])
 
+    distribution = [0] * 6
+
     # Scan each of the rows 
     for row in range(0, ascheader['nrows']):
 
@@ -113,6 +115,12 @@ def main():
             [values, epsilon] = get_betas( \
                 zones[row][col], pfpr[row][col], population[row][col], treatment[row][col], lookup)
 
+            # Need to find a better way of doing this
+            for exponent in range(1, 7):
+                if epsilon >= pow(10, -exponent):
+                    distribution[exponent - 1] += 1
+                    break
+
             # Was nothing returned?
             if len(values) == 0:
                 epsilons[row].append(0)
@@ -132,9 +140,13 @@ def main():
         progressBar(row + 1, ascheader['nrows'])
                 
     # Write the results
-    print "Max epsilon: {}".format(maxEpsilon)
-    print maxValues
-    print "Saving {}".format('out/bf_epsilons_beta.asc')
+    print "\nMax epsilon: {} / {}".format(maxEpsilon, maxValues)
+    print " Distribution"
+    for ndx in range(0, len(distribution)):
+        print "{:>6} : {}".format(pow(10, -(ndx + 1)), distribution[ndx])
+
+    # Save the maps
+    print "\nSaving {}".format('out/bf_epsilons_beta.asc')
     write_asc(ascheader, epsilons, 'out/bf_epsilons_beta.asc')
     print "Saving {}".format('out/bf_mean_beta.asc')
     write_asc(ascheader, meanBeta, 'out/bf_mean_beta.asc')
