@@ -5,6 +5,7 @@
 # Ingore input-output directories
 Analysis/Loader/out/
 Analysis/Loader/data/
+Analysis/Movement/out/
 Analysis/PfPRMap/data/
 Analysis/PfPRMap/out/
 Analysis/Population/data/
