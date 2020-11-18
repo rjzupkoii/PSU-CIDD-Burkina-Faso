@@ -1,5 +1,5 @@
 function [points] = getSurveyPoints(index)
-    survey = csvread('data/marshall_processed.csv', 1, 0);
+    survey = csvread('marshall_processed.csv', 1, 0);
     survey = survey(survey(:, 1) == index, 2:3);
     points = zeros(1, 45);
     for ndx = 1:45
