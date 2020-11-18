@@ -1,37 +1,53 @@
+% synthetic_study.m
+%
 % This script is intended to generate synthetic "surveys" of movements in
 % Burkina Faso based upon the equation in Marshall et al. (2018)
 addpath('../Common');
+clear;
 
-[distances, populations] = loadData();
-results = [];
-for rho = 0.02:0.01:1.8
-    lookup = generateLookup(distances, populations, rho);
-    directory = sprintf('rho-%.2f', rho);
-    mkdir(directory);
+% Make sure the output path exists
+if ~exist('out', 'dir'), mkdir('out'); end
 
-    % Conduct the trial
-    for count = 1:100
-       trial(directory, count, lookup);
+study(1000)
+
+function [] = study(trials)
+
+    % Load the data used for the trials
+    [distances, populations] = loadData();
+    
+    % Sweep the rhos for the given number of trials
+    results = [];
+    for rho = 0.05:0.05:1.8
+        lookup = generateLookup(distances, populations, rho);
+        directory = sprintf('rho-%.2f', rho);
+        mkdir(directory);
+
+        % Conduct the trials
+        for count = 1:trials
+           trial(directory, count, lookup);
+        end
+
+        % Calcluate the MSE
+        mse = calc_mse(directory);
+
+        % Zip the data, move it to the archive, delete the old directory
+        file = append(directory, '.zip');
+        zip(file, directory);
+        movefile(file, 'out');
+        rmdir(directory, 's');
+
+        results = [results; rho mse ];
     end
 
-    % Calcluate the MSE
-    mse = calc_mse(directory);
+	% Save the sumary reuslts to disk
+    csvwrite('out/rho-results.csv', results);
 
-    % Zip the data, move it to the archive, delete the old directory
-    file = append(directory, '.zip');
-    zip(file, directory);
-    movefile(file, 'archive');
-    rmdir(directory, 's');
-    
-    results = [results; rho mse ];
+    % Plot the summary results
+    plot(results(:, 1), results(:, 2));
+    title('Sweep of Rho Values, Synehetic versus Survey Data');
+    xlabel('Rho value');
+    ylabel('Mean Squared Error');
 end
-
-csvwrite('rho-results.csv', resuls);
-
-plot(results(:, 1), results(:, 2));
-title('Sweep of Rho Values, Synehetic versus Survey Data');
-xlabel('Rho value');
-ylabel('Mean Squared Error');
 
 function [mse] = calc_mse(directory)
     data = loadDirectory(append(directory, "/"), false);
@@ -91,7 +107,7 @@ function [distances, populations] = loadData()
 
     % Load the distance data, align the columns such that,
     % 1 = source FID, 2 = destination FID, 3 = distance in KM
-    distances = csvread('data/marshall_survey_centroid.csv', 1, 0);
+    distances = csvread('../Common/marshall_survey_centroid.csv', 1, 0);
     distances = distances(:, [2:3 6]);
 
     % Shift to one indexed
@@ -102,7 +118,7 @@ end
 % Get the bounding dimension, where 0 is width and 1 is length,
 % and 2 is the mean of the two
 function [distance] = get_bound(fid, dimension)
-    bounding = csvread('data/bf_survey_bounding.csv', 1, 0);
+    bounding = csvread('../Common/bfa_survey_bounding.csv', 1, 0);
     FID = 1; WIDTH = 2; LENGTH = 3;
     
     filter = bounding(bounding(:, FID) == fid, :);
