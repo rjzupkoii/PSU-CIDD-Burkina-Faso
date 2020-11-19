@@ -4,8 +4,8 @@
 % well as simuation data.
 
 % Plot the data from the survey
-plot_survey_bar('../Common/bfa_survey_mapped.csv')
-plot_survey_heatmap('../Common/bfa_survey_mapped.csv')
+plot_survey_bar('Shared/bfa_survey_mapped.csv')
+plot_survey_heatmap('Shared/bfa_survey_mapped.csv')
 
 % Plot the data from the simulation
 plot_trips_heatmap('data/rho-0.45-cellular.csv');

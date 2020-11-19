@@ -2,7 +2,7 @@
 %
 % This script is intended to generate synthetic "surveys" of movements in
 % Burkina Faso based upon the equation in Marshall et al. (2018)
-addpath('../Common');
+addpath('Shared');
 clear;
 
 % Make sure the output path exists
@@ -107,7 +107,7 @@ function [distances, populations] = loadData()
 
     % Load the distance data, align the columns such that,
     % 1 = source FID, 2 = destination FID, 3 = distance in KM
-    distances = csvread('../Common/marshall_survey_centroid.csv', 1, 0);
+    distances = csvread('Shared/marshall_survey_centroid.csv', 1, 0);
     distances = distances(:, [2:3 6]);
 
     % Shift to one indexed
@@ -118,7 +118,7 @@ end
 % Get the bounding dimension, where 0 is width and 1 is length,
 % and 2 is the mean of the two
 function [distance] = get_bound(fid, dimension)
-    bounding = csvread('../Common/bfa_survey_bounding.csv', 1, 0);
+    bounding = csvread('Shared/bfa_survey_bounding.csv', 1, 0);
     FID = 1; WIDTH = 2; LENGTH = 3;
     
     filter = bounding(bounding(:, FID) == fid, :);

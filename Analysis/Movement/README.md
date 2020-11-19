@@ -1,5 +1,9 @@
 ## Movement Analysis
-The files contained within this directory were used for analyzing, calibrating, and verifying model movement. The subdirectory `Common` contains data files and Matlab scripts that are used by the Matlab scripts that are present in this directory.
+The files contained within this directory were used for analyzing, calibrating, and verifying model movement. The subdirectory `Shared` contains data files and Matlab scripts that are used by the Matlab scripts that are present in this directory. Note that some data files from `../Common` are also referenced. 
+
+`marshall_survey_condensed.csv` is the result of work to parse Marshall et al. (2016) EMS2 into a file that contains just the Burkina Faso survey results.
+
+`model-rho-sweep.csv` is the summary of model runs that swept through the log(rho) values and tracked the total trips to the destination district from the source district.
 
 The general workflow for this process is as follows:
 

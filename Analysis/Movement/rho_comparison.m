@@ -1,7 +1,7 @@
 % rho_comparison.m
 %
 % Generate a plot that compares all of the Rho values
-addpath('../Common');
+addpath('Shared');
 clear;
 
 plot_comparison();

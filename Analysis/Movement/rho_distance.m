@@ -2,7 +2,7 @@
 %
 % Generate plots for the various Rho values based upon the distance from
 % the centeroid of the district and the frequency of movements.
-addpath('../Common');
+addpath('Shared');
 clear;
 
 % Note the constants
@@ -14,11 +14,11 @@ PROVINCES = {
 
 % Load the distance data, convert zero- to one-indexed
 global distance;
-distance = csvread('../Common/marshall_survey_centroid.csv', 1, 0);
+distance = csvread('Shared/marshall_survey_centroid.csv', 1, 0);
 distance(:, 2) = distance(:, 2) + 1;
 distance(:, 3) = distance(:, 3) + 1;
 
-generate_plots('data/rho-sweep.csv');
+generate_plots('data/model-rho-sweep.csv');
 
 % Generate plots that compare the model output for each rho value to the
 % expected movement data based upon the survey.
