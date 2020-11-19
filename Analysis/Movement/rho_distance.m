@@ -18,9 +18,6 @@ distance = csvread('../Common/marshall_survey_centroid.csv', 1, 0);
 distance(:, 2) = distance(:, 2) + 1;
 distance(:, 3) = distance(:, 3) + 1;
 
-% Make sure the output path exists
-if ~exist('out', 'dir'), mkdir('out'); end
-
 generate_plots('data/rho-sweep.csv');
 
 % Generate plots that compare the model output for each rho value to the
@@ -28,6 +25,9 @@ generate_plots('data/rho-sweep.csv');
 function [] = generate_plots(filename) 
     global PROVINCES; global distance;
 
+    % Make sure the output path exists
+    if ~exist('out', 'dir'), mkdir('out'); end
+    
     % Load the survey data
     survey = load_survey();
 

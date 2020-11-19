@@ -5,17 +5,9 @@
 # Ingore any temp directories
 /**/temp/
 
-# Ingore input-output directories
-Analysis/Loader/out/
-Analysis/Loader/data/
-Analysis/Movement/out/
+# Ignore data and output directories
+/**/data/
+/**/out/
+
+# Ignore other directories as needed
 Analysis/Movement/plots/
-Analysis/PfPRMap/data/
-Analysis/PfPRMap/out/
-Analysis/Population/data/
-Analysis/Rainy/data
-Studies/**/data/
-Plots/data/
-Plots/out/
-Plots/Single/data/
-Plots/cellular/data

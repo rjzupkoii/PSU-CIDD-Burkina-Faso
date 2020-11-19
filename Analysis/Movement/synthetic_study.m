@@ -102,7 +102,7 @@ end
 function [distances, populations] = loadData() 
     % Load the population data, align the columns such that,
     % 1 = FID, 2 = population
-    populations = csvread('data/bf_2006_pop.csv', 1, 0);
+    populations = csvread('../Common/bfa_2006_pop.csv', 1, 0);
     populations = populations(:, 2:3);
 
     % Load the distance data, align the columns such that,

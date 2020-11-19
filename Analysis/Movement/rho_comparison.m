@@ -50,7 +50,7 @@ function [] = plot_comparison()
     xtickangle(45);
     title('Model Results versus Survey Data');
     ylabel("IQR Match Count");
-    xlabel("Rho Value");
+    xlabel("Log(\rho) Value");
     legend('Kadiogo', 'Kourweogo', 'Bazega', 'Location', 'eastoutside');
 
     graphic = gca;
