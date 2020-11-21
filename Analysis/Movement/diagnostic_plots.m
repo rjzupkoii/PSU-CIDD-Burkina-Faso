@@ -8,7 +8,7 @@ plot_survey_bar('Shared/bfa_survey_mapped.csv')
 plot_survey_heatmap('Shared/bfa_survey_mapped.csv')
 
 % Plot the data from the simulation
-plot_trips_heatmap('data/rho-0.45-cellular.csv');
+plot_trips_heatmap('data/rho-0.25-cellular.csv', 'data/rho-0.25-district-map.csv');
 
 function [] = plot_survey_bar(filename)
     data = csvread(filename, 1, 0);
@@ -73,12 +73,12 @@ function [] = plot_survey_heatmap(filename)
 end
 
 % Plot a heat map of all of the trips as recorded from the simuation.
-function [] = plot_trips_heatmap(filename)
+function [] = plot_trips_heatmap(filename, map_filename)
     TRIPS = 4; DESTINATION = 6;
 
     % Load the data
     data = csvread(filename, 1, 0);
-    mapping = csvread('data/rho-0.45-district-map.csv', 1, 0);
+    mapping = csvread(map_filename, 1, 0);
     X = 4; Y = 5;
 
     % Prepare the "map" for the trips
