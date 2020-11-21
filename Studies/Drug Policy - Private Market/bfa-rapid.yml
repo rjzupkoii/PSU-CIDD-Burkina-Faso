@@ -113,7 +113,7 @@ spatial_model:
   name: "BurkinaFaso"
   BurkinaFaso:
     alpha: 1.27
-    log_rho: 0.45
+    log_rho: 0.25
     tau: 1.342
     capital: 14
     penalty: 12
@@ -543,7 +543,7 @@ strategy_db:
     # AL, ASAQ, ASMQ, DP, ADQ, AS, CQ, QUIN, SP
     name: BurkinaFaso-Baseline
     type: MFT
-    therapy_ids: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    therapy_ids: [1, 0, 2, 3, 4, 5, 6, 7, 8]
     distribution: [0.68, 0.025, 0.013, 0.049, 0.124, 0.022, 0.015, 0.056, 0.017]
   1:
     # AL, DP, AS, QUIN
