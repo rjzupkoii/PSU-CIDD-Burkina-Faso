@@ -9,4 +9,4 @@
 #PBS -M rbz5100@psu.edu
 
 cd $PBS_O_WORKDIR
-./MaSim -i bfa-import.yml -s 26
+./MaSim -i bfa-import.yml -s 4

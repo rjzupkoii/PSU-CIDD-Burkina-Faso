@@ -224,7 +224,7 @@ events:
         rate: -0.03
   - name: turn_off_mutation
     info:
-      - day: 2018/1/1
+      - day: 2007/1/1
   - name: turn_on_mutation
     info:
       # Artemisinin
