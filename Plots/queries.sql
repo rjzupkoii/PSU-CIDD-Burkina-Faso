@@ -9,6 +9,14 @@ where r.endtime is null
 group by filename, replicateid, starttime
 order by modeldays desc
 
+-- Count of running replicates
+select c.filename, count(r.id) as replicates,
+  sum(case when r.endtime is null then 1 else 0 end) as running
+from sim.configuration c
+  inner join sim.replicate r on r.configurationid = c.id
+where c.studyid > 2
+group by c.filename
+
 -- October peaks
 select dayselapsed, 
   cast(to_date('2007-1-1', 'yyyy-mm-dd') + dayselapsed*INTERVAL'1 day' as varchar) date,
