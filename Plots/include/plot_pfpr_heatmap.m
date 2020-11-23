@@ -32,7 +32,7 @@ function generate(raw, date, startDate)
     % Prepare the data structure
     rows = max(raw(:, ROW) + 1);
     cols = max(raw(:, COL) + 1);
-    map = zeros(rows, cols);
+    map = NaN(rows, cols);
     
     % Load the data on to the map structure
     data = raw(raw(:, 1) == date, :);
@@ -47,8 +47,8 @@ function generate(raw, date, startDate)
     title = datestr(datetime(days, 'ConvertFrom', 'datenum'), 'mmmm');
 
     % Plot the heatmap and color bar
-    hm = heatmap(map);
-    hm.Colormap = colormap(flipud(hot));
+    hm = heatmap(map, 'MissingDataColor', [1.0 1.0 1.0]);
+    hm.Colormap = colormap(flipud(autumn));
     caxis(hm, [min(raw(:, DATA)) max(raw(:, DATA))]);
         
     % Apply the remainder of the formatting

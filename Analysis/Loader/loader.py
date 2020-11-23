@@ -283,5 +283,6 @@ if __name__ == '__main__':
 
     # TODO Find a better way of getting the subset
     # October every three years starting in 2020 - 5022, 6117, 7213, 8309, 9405, 10866
-    main(studyId, startDay, "5022, 6117, 7213, 8309, 9405, 10866")
+    # January every five years starting in 2021 - 5114, 6940, 8766, 10592
+    main(studyId, startDay, "5114, 6940, 8766, 10592")
 

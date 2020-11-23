@@ -65,7 +65,7 @@ function [] = generate(directory, startDate, plotTitle, file)
     ylabel('Occurances of 580Y (log10)');    
 
     % Apply the title
-    sgtitle({sprintf('580Y Frequency with %s (%d Replicates)', ...
+    sgtitle({sprintf('580Y Frequency %s (%d Replicates)', ...
         plotTitle, length(files))}, 'FontSize', 24);  
     
     graphic = gca;

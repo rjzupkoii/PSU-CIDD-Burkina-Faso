@@ -26,7 +26,7 @@ function [] = parse_file(filename, name, startdate)
 
     ndx = 1;
     for day = transpose(days)
-        subplot(2, 3, ndx);
+        subplot(2, 2, ndx);
         generate(raw, day, startdate);
         ndx = ndx + 1;
     end

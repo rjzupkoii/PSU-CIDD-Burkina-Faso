@@ -67,7 +67,7 @@ function [] = generate(directory, startDate, plotTitle, file)
     xlabel(handle, 'Model Year');
     
     % Apply the title
-    sgtitle({sprintf('580Y Frequency with %s (%d Replicates)', ...
+    sgtitle({sprintf('580Y Frequency %s (%d Replicates)', ...
         plotTitle, length(files))}, 'FontSize', 24);
     
     % Save and close
