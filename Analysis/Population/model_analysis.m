@@ -6,10 +6,10 @@ addpath('../Common');
 clear;
 
 STARTDATE = '2007-1-1';
-FILENAME = 'data/population-pfpr.csv';
+FILENAME = 'data/validation-data-0.02.csv';
 
 % Figure one plot
-%plotSimuatedVsReferencePfPR(FILENAME)
+plotSimuatedVsReferencePfPR(FILENAME);
 
 %plotPopulation(FILENAME, STARTDATE);
 
@@ -18,7 +18,7 @@ FILENAME = 'data/population-pfpr.csv';
 
 % Seasonal exposure
 %seasonalError(FILENAME, STARTDATE);
-seasonalErrorSummary(FILENAME);
+%seasonalErrorSummary(FILENAME);
 
 % Constant exposure
 %perennialError(FILENAME, STARTDATE);
@@ -155,8 +155,7 @@ function [] = plotSimuatedVsReferencePfPR(filename)
         pfpr = data(data(:, 2) == district, 6); 
 
         % We want the seasonal maxima, filter out the local maxima, once
-        % this is done we should only have ten points left (i.e., number of
-        % years)
+        % this is done we should only have six points left
         maxima = pfpr(pfpr > mean(pfpr));
         maxima = maxima(maxima > maxima - std(maxima));
         maxima = findpeaks(maxima);
@@ -174,7 +173,20 @@ function [] = plotSimuatedVsReferencePfPR(filename)
     hold off;
 
     data = get(gca, 'YLim');
+    line([data(1) data(2)], [data(1)*1.05 data(2)*1.1], 'Color', 'red', 'LineStyle', '-.');
+    text(data(2), data(2) * 1.1, '+10%');
+    
+    line([data(1) data(2)], [data(1)*1.05 data(2)*1.05], 'Color', 'red', 'LineStyle', '-.');
+    text(data(2), data(2) * 1.05, '+5%');
+    
+    line([data(1) data(2)], [data(1)*0.95 data(2)*0.95], 'Color', 'blue', 'LineStyle', '-.');
+    text(data(2), data(2) * 0.95, '-5%');
+    
+    line([data(1) data(2)], [data(1)*0.95 data(2)*0.9], 'Color', 'blue', 'LineStyle', '-.');
+    text(data(2), data(2) * 0.9, '-10%');
+    
     line([data(1) data(2)], [data(1) data(2)], 'Color', 'black', 'LineStyle', '-.');
+    text(data(2), data(2), '\pm0%');
     
     ylabel('Simulated {\it Pf}PR_{2 to 10}, mean of peaks');
     xlabel('Reference {\it Pf}PR_{2 to 10}');
