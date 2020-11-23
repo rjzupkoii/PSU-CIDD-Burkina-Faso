@@ -9,11 +9,10 @@ function [] = plot_heatmaps(directory, startdate)
     files = dir(directory);
     for ndx = 1:length(files)
         filename = fullfile(files(ndx).folder, files(ndx).name);
-        indicies = strfind(files(ndx).name, '-');        
-        rate = string(extractBetween(files(ndx).name, 1, indicies(1) - 1));
-        parse_file(filename, rate, startdate);
+        [name, file] = parse_name(files(ndx).name);
+        parse_file(filename, name, startdate);
         set(gcf, 'Position',  [0, 0, 2560, 1440]);
-        print('-dtiff', '-r300', sprintf('out/%s-heatmap.png', rate));
+        print('-dtiff', '-r300', sprintf('out/%s-heatmap.png', file));
         clf;
         close;
     end
@@ -21,7 +20,7 @@ end
 
 % Generate multiple subplots that contain heatmaps at fixed intervals, note
 % that the dates are controled by the loader
-function [] = parse_file(filename, rate, startdate) 
+function [] = parse_file(filename, name, startdate) 
     raw = csvread(filename, 1, 0);
     days = unique(raw(:, 1));
 
@@ -32,7 +31,7 @@ function [] = parse_file(filename, rate, startdate)
         ndx = ndx + 1;
     end
     
-    sgtitle(sprintf("580Y Frequency with %s Mutation Rate", rate), 'FontSize', 24);
+    sgtitle(sprintf("580Y Frequency %s", name), 'FontSize', 24);
 end
 
 % Generate a single heatmap for the given date
@@ -40,7 +39,7 @@ function [hm] = generate(raw, date, startDate)
     % Prepare the data structure
     rows = max(raw(:, 3) + 1);
     cols = max(raw(:, 2) + 1);
-    map = zeros(rows, cols);
+    map = NaN(rows, cols);
 
     % Load the data on to the map structure
     data = raw(raw(:, 1) == date, :);
@@ -55,8 +54,8 @@ function [hm] = generate(raw, date, startDate)
     title = datestr(datetime(days, 'ConvertFrom', 'datenum'), 'mmmm yyyy');
 
     % Plot the heatmap and color bar
-    hm = heatmap(map);
-    hm.Colormap = colormap(flipud(hot));
+    hm = heatmap(map, 'MissingDataColor', [1.0 1.0 1.0]);
+    hm.Colormap = colormap(flipud(autumn));
 	caxis(hm, [min(raw(:, 4)) max(raw(:, 4))]);
     
     % Apply the formatting

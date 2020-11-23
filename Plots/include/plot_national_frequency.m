@@ -14,13 +14,14 @@ function [] = plot_national_frequency(directory, startDate)
 
         % Plot the national summary and district summary
         filename = fullfile(files(ndx).folder, files(ndx).name);
-        generate(filename, files(ndx).name, startDate);
+        [plotTitle, file] = parse_name(files(ndx).name);        
+        generate(filename, startDate, plotTitle, file);
     end
 end
 
 % Generates a single plot based upon the data files in the supplyed
 % subdirectory, saves the plot to disk.
-function [] = generate(directory, rate, startDate)
+function [] = generate(directory, startDate, plotTitle, file)
     
     hold on;
     
@@ -63,21 +64,16 @@ function [] = generate(directory, rate, startDate)
     yyaxis right;
     ylabel('Occurances of 580Y (log10)');    
 
-    % Apply the relevent title if there is a rate or a label
-    if isnan(str2double(rate))
-        sgtitle({sprintf('580Y Frequency with %s (%d Replicates)', ...
-            rate, length(files))}, 'FontSize', 24);
-    else
-        sgtitle({sprintf('580Y Frequency with %s Mutation Rate (%d Replicates)', ...
-            rate, length(files))}, 'FontSize', 24);
-    end    
+    % Apply the title
+    sgtitle({sprintf('580Y Frequency with %s (%d Replicates)', ...
+        plotTitle, length(files))}, 'FontSize', 24);  
     
     graphic = gca;
     graphic.FontSize = 18;
     
     % Save and close
     set(gcf, 'Position',  [0, 0, 2560, 1440]);
-    print('-dtiff', '-r300', sprintf('out/%s-frequency-replicates.png', rate));
+    print('-dtiff', '-r300', sprintf('out/%s-frequency-replicates.png', file));
     clf;
     close;    
 end

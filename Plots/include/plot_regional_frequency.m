@@ -15,13 +15,14 @@ function [] = plot_regional_frequency(directory, startdate)
 
         % Defer to plot the data sets
         filename = fullfile(files(ndx).folder, files(ndx).name);
-        generate(filename, files(ndx).name, startdate);
+        [plotTitle, file] = parse_name(files(ndx).name); 
+        generate(filename, startdate, plotTitle, file);
     end
 end
 
 % Generates a single plot based upon the data files in the supplyed
 % subdirectory, saves the plot to disk.
-function [] = generate(directory, rate, startdate)
+function [] = generate(directory, startdate, plotTitle, file)
     files = dir(fullfile(directory, '*.csv'));
     for ndx = 1:length(files)
         filename = fullfile(files(ndx).folder, files(ndx).name);
@@ -45,18 +46,13 @@ function [] = generate(directory, rate, startdate)
     ylabel(handle, '580Y Frequency');
     xlabel(handle, 'Model Year');
     
-    % Apply the relevent title if there is a rate or a label
-    if isnan(str2double(rate))
-        sgtitle({sprintf('580Y Frequency with %s (%d Replicates)', ...
-            rate, length(files))}, 'FontSize', 24);
-    else
-        sgtitle({sprintf('580Y Frequency with %s Mutation Rate (%d Replicates)', ...
-            rate, length(files))}, 'FontSize', 24);
-    end    
+    % Apply the title
+    sgtitle({sprintf('580Y Frequency with %s (%d Replicates)', ...
+        plotTitle, length(files))}, 'FontSize', 24);
     
     % Save and close
     set(gcf, 'Position',  [0, 0, 2560, 1440]);
-    print('-dtiff', '-r300', sprintf('out/%s-frequency-regions.png', rate));
+    print('-dtiff', '-r300', sprintf('out/%s-frequency-regions.png', file));
     clf;
     close;      
 end
