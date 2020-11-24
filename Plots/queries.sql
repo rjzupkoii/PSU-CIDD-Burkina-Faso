@@ -46,6 +46,29 @@ where (c.id = 59797 or c.id = 59801)
 group by c.id, dayselapsed
 order by c.id, dayselapsed
 
+-- Treatment failures / work in progress
+select c.id,
+  r.id,
+  md.dayselapsed,
+  md.treatmentfailures
+--  avg(md.treatmentfailures) as tfaverage,
+--  stddev(md.treatmentfailures) as tfstddev
+from sim.configuration c
+  inner join sim.replicate r on r.configurationid = c.id
+  inner join sim.monthlydata md on md.replicateid = r.id
+where c.studyid > 4
+  and r.endtime is not null  
+  and md.dayselapsed >= 4748
+--group by c.id, dayselapsed
+order by c.id, r.id, dayselapsed
+
+select distinct c.id, filename 
+from sim.configuration c 
+  inner join sim.replicate r on r.configurationid = c.id
+where c.studyid > 4
+  and r.endtime is not null
+
+
 -- Select country level treatment faliures
 SELECT cast((regexp_matches(filename, '^(\d\.\d*)-bfa\.yml'))[1] as float) as rate,
   md.replicateid, md.dayselapsed, md.treatmentfailures
