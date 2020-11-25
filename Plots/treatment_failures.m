@@ -33,7 +33,7 @@ add_legend(labels, colors);
 hold off;
 
 title('Comparison of Possible Interventions');
-ylabel('Percent Treatment Failures');
+ylabel('Rate of Treatment Failures (population adjusted)');
 datetick('x', 'yyyy');
 xlabel('Model Year');
 

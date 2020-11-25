@@ -11,19 +11,7 @@ FILENAME = 'data/validation-data-0.02.csv';
 % Figure one plot
 plotSimuatedVsReferencePfPR(FILENAME);
 
-%plotPopulation(FILENAME, STARTDATE);
-
-% Common to all types
-%monthlyPfPR(FILENAME, STARTDATE, true);
-
-% Seasonal exposure
-%seasonalError(FILENAME, STARTDATE);
-%seasonalErrorSummary(FILENAME);
-
-% Constant exposure
-%perennialError(FILENAME, STARTDATE);
-%perennialErrorSummary(FILENAME);
-
+% Plot the monthly PfPR values
 function [] = monthlyPfPR(filename, startDate, single)
     % Load the data and reference data
     data = csvread(filename, 1, 0);
@@ -75,6 +63,8 @@ function [] = monthlyPfPR(filename, startDate, single)
     end
 end
 
+% Plot the error in PfPR to the reference data, presuming that transmission
+% is perennial.
 function [] = perennialError(filename, startDate) 
     % Load the data and reference data
     data = csvread(filename, 1, 0);
@@ -105,6 +95,8 @@ function [] = perennialError(filename, startDate)
     hold off;
 end
 
+% Plot the error summary in PfPR to the reference data, presuming the
+% transmission ie perennial.
 function [] = perennialErrorSummary(filename) 
     % Load reference data
     reference = csvread('../Common/weighted_pfpr.csv');
@@ -172,21 +164,24 @@ function [] = plotSimuatedVsReferencePfPR(filename)
     end
     hold off;
 
+    % Plot the reference error lines
     data = get(gca, 'YLim');
-    line([data(1) data(2)], [data(1)*1.05 data(2)*1.1], 'Color', 'red', 'LineStyle', '-.');
-    text(data(2), data(2) * 1.1, '+10%');
+    line([data(1) data(2)], [data(1)*1.05 data(2)*1.1], 'Color', [0.5 0.5 0.5], 'LineStyle', '-.');
+    % text(data(2) * 0.9, data(2) + 0.5, '+10%', 'FontSize', 16);
+    line([data(1) data(2)], [data(1)*1.05 data(2)*1.05], 'Color', [0.5 0.5 0.5], 'LineStyle', '-.');
+    % text(data(2)* 0.95, data(2) + 0.5, '+5%', 'FontSize', 16);
+    line([data(1) data(2)], [data(1)*0.95 data(2)*0.95], 'Color', [0.5 0.5 0.5], 'LineStyle', '-.');
+    text(data(2), data(2) * 0.95, '-5%', 'FontSize', 16);
+    line([data(1) data(2)], [data(1)*0.95 data(2)*0.9], 'Color', [0.5 0.5 0.5], 'LineStyle', '-.');
+    text(data(2), data(2) * 0.9, '-10%', 'FontSize', 16);
     
-    line([data(1) data(2)], [data(1)*1.05 data(2)*1.05], 'Color', 'red', 'LineStyle', '-.');
-    text(data(2), data(2) * 1.05, '+5%');
-    
-    line([data(1) data(2)], [data(1)*0.95 data(2)*0.95], 'Color', 'blue', 'LineStyle', '-.');
-    text(data(2), data(2) * 0.95, '-5%');
-    
-    line([data(1) data(2)], [data(1)*0.95 data(2)*0.9], 'Color', 'blue', 'LineStyle', '-.');
-    text(data(2), data(2) * 0.9, '-10%');
-    
+    % Plot the reference center line
     line([data(1) data(2)], [data(1) data(2)], 'Color', 'black', 'LineStyle', '-.');
-    text(data(2), data(2), '\pm0%');
+    text(data(2), data(2) + 0.5, '\pm0%', 'FontSize', 16);
+    
+    xlim([0 60]);
+    ylim([0 60]);
+    pbaspect([1 1 1]);
     
     ylabel('Simulated {\it Pf}PR_{2 to 10}, mean of peaks');
     xlabel('Reference {\it Pf}PR_{2 to 10}');
@@ -194,9 +189,11 @@ function [] = plotSimuatedVsReferencePfPR(filename)
     title('Burkina Faso, Simuated versus Reference {\it Pf}PR_{2 to 10} values');
 
     graphic = gca;
-    graphic.FontSize = 18;
+    graphic.FontSize = 20;
 end
 
+% Plot the error summary in PfPR to the refernce data, presuming the
+% transmission is seasonal.
 function [] = seasonalError(filename, startDate)
     % Load the data and reference data
     data = csvread(filename, 1, 0);
@@ -238,6 +235,8 @@ function [] = seasonalError(filename, startDate)
     end
 end
 
+% Plot the error summary in PfPR to the refernece data, presuming the
+% trasnmission is seasonal.
 function [] = seasonalErrorSummary(filename)
     % Load reference data
     reference = csvread('../Common/weighted_pfpr.csv');
@@ -277,6 +276,7 @@ function [] = seasonalErrorSummary(filename)
     hold off;
 end
 
+% Plot the population of individuals in the model from the start date.
 function [] = plotPopulation(filename, startDate)
     
     % Extract the relevent data
