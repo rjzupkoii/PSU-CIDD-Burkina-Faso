@@ -564,7 +564,7 @@ strategy_db:
     name: BurkinaFaso-Year2
     type: MFT
     therapy_ids: [1, 3, 5, 7, 2, 4, 6, 8]
-    distribution: [0.0766, 0.055, 0.022, 0.056, 0.008, 0.074, 0.009, 0.001]
+    distribution: [0.766, 0.055, 0.022, 0.056, 0.008, 0.074, 0.009, 0.001]
   3:
     # AL, DP, AS, QUIN, ASMQ, ADQ, CQ, SP
     name: BurkinaFaso-Year3
