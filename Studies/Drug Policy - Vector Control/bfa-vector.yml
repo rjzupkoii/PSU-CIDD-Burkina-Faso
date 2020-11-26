@@ -220,7 +220,7 @@ events:
         rate: 0.03
   - name: annual_beta_update_event
     info:
-      - day: 2008/1/1
+      - day: 2021/1/1
         rate: -0.03
   - name: turn_off_mutation
     info:
