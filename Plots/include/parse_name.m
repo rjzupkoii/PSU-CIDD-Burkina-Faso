@@ -19,6 +19,12 @@ function [name, file] = parse_name(file)
         case 'bfa-vector'
             name = 'with Malaria Control Focus';
             file = 'vector';
+        case 'bfa-fiveyear'
+            name = 'with Private Market Elimination (5 years)';
+            file = 'five';
+        case 'bfa-tenyear'
+            name = 'with Private Market Elimination (10 years)';
+            file = 'ten';            
         otherwise
             error("No mapping for prefix %s", prefix);
     end
