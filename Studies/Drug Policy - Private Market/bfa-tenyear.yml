@@ -222,23 +222,23 @@ events:
     info:
       - day: 2021/1/1
         strategy_id: 1   
-      - day: 2021/1/1
+      - day: 2022/1/1
         strategy_id: 2
-      - day: 2021/1/1
+      - day: 2023/1/1
         strategy_id: 3   
-      - day: 2021/1/1
+      - day: 2024/1/1
         strategy_id: 4   
-      - day: 2021/1/1
+      - day: 2025/1/1
         strategy_id: 5   
-      - day: 2021/1/1
+      - day: 2026/1/1
         strategy_id: 6   
-      - day: 2021/1/1
+      - day: 2027/1/1
         strategy_id: 7   
-      - day: 2021/1/1
+      - day: 2028/1/1
         strategy_id: 8   
-      - day: 2021/1/1
+      - day: 2029/1/1
         strategy_id: 9   
-      - day: 2021/1/1
+      - day: 2030/1/1
         strategy_id: 10                                                                                
   - name: turn_off_mutation
     info:
