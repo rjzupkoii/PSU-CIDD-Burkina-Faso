@@ -60,7 +60,7 @@ function [hm] = generate(raw, date, startDate)
     
     % Apply the formatting
     graphic = gca;
-    graphic.FontSize = 18;    
+    graphic.FontSize = 22;    
     hm.Title = title;
     hm.XDisplayLabels = repmat(' ', cols, 1); 
     hm.YDisplayLabels = repmat(' ', rows, 1);

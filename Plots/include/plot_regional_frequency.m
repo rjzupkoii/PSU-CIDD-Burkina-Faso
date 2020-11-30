@@ -42,7 +42,7 @@ function [] = generate(directory, startdate, plotTitle, file)
     handle = axes(gcf, 'visible', 'off'); 
     handle.XLabel.Visible = 'on';
     handle.YLabel.Visible = 'on';
-    handle.FontSize = 18;
+    handle.FontSize = 22;
     ylabel(handle, '580Y Frequency');
     xlabel(handle, 'Model Year');
     

@@ -38,7 +38,7 @@ datetick('x', 'yyyy');
 xlabel('Model Year');
 
 graphic = gca;
-graphic.FontSize = 18;
+graphic.FontSize = 22;
 
 function [] = add_legend(labels, colors)
     h = zeros(1, 1);
