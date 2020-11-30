@@ -17,6 +17,27 @@ from sim.configuration c
 where c.studyid > 2
 group by c.studyid, c.filename
 
+-- Treatment failures / work in progress
+select c.id,
+  r.id,
+  md.dayselapsed,
+  md.treatmentfailures
+from sim.configuration c
+  inner join sim.replicate r on r.configurationid = c.id
+  inner join sim.monthlydata md on md.replicateid = r.id
+where (c.studyid = 3 or c.studyid >4)
+  and r.endtime is not null  
+  and md.dayselapsed >= 4748
+order by c.id, r.id, dayselapsed
+
+select distinct c.id, filename , c.studyid
+from sim.configuration c 
+  inner join sim.replicate r on r.configurationid = c.id
+where (c.studyid = 3 or c.studyid >4)
+  and r.endtime is not null
+order by c.studyid
+
+
 -- October peaks
 select dayselapsed, 
   cast(to_date('2007-1-1', 'yyyy-mm-dd') + dayselapsed*INTERVAL'1 day' as varchar) date,
@@ -45,29 +66,6 @@ where (c.id = 59797 or c.id = 59801)
   and md.treatmentfailures != 0
 group by c.id, dayselapsed
 order by c.id, dayselapsed
-
--- Treatment failures / work in progress
-select c.id,
-  r.id,
-  md.dayselapsed,
-  md.treatmentfailures
---  avg(md.treatmentfailures) as tfaverage,
---  stddev(md.treatmentfailures) as tfstddev
-from sim.configuration c
-  inner join sim.replicate r on r.configurationid = c.id
-  inner join sim.monthlydata md on md.replicateid = r.id
-where c.studyid > 4
-  and r.endtime is not null  
-  and md.dayselapsed >= 4748
---group by c.id, dayselapsed
-order by c.id, r.id, dayselapsed
-
-select distinct c.id, filename 
-from sim.configuration c 
-  inner join sim.replicate r on r.configurationid = c.id
-where c.studyid > 4
-  and r.endtime is not null
-
 
 -- Select country level treatment faliures
 SELECT cast((regexp_matches(filename, '^(\d\.\d*)-bfa\.yml'))[1] as float) as rate,
