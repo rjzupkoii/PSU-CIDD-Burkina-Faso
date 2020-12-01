@@ -37,7 +37,7 @@ starting_date: 2007/1/1
 start_of_comparison_period: 2018/1/1
 
 # Ending date is 2023 so we have some extra data to check
-ending_date: 2023/12/31
+ending_date: 2038/1/1
 
 # Date to start collecting data, 1 year before start of comparison
 start_collect_data_day: 1826 
