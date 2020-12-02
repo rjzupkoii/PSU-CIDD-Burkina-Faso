@@ -69,7 +69,8 @@ def get_replicates(configurationId, label):
         nrows, ncols, c.id AS configurationid, r.id AS replicateid,
 	    CASE WHEN r.endtime IS NULL THEN 0 ELSE 1 END As complete
     FROM sim.configuration c INNER JOIN sim.replicate r ON r.configurationid = c.id
-    WHERE c.id = %(configurationId)s"""
+    WHERE c.id = %(configurationId)s
+      AND r.endtime IS NOT NULL"""
     return select(sql, {'configurationId':configurationId, 'label':label})
 
 
