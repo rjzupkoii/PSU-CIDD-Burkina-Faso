@@ -34,9 +34,9 @@ function [] = report(path, name)
     
 	% Pretty print the results
     if strcmp(name, 'bfa-import')
-        fprintf("%s: %.4e%% (%.4e%% to %.5e%%), max: %e.5%%\n", name, result(2), result(1), result(3), max(values));
+        fprintf("%s: %.4e%% (%.4e%% to %.5e%%), max: %e.5%%, count: %d\n", name, result(2), result(1), result(3), max(values), size(values, 2));
         return
     end
-    fprintf("%s: %.4g%% (%.4g%% to %.4g%%), max: %.4g%%\n", name, result(2), result(1), result(3), max(values));
+    fprintf("%s: %.4g%% (%.4g%% to %.4g%%), max: %.4g%%, count: %d\n", name, result(2), result(1), result(3), max(values), size(values, 2));
 end
 
