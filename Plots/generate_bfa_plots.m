@@ -1,4 +1,4 @@
-% generate_bfa_plots.m
+ % generate_bfa_plots.m
 %
 % Generate heatmaps and 580Y frequency plot based upon the data downloaded
 % by the Python loader script.

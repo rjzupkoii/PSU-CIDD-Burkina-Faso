@@ -69,7 +69,7 @@ function [] = generate(directory, startDate, plotTitle, file)
         plotTitle, length(files))}, 'FontSize', 24);  
     
     graphic = gca;
-    graphic.FontSize = 22;
+    graphic.FontSize = 24;
     
     % Save and close
     set(gcf, 'Position',  [0, 0, 2560, 1440]);

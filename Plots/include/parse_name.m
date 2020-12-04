@@ -14,7 +14,7 @@ function [name, file] = parse_name(file)
             name = 'with Importation Only';
             file = 'importation';
         case 'bfa-rapid'
-            name = 'with Rapid Private Market Elimination';
+            name = 'with Private Market Elimination (Rapid)';
             file = 'rapid';
         case 'bfa-vector'
             name = 'with Malaria Control Focus';
@@ -25,6 +25,12 @@ function [name, file] = parse_name(file)
         case 'bfa-tenyear'
             name = 'with Private Market Elimination (10 years)';
             file = 'ten';            
+        case 'bfa-aldp-fiveyear'
+            name = 'with AL/DP Balance (5 years)';
+            file = 'aldp-fiveyear';
+        case 'bfa-aldp-rapid'
+            name = 'with AL/DP Balance (Rapid)';
+            file = 'aldp-rapid';            
         otherwise
             error("No mapping for prefix %s", prefix);
     end

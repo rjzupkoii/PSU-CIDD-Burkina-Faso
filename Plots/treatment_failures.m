@@ -11,7 +11,7 @@ raw = csvread('data/treatment-failures.csv', 1, 0);
 dn = transpose(prepareDates('data/treatment-failures.csv', 3, STARTDATE));
 
 mapping = readtable('data/id-mapping.csv');
-colors = colormap(lines(size(mapping, 1)));
+colors = colormap(lines(size(mapping, 1) + 1));
 
 labels = {};
 
@@ -38,7 +38,7 @@ datetick('x', 'yyyy');
 xlabel('Model Year');
 
 graphic = gca;
-graphic.FontSize = 22;
+graphic.FontSize = 24;
 
 function [] = add_legend(labels, colors)
     h = zeros(1, 1);
