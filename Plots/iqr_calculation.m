@@ -2,20 +2,30 @@
 % 
 % Scan the directory of the loader output and report the IQR for the
 % replicates of each directory. 
+addpath('include');
 clear;
 
-scan('../Analysis/Loader/out/');
+[data, labels] = scan('../Analysis/Loader/out/');
+create_boxplot(data, labels);
 
-function [] = scan(path)
+% Scan the directory for relevent subdirectories
+function [data, labels] = scan(path)
     files = dir(path);
+    
+    data = {}; labels = {};
     for ndx = 1:length(files)
         if ~files(ndx).isdir, continue; end
         if strcmp(files(ndx).name(1), '.'), continue; end
-        report(fullfile(files(ndx).folder, files(ndx).name), files(ndx).name);
+        values = report(fullfile(files(ndx).folder, files(ndx).name), files(ndx).name);
+        [~, ~, label] = parse_name(files(ndx).name);
+        labels{end + 1} = label;
+        data{end + 1} = values;
     end
 end
 
-function [] = report(path, name)
+% Generate the IRQ output and return the last maximum value for the last
+% year of each replicate in the given path
+function [values] = report(path, name)
     values = [];
         
     files = dir(fullfile(path, '*.csv'));
@@ -34,9 +44,41 @@ function [] = report(path, name)
     
 	% Pretty print the results
     if strcmp(name, 'bfa-import')
-        fprintf("%s: %.4e%% (%.4e%% to %.5e%%), max: %e.5%%, count: %d\n", name, result(2), result(1), result(3), max(values), size(values, 2));
+        fprintf("%s: %.2e (IQR: %.2e to %.2e), max: %e.2, count: %d\n", name, result(2), result(1), result(3), max(values), size(values, 2));
         return
     end
-    fprintf("%s: %.4g%% (%.4g%% to %.4g%%), max: %.4g%%, count: %d\n", name, result(2), result(1), result(3), max(values), size(values, 2));
+    fprintf("%s: %.2g (IQR %.2g to %.2g), max: %.2g, count: %d\n", name, result(2), result(1), result(3), max(values), size(values, 2));
 end
 
+function [] = create_boxplot(data, labels)
+    % Seperate the biological data from policy data
+    bio = {};
+    bio{end + 1} = cell2mat(data(1));
+    bio{end + 1} = cell2mat(data(2));
+    bio{end + 1} = cell2mat(data(6));
+    add_plot(bio, 1, {labels{1:2} labels{6}}, "Biological Scenarios");
+
+    % Remove the biological data from policy data
+    data(6) = [];
+    data(2) = [];
+    data(1) = [];
+    add_plot(data, 2, {labels{3:5} labels{7:end}}, "Policy Interventions");    
+end
+
+% Add a boxplot to the plot already in progress at the given index with the
+% given labels
+function [] = add_plot(data, index, labels, plot_title)
+    % Create the plot
+    subplot(1, 2, index);
+    indicies = num2cell(1:numel(data));
+    temp = cellfun(@(x, y) [x(:) y*ones(size(x(:)))], data, indicies, 'UniformOutput', 0);
+    temp = vertcat(temp{:});
+    boxplot(temp(:,1), temp(:, 2), 'Labels', labels);
+        
+    % Format the plot
+    title(plot_title);
+    ylabel('580Y Frequency');
+	graphic = gca;
+    graphic.FontSize = 24;   
+    set(gca, 'FontSize', 18, 'XTickLabelRotation', 15)   
+end
