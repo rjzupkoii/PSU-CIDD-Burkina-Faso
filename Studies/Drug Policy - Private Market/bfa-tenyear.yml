@@ -571,55 +571,55 @@ strategy_db:
     distribution: [0.719, 0.052, 0.022, 0.056, 0.012, 0.112, 0.014, 0.014]
   2:
     # AL, DP, AS, QUIN, ASMQ, ADQ, CQ, SP
-    name: BurkinaFaso-Year1
+    name: BurkinaFaso-Year2
     type: MFT
     therapy_ids: [1, 3, 5, 7, 2, 4, 6, 8]
     distribution: [0.735, 0.053, 0.022, 0.056, 0.01, 0.099, 0.012, 0.013]
   3:
     # AL, DP, AS, QUIN, ASMQ, ADQ, CQ, SP
-    name: BurkinaFaso-Year1
+    name: BurkinaFaso-Year3
     type: MFT
     therapy_ids: [1, 3, 5, 7, 2, 4, 6, 8]
     distribution: [0.75, 0.054, 0.022, 0.056, 0.009, 0.087, 0.011, 0.011]
   4:
     # AL, DP, AS, QUIN, ASMQ, ADQ, CQ, SP
-    name: BurkinaFaso-Year1
+    name: BurkinaFaso-Year4
     type: MFT
     therapy_ids: [1, 3, 5, 7, 2, 4, 6, 8]
     distribution: [0.766, 0.055, 0.022, 0.056, 0.008, 0.074, 0.009, 0.01]
   5:
     # AL, DP, AS, QUIN, ASMQ, ADQ, CQ, SP
-    name: BurkinaFaso-Year1
+    name: BurkinaFaso-Year5
     type: MFT
     therapy_ids: [1, 3, 5, 7, 2, 4, 6, 8]
     distribution: [0.782, 0.056, 0.022, 0.056, 0.007, 0.062, 0.008, 0.008]
   6:
     # AL, DP, AS, QUIN, ASMQ, ADQ, CQ, SP
-    name: BurkinaFaso-Year1
+    name: BurkinaFaso-Year6
     type: MFT
     therapy_ids: [1, 3, 5, 7, 2, 4, 6, 8]
     distribution: [0.797, 0.057, 0.022, 0.056, 0.005, 0.05, 0.006, 0.006]
   7:
     # AL, DP, AS, QUIN, ASMQ, ADQ, CQ, SP
-    name: BurkinaFaso-Year1
+    name: BurkinaFaso-Year7
     type: MFT
     therapy_ids: [1, 3, 5, 7, 2, 4, 6, 8]
     distribution: [0.813, 0.059, 0.022, 0.056, 0.004, 0.037, 0.005, 0.005]
   8:
     # AL, DP, AS, QUIN, ASMQ, ADQ, CQ, SP
-    name: BurkinaFaso-Year1
+    name: BurkinaFaso-Year8
     type: MFT
     therapy_ids: [1, 3, 5, 7, 2, 4, 6, 8]
     distribution: [0.829, 0.06, 0.022, 0.056, 0.003, 0.025, 0.003, 0.003]
   9:
     # AL, DP, AS, QUIN, ASMQ, ADQ, CQ, SP
-    name: BurkinaFaso-Year1
+    name: BurkinaFaso-Year9
     type: MFT
     therapy_ids: [1, 3, 5, 7, 2, 4, 6, 8]
     distribution: [0.844, 0.061, 0.022, 0.056, 0.001, 0.012, 0.002, 0.002]
   10:
     # AL, DP, AS, QUIN, ASMQ, ADQ, CQ, SP
-    name: BurkinaFaso-Year1
+    name: BurkinaFaso-Year10
     type: MFT
     therapy_ids: [1, 3, 5, 7]
     distribution: [0.86, 0.062, 0.022, 0.056]
