@@ -39,7 +39,7 @@ function [] = generate(directory, startDate, plotTitle, file)
         
         % Get the data, format the date in the process
         for ndy = 1:length(days)
-            frequency(ndy) = sum(data(data(:, 2) == days(ndy), 7)) / sum(data(data(:, 2) == days(ndy), 4));
+            frequency(ndy) = sum(data(data(:, 2) == days(ndy), 7)) ./ sum(data(data(:, 2) == days(ndy), 4));
             occurrences(ndy) = sum(data(data(:, 2) == days(ndy), 5));
             days(ndy) = addtodate(datenum(startDate), days(ndy), 'day');
         end
