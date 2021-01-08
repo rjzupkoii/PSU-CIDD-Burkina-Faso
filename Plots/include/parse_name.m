@@ -40,6 +40,10 @@ function [name, file, label] = parse_name(file)
             name = 'with AL/DP Balance (Immediate)';
             file = 'aldp-rapid';       
             label = 'AL/DP Balance, Immediate';
+        case 'fast-frequency'
+            name = 'Fast Mutation w/o Daily Cost of Resistance';
+            file = 'fast-frequency';
+            label = 'Fast w/o Daily Cost';
         otherwise
             error("No mapping for prefix %s", prefix);
     end
