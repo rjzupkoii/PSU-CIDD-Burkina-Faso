@@ -33,7 +33,7 @@ function run() {
         check_delay
 
         # Prepare the configuration file
-        sed 's/#BETA#/'"$beta"'/g' bf-calibration.yml > $zone-$population-$access-$beta-bfa.yml
+        sed 's/#BETA#/'"$beta"'/g' bfa-calibration.yml > $zone-$population-$access-$beta-bfa.yml
         sed -i 's/#POPULATION#/'"$population"'/g' $zone-$population-$access-$beta-bfa.yml  
         sed -i 's/#ACCESS#/'"$access"'/g' $zone-$population-$access-$beta-bfa.yml
         sed -i 's/#ZONE#/'"$zone"'/g' $zone-$population-$access-$beta-bfa.yml
