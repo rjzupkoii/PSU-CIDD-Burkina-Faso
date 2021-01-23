@@ -6,7 +6,7 @@ addpath('../Common');
 clear;
 
 STARTDATE = '2007-1-1';
-FILENAME = 'data/validation-data-0.02.csv';
+FILENAME = 'data/validation.csv';
 
 % Figure one plot
 plotSimuatedVsReferencePfPR(FILENAME);
