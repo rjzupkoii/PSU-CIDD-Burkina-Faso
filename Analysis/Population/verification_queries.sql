@@ -12,7 +12,7 @@ from sim.replicate r
   inner join sim.monthlydata md on md.replicateid = r.id
   inner join sim.monthlysitedata msd on msd.monthlydataid = md.id
   inner join sim.location l on l.id = msd.locationid
-where r.id = 56653 and eir != 0
+where r.id = 96054 and eir != 0
 group by dayselapsed, district
 
 -- Weighted average for bounded model calibration

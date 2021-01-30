@@ -15,11 +15,10 @@ CONNECTION = "host=masimdb.vmhost.psu.edu dbname=burkinafaso user=sim password=s
 
 # Delete replicates attached to the calibration
 REPLICATES = """
-select c.id, r.id, filename, substring(filename, 1, 1)
+select r.id
 from sim.configuration c
   inner join sim.replicate r on r.configurationid = c.id
-where c.studyid = 1
-  and substring(filename, 1, 1) != '2'"""
+where c.studyid = 1"""
 
 # Delete empty configuration
 CONFIGURATIONS = """
@@ -68,13 +67,13 @@ def deleteConfigurations():
 
 
 def deleteReplicates():
-  replicates = getReplicates(REPLICATES)
+  replicates = getResults(REPLICATES)
   for row in replicates:
     print "{} - Deleting {}".format(datetime.datetime.now(), row[0])
     delete("CALL delete_replicate(%(replicateId)s)", {'replicateId': row[0]})
 
 
 if __name__ == '__main__':
-#  deleteReplicates()
+  deleteReplicates()
   deleteConfigurations()
 
