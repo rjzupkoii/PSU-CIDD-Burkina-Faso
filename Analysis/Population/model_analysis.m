@@ -130,6 +130,8 @@ end
 % Generate the simuated versus reference PfPR values, which can be used as
 % figure one for a manuscript.
 function [] = plotSimuatedVsReferencePfPR(filename)
+    CENTER_MIN = 0; CENTER_MAX = 60;
+
     % Load the reference data
     reference = csvread('../Common/weighted_pfpr.csv');
 
@@ -158,12 +160,17 @@ function [] = plotSimuatedVsReferencePfPR(filename)
         minima = findpeaks(minima);
 
         % Plot from the maxima to the minima, connected by a line
-        line([expected expected], [mean(maxima) abs(mean(minima))], 'color', [0, 0, 0, 0.25]);
-        scatter(expected, mean(maxima), 75, colors(district, :), 'filled', 'MarkerEdgeColor', 'black');
-        scatter(expected, abs(mean(minima)), 37.5, [99 99 99] / 255, 'filled');
+        line([expected expected], [mean(maxima) abs(mean(minima))], 'LineStyle', '--', 'LineWidth', 1.5, 'Color', 'black');
+        scatter(expected, mean(maxima), 100, colors(district, :), 'filled', 'MarkerEdgeColor', 'black');
+        scatter(expected, abs(mean(minima)), 75, [99 99 99] / 255, 'filled', 'MarkerEdgeColor', 'black');
     end
     hold off;
 
+    % Set the limits
+    xlim([CENTER_MIN CENTER_MAX]);
+    ylim([CENTER_MIN CENTER_MAX]);
+    pbaspect([1 1 1]);
+    
     % Plot the reference error lines
     data = get(gca, 'YLim');
     line([data(1) data(2)], [data(1)*1.05 data(2)*1.1], 'Color', [0.5 0.5 0.5], 'LineStyle', '-.');
@@ -178,11 +185,7 @@ function [] = plotSimuatedVsReferencePfPR(filename)
     % Plot the reference center line
     line([data(1) data(2)], [data(1) data(2)], 'Color', 'black', 'LineStyle', '-.');
     text(data(2), data(2) + 0.5, '\pm0%', 'FontSize', 16);
-    
-    xlim([0 60]);
-    ylim([0 60]);
-    pbaspect([1 1 1]);
-    
+        
     ylabel('Simulated {\it Pf}PR_{2 to 10}, mean of peaks');
     xlabel('Reference {\it Pf}PR_{2 to 10}');
 
