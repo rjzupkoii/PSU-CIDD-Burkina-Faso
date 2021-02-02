@@ -104,6 +104,9 @@ def get_summary(replicateId, startDay):
 
 # Process the frequency data by aggregating it together across all cells and replicates for each rate
 def process_frequencies(replicates, subset):
+    # If there are not replicates, then return
+    if len(replicates) == 0: return
+
     # Update the user and note common data
     print("Processing {} replicate frequencies...".format(len(replicates)))
     nrows = replicates[0][1]
