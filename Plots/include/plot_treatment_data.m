@@ -1,11 +1,5 @@
-% plot_national_frequency.m
-%
-% This function generates frequency plots at the national level based upon 
-% the data files in the supplied directory.
-
-
 % Generate plots based upon the summary input files
-function [] = plot_national_frequency(directory, startDate)
+function [] = plot_treatment_data(directory, startDate)
     files = dir(directory);
     for ndx = 1:length(files)
         % Skip anything that is not the directories we are looking for
@@ -26,7 +20,7 @@ function [] = generate(directory, startDate, plotTitle, file)
     hold on;
     
     replicates = 0;
-    files = dir(fullfile(directory, '*genotype*.csv'));
+    files = dir(fullfile(directory, '*treatment*.csv'));
     for ndx = 1:length(files)
         % Load the data, note the unique days
         filename = fullfile(files(ndx).folder, files(ndx).name);
@@ -34,21 +28,21 @@ function [] = generate(directory, startDate, plotTitle, file)
         days = transpose(unique(data(:, 2)));
         
         % Allocate the arrays
-        frequency = zeros(size(days, 2), 1);
-        occurrences = zeros(size(days, 2), 1);
+        treatmentfailures = zeros(size(days, 2), 1);
+        nontreatment = zeros(size(days, 2), 1);
         
         % Get the data, format the date in the process
         for ndy = 1:length(days)
-            frequency(ndy) = sum(data(data(:, 2) == days(ndy), 7)) ./ sum(data(data(:, 2) == days(ndy), 4));
-            occurrences(ndy) = sum(data(data(:, 2) == days(ndy), 5));
+            treatmentfailures(ndy) = sum(data(data(:, 2) == days(ndy), 6));
+            nontreatment(ndy) = sum(data(data(:, 2) == days(ndy), 7));
             days(ndy) = addtodate(datenum(startDate), days(ndy), 'day');
         end
                 
         % Plot the data
         yyaxis left;
-        plot(days, frequency, '-');
+        plot(days, log10(treatmentfailures), '-');
         yyaxis right;
-        plot(days, log10(occurrences), '.-');
+        plot(days, log10(nontreatment), '.-');
         
         % Update the replicate count
         replicates = replicates + 1;
@@ -60,12 +54,12 @@ function [] = generate(directory, startDate, plotTitle, file)
     datetick('x', 'yyyy');
     xlabel('Model Year');
     yyaxis left;
-    ylabel('580Y Frequency');
+    ylabel('Treatment Failures (log_{10})');
     yyaxis right;
-    ylabel('Occurances of 580Y (log10)');    
+    ylabel('Non-treatment (log_{10})');    
 
     % Apply the title
-    sgtitle({sprintf('580Y Frequency %s (%d Replicates)', ...
+    sgtitle({sprintf('Treatment Failures and Non-treatment %s (%d Replicates)', ...
         plotTitle, length(files))}, 'FontSize', 24);  
     
     graphic = gca;
@@ -73,7 +67,7 @@ function [] = generate(directory, startDate, plotTitle, file)
     
     % Save and close
     set(gcf, 'Position',  [0, 0, 2560, 1440]);
-    print('-dtiff', '-r300', sprintf('out/%s-frequency-replicates.png', file));
+    print('-dtiff', '-r300', sprintf('out/%s-treatment-replicates.png', file));
     clf;
     close;    
 end

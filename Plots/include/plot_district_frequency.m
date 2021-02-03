@@ -12,7 +12,7 @@ function [] = plot_district_frequency(directory, startDate)
         % Skip anything that is not the directories we are looking for
         if ~files(ndx).isdir, continue; end
         if strcmp(files(ndx).name(1), '.'), continue; end
-        
+                
         % Plot the national summary and district summary
         filename = fullfile(files(ndx).folder, files(ndx).name);
         [plotTitle, file] = parse_name(files(ndx).name);        
@@ -23,7 +23,7 @@ end
 % Generates a single plot based upon the data files in the supplyed
 % subdirectory, saves the plot to disk.
 function [] = generate(directory, startDate, plotTitle, file)   
-    files = dir(fullfile(directory, '*.csv'));
+    files = dir(fullfile(directory, '*genotype*.csv'));
     for ndx = 1:length(files)
         
         % Load the data, note the unique days

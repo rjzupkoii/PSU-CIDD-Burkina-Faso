@@ -23,7 +23,7 @@ end
 % Generates a single plot based upon the data files in the supplyed
 % subdirectory, saves the plot to disk.
 function [] = generate(directory, startdate, plotTitle, file)
-    files = dir(fullfile(directory, '*.csv'));
+    files = dir(fullfile(directory, '*genotype*.csv'));
     for ndx = 1:length(files)
         filename = fullfile(files(ndx).folder, files(ndx).name);
         regions = append_file(filename, startdate);

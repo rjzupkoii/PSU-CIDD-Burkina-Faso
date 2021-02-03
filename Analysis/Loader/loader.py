@@ -20,7 +20,8 @@ CONNECTION = "host=masimdb.vmhost.psu.edu dbname=burkinafaso user=sim password=s
 PATH_TEMPLATE = "out/{}"
 
 # Default filename path template for downloaded replicates
-FILE_TEMPLATE = "out/{}/{}-summary.csv"
+GENOTYPE_TEMPLATE = "out/{}/{}-genotype-summary.csv"
+TREATMENT_TEMPLATE = "out/{}/{}-treatment-summary.csv"
 
 # Indices in getReplicates query
 LABEL = 0
@@ -74,8 +75,8 @@ def get_replicates(configurationId, label):
     return select(sql, {'configurationId':configurationId, 'label':label})
 
 
-# Get the summary data for the given replicate after the burn-in period is complete
-def get_summary(replicateId, startDay):
+# Get the summary data for the given replicate genotype information after the given date
+def get_genotype_summary(replicateId, startDay):
     sql = """
         SELECT dayselapsed, l.district,
             sum(infectedindividuals) AS infectedindividuals,
@@ -97,6 +98,26 @@ def get_summary(replicateId, startDay):
             FROM sim.monthlydata md
                 INNER JOIN sim.monthlysitedata msd ON msd.monthlydataid = md.id
             WHERE md.replicateid = %(replicateId)s AND md.dayselapsed > %(startDay)s) two ON one.id = two.id AND one.locationid = two.locationid
+        INNER JOIN sim.location l on l.id = one.locationid
+        GROUP BY dayselapsed, l.district"""
+    return select(sql, {'replicateId':replicateId, 'startDay':startDay})
+
+
+# Get the summary data for the given replicate treatment information after the given date
+def get_treatment_summary(replicateId, startDay):
+    sql = """
+        SELECT dayselapsed, l.district,
+            sum(infectedindividuals) AS infectedindividuals,
+            sum(clinicalepisodes) AS clinicalepisodes,
+            sum(treatmentfailures) AS treatmentfailures,
+            sum(nontreatment) AS nontreatment
+        FROM (
+            SELECT md.id, 
+                msd.locationid, md.dayselapsed, msd.infectedindividuals,
+                msd.clinicalepisodes, msd.treatmentfailures, msd.nontreatment
+        FROM sim.monthlydata md
+            INNER JOIN sim.monthlysitedata msd ON msd.monthlydataid = md.id
+        WHERE md.replicateid = %(replicateId)s AND md.dayselapsed > %(startDay)s) one
         INNER JOIN sim.location l on l.id = one.locationid
         GROUP BY dayselapsed, l.district"""
     return select(sql, {'replicateId':replicateId, 'startDay':startDay})
@@ -168,9 +189,13 @@ def process_summaries(replicates, burnIn):
         if replicate[COMPLETE] == False: continue
 
         # Check to see if the work has already been done
-        filename = FILE_TEMPLATE.format(replicate[LABEL], replicate[REPLICATEID])
+        filename = GENOTYPE_TEMPLATE.format(replicate[LABEL], replicate[REPLICATEID])
         if not os.path.exists(filename):
-            save_summary(replicate[LABEL], replicate[REPLICATEID], burnIn)
+            save_genotype_summary(replicate[LABEL], replicate[REPLICATEID], burnIn)
+
+        filename = TREATMENT_TEMPLATE.format(replicate[LABEL], replicate[REPLICATEID])
+        if not os.path.exists(filename):
+            save_treatment_summary(replicate[LABEL], replicate[REPLICATEID], burnIn)
         
         # Note the progress
         total = total + 1
@@ -205,24 +230,44 @@ def save_frequencies(data, rate):
                     writer.writerow([day, row, col, frequency])
 
 
-# Query for the summary information and save it to disk
-def save_summary(rate, replicateId, burnIn):
+# Query for the genotype summary information and save it to disk
+def save_genotype_summary(label, replicateId, burnIn):
     # Create the path if it doesn't exist
-    path = PATH_TEMPLATE.format(rate)
+    path = PATH_TEMPLATE.format(label)
     if not os.path.exists(path): os.makedirs(path)
 
     # Load the data
-    data = get_summary(replicateId, burnIn)   
+    data = get_genotype_summary(replicateId, burnIn)   
 
     # Save the data to disk as a CSV file, replicateid is redundant, but useful
     # when scripting to avoid messing around with the filename in Matlab
-    filename = FILE_TEMPLATE.format(rate, replicateId) 
+    filename = GENOTYPE_TEMPLATE.format(label, replicateId) 
     with open(filename, "wb") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["replicateId", "days", "district", "infectedindividuals", "occurrences", "clinicaloccurrrences", "weightedoccurrences"])
         for row in data:
             data = [replicateId] + list(row)
             writer.writerow(data)
+
+
+# Query for the treatment summary information and save it to disk
+def save_treatment_summary(label, replicateId, burnIn):
+    # Create the path if it doesn't exist
+    path = PATH_TEMPLATE.format(label)
+    if not os.path.exists(path): os.makedirs(path)
+
+    # Load the data
+    data = get_treatment_summary(replicateId, burnIn)   
+
+    # Save the data to disk as a CSV file, replicateid is redundant, but useful
+    # when scripting to avoid messing around with the filename in Matlab
+    filename = TREATMENT_TEMPLATE.format(label, replicateId) 
+    with open(filename, "wb") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["replicateId", "days", "district", "infectedindividuals", "clinicalepisodes", "treatmentfailures", "nontreatment"])
+        for row in data:
+            data = [replicateId] + list(row)
+            writer.writerow(data)    
 
 
 def main(studyId, burnIn, subset):
