@@ -23,6 +23,10 @@ end
 % Generates a single plot based upon the data files in the supplyed
 % subdirectory, saves the plot to disk.
 function [] = generate(directory, startDate, plotTitle, file)   
+
+    % Track the ymax so we can set all of the plots
+    ymax = 0;
+
     files = dir(fullfile(directory, '*genotype*.csv'));
     for ndx = 1:length(files)
         
@@ -40,6 +44,7 @@ function [] = generate(directory, startDate, plotTitle, file)
             
             hold on;          
             plot(dn, data(data(:, 3) == district, 7) ./ data(data(:, 3) == district, 4));
+            ymax = max(ymax, max(data(data(:, 3) == district, 7) ./ data(data(:, 3) == district, 4)));
             
             % Bit of a hack to make sure the date labels are correct
             xlim([min(dn), max(dn)]);            
@@ -53,7 +58,10 @@ function [] = generate(directory, startDate, plotTitle, file)
         % Format the date ticks to be year labels
         xtl = {};
         for tick = get(gca, 'XTick'), xtl{end + 1} = datestr(tick, 'yyyy'); end
-        set(gca, 'XTickLabel', xtl);     
+        set(gca, 'XTickLabel', xtl);
+        
+        % Format the y-axis range
+        ylim([0 ymax]);
         
         hold off;
     end

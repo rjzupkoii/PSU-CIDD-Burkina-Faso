@@ -23,10 +23,15 @@ end
 % Generates a single plot based upon the data files in the supplyed
 % subdirectory, saves the plot to disk.
 function [] = generate(directory, startdate, plotTitle, file)
+
+    % Track the ymax so we can set all of the plots
+    ymax = 0;
+
     files = dir(fullfile(directory, '*genotype*.csv'));
     for ndx = 1:length(files)
         filename = fullfile(files(ndx).folder, files(ndx).name);
-        regions = append_file(filename, startdate);
+        [regions, max_value] = append_file(filename, startdate);
+        ymax = max(ymax, max_value);
     end
         
     % Append plot elements
@@ -36,6 +41,7 @@ function [] = generate(directory, startdate, plotTitle, file)
         title(getRegionName(region));
         datetick('x', 'yyyy');
         axis tight;
+        ylim([0 ymax]);        
     end
 
     % Apply the common labels
@@ -58,7 +64,7 @@ function [] = generate(directory, startdate, plotTitle, file)
 end
 
 % Parses the supplied data file and adds the data to the plot.
-function [regions] = append_file(filename, startdate)
+function [regions, ymax] = append_file(filename, startdate)
 
     % Load the data
     raw = csvread(filename, 1, 0);
@@ -95,10 +101,13 @@ function [regions] = append_file(filename, startdate)
 
     % Find the frequency for each provience
     frequency = weighted_occurances ./ infected_individuals;
-
+    
     % Get the dates
     dn = prepareDates(filename, 2, startdate);
 
+	% Note the ymax
+    ymax = 0;
+    
     % Plot the data for this file
     regions = max(mapping(:, 2));
     for region = 1:regions
@@ -108,5 +117,8 @@ function [regions] = append_file(filename, startdate)
         hold on;
         plot(dn, frequency(:, region));
         hold off;
+        
+        % Update the ymax
+        ymax = max(ymax, max(frequency(:, region)));
     end
 end
