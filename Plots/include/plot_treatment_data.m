@@ -18,7 +18,6 @@ end
 function [] = generate(directory, startDate, plotTitle, file)
     
     hold on;
-    
     replicates = 0;
     files = dir(fullfile(directory, '*treatment*.csv'));
     for ndx = 1:length(files)
@@ -28,6 +27,7 @@ function [] = generate(directory, startDate, plotTitle, file)
         days = transpose(unique(data(:, 2)));
         
         % Allocate the arrays
+        clinicalcases = zeros(size(days, 2), 1);
         treatmentfailures = zeros(size(days, 2), 1);
         nontreatment = zeros(size(days, 2), 1);
         
@@ -47,7 +47,6 @@ function [] = generate(directory, startDate, plotTitle, file)
         % Update the replicate count
         replicates = replicates + 1;
     end
-    
     hold off;
 
     % Add labels, title, apply formatting
