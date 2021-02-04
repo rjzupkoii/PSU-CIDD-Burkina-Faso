@@ -3,7 +3,7 @@
 % This file contains various basic plots that were used while writing the
 % manuscript but that may not appear in the manuscript or supplmental
 % materials.
-addpath('../Analysis/Common');
+addpath('../Common');
 clear;
 
 STARTDATE = '2007-1-1';

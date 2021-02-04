@@ -7,7 +7,7 @@ addpath('../Analysis/Common');
 clear;
 
 STARTDATE = '2007-1-1';
-SUMMARY = '../Analysis/Loader/out/*summary*.csv';
+SUMMARY = '../Loader/out/*summary*.csv';
 
 STARTDATE = '2007-01-01';
 SCALING = 0.25;
