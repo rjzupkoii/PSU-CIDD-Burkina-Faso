@@ -6,7 +6,7 @@ addpath('include');
 clear;
 
 [data, labels] = scan('../Analysis/Loader/out/', @report);
-bfa_boxplot(data, labels, 'Treatment Failures');
+bfa_boxplot(data, labels, 'Maximum Monthly Treatment Failures');
 
 % Generate the IRQ output and return the last maximum value for the last
 % year of each replicate in the given path
