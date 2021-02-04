@@ -7,14 +7,14 @@ function [] = bfa_boxplot(data, labels, y_label)
     bio = {};
     bio{end + 1} = cell2mat(data(1));
     bio{end + 1} = cell2mat(data(2));
-    bio{end + 1} = cell2mat(data(4));
-    add_plot(bio, 1, {labels{1:2} labels{4}}, "Biological Scenarios", y_label);
+    bio{end + 1} = cell2mat(data(7));
+    add_plot(bio, 1, {labels{1:2} labels{7}}, "Biological Scenarios", y_label);
 
     % Remove the biological data from policy data
-    data(4) = [];
+    data(7) = [];
     data(2) = [];
     data(1) = [];
-    add_plot(data, 2, {labels{3} labels{5:end}}, "Policy Interventions", y_label);
+    add_plot(data, 2, {labels{3:6} labels{8:end}}, "Policy Interventions", y_label);
 end
 
 % Add a boxplot to the plot already in progress at the given index with the
