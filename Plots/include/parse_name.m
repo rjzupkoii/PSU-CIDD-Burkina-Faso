@@ -12,6 +12,10 @@ function [name, file, label] = parse_name(file)
             name = 'with 0.001983 Mutation Rate';
             file = 'de-novo-0.001983';
             label = 'Fast Mutation Rate';
+        case 'bfa-fast-no-asaq'
+            name = 'with 0.001983 Muation Rate (no ASAQ)';
+            file = 'de-novo-0.001983-no-asaq';
+            label = 'Fast Mutation Rate (no ASAQ)';
         case 'bfa-import'
             name = 'with Importation Only';
             file = 'importation';
