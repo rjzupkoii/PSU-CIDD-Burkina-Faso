@@ -1,14 +1,6 @@
-% treatment_failures.m
+% plot_treatment_failures.m
 %
 % Plot the treatment failures from the model.
-addpath('../Analysis/Common');
-addpath('include');
-clear;
-
-DIRECTORY = '../Analysis/Loader/out';
-STARTDATE = '2007-1-1';
-
-plot_treatment_failures(DIRECTORY, STARTDATE);
 
 function [] = plot_treatment_failures(directory, startDate)
 
@@ -51,10 +43,15 @@ function [] = plot_treatment_failures(directory, startDate)
     subplot(2, 1, 1);
     format_legend(top, colors);
     format_plot('Comparison of Muation Rates', startDate);
-    
     subplot(2, 1, 2);
     format_legend(bottom, colors);
-    format_plot('Comparison of Possible Interventions', startDate);    
+    format_plot('Comparison of Possible Interventions', startDate);
+    
+    % Save and close
+    set(gcf, 'Position',  [0, 0, 2560, 1440]);
+    print('-dtiff', '-r300', 'out/treatment-failures.png');
+    clf;
+    close;    
 end
 
 
