@@ -69,7 +69,7 @@ function [] = plot_survey_heatmap(filename)
     hm.XDisplayLabels = table2cell(names(:, 3));
     
     graphic = gca;
-    graphic.FontSize = 18;
+    graphic.FontSize = 24;
 end
 
 % Plot a heat map of all of the trips as recorded from the simuation.
@@ -96,12 +96,12 @@ function [] = plot_trips_heatmap(filename, map_filename)
     end
 
     % Plot the heatmap
-    hm = heatmap(map);
+    hm = heatmap(map, 'Colormap', parula);
     hm.MissingDataColor = [1.0 1.0 1.0];
     hm.Title = "Modeled Trips to Desitnation Cell Cummulative for One Month";
     hm.XDisplayLabels = repmat(' ', cols, 1); 
     hm.YDisplayLabels = repmat(' ', rows, 1);
     grid off;
     graphic = gca;
-    graphic.FontSize = 18;
+    graphic.FontSize = 24;
 end
