@@ -6,12 +6,12 @@ addpath('include');
 clear;
 
 [data, labels] = scan('../Analysis/Loader/out/', @report);
-bfa_boxplot(data, labels, 'Maximum Monthly Treatment Failures');
+bfa_boxplot(data, labels, 'Maximum Monthly Treatment Failure Rate');
 
 % Generate the IRQ output and return the last maximum value for the last
 % year of each replicate in the given path
-function [values] = report(path, name)
-    values = [];
+function [tfr] = report(path, name)
+    tfr = [];
         
     files = dir(fullfile(path, '*treatment-summary.csv'));
     for ndx = 1:length(files)
@@ -19,14 +19,21 @@ function [values] = report(path, name)
         filename = fullfile(files(ndx).folder, files(ndx).name);
         data = csvread(filename, 1, 0);
         data = data(data(:, 2) > 10958, :);
+        
+        % Find the maximum monthly across the district sum
+        monthTfr = 0;
+        for day = transpose(unique(data(:, 2)))
+            value = sum(data(data(:, 2) == day, 6)) / sum(data(data(:, 2) == day, 5));
+            monthTfr = max(monthTfr, value);
+        end
 
-        % Find the max value for the year
-        values = [values max(data(:, 6))];
+        % Append the district max
+        tfr = [tfr monthTfr];
     end
 
     % Find 25th, 50th, and 75th percentile of the data
-    result = prctile(values, [25 50 75]);
+    result = prctile(tfr, [25 50 75]);
     
 	% Pretty print the results
-    fprintf("%s: %g (IQR %g - %g), max: %d, count: %d\n", name, result(2), result(1), result(3), max(values), size(values, 2));
+    fprintf("%s: %g (IQR %g - %g), max: %d, count: %d\n", name, result(2), result(1), result(3), max(tfr), size(tfr, 2));
 end

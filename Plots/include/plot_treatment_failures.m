@@ -14,37 +14,39 @@ function [] = plot_treatment_failures(directory, startDate)
     ci = 1;    
 
     % Append the files to the plot
-    top = {}; bottom = {};
+    topLabel = {}; bottomLabel = {};
+    topColor = []; bottomColor = [];
     files = dir(directory);
     for ndx = 1:length(files)
         % Skip anything that is not the directories we are looking for
         if ~files(ndx).isdir, continue; end
         if strcmp(files(ndx).name(1), '.'), continue; end
-                
+                        
         % Prepare to append to the plot
         filename = fullfile(files(ndx).folder, files(ndx).name);
         label = strrep(parse_name(files(ndx).name), 'with ', '');
         if startsWith(label, '0.0')
             location = 1;
-            top = [top, label];    
+            topLabel = [topLabel label];
+            topColor = [topColor; colors(ci, :)];
         else
             location = 2;
-            bottom = [bottom, label];
+            bottomLabel = [bottomLabel, label];
+            bottomColor = [bottomColor; colors(ci, :)];
         end
         
         % Update the plot
-        hold on;
-        subplot(2, 1, location);
+        subplot(2, 1, location); hold on;
         append_plots(filename, colors(ci, :));
         ci = ci + 1;
     end
         
     % Format the plots
     subplot(2, 1, 1);
-    format_legend(top, colors);
+    format_legend(topLabel, topColor);
     format_plot('Comparison of Muation Rates', startDate);
     subplot(2, 1, 2);
-    format_legend(bottom, colors);
+    format_legend(bottomLabel, bottomColor);
     format_plot('Comparison of Possible Interventions', startDate);
     
     % Save and close
@@ -67,12 +69,12 @@ function [] = append_plots(directory, color)
         days = transpose(unique(data(:, 2)));
         total = zeros(size(days, 1)); index = 1;
         for day = days
-            total(index) = sum(data(data(:, 2) == day, 6));
+            total(index) = sum(data(data(:, 2) == day, 6)) / sum(data(data(:, 2) == day, 5));
             index = index + 1;
         end
         
         % Append the plot
-        plot(days, log10(total), 'Color', color);
+        plot(days, total, 'Color', color);
     end
 end
 
@@ -93,7 +95,7 @@ end
 function [] = format_plot(plotTitle, startDate)    
     % Format the rest of the plot
     title(plotTitle);
-    ylabel('Treatment Failures (log_{10})');    
+    ylabel('Treatment Failure Rate');    
     xlabel('Model Year');
     axis tight;
     
