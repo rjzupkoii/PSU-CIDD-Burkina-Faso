@@ -172,7 +172,13 @@ end
 
 % Gravity model with kernel function per Marshall et al. (2018)
 function [result] = model(pop, dist, rho)
-    r = 1.342; a = 1.27; p = 10^rho;
+    r = 1.342; a = 1.27; 
+    
+    p = 10^rho;
+    
+    % Replace above to test for log_e
+    %p = exp(rho);
+    
     
     kernel = (1 + (dist / p))^(-a);
     result = pop^r * kernel;

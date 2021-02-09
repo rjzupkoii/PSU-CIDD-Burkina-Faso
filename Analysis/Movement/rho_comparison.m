@@ -50,11 +50,11 @@ function [] = plot_comparison()
     xtickangle(45);
     title('Model Results versus Survey Data');
     ylabel("IQR Match Count");
-    xlabel("Log(\rho) Value");
+    xlabel("Log_{10}(\rho) Value");
     legend('Kadiogo', 'Kourweogo', 'Bazega', 'Location', 'eastoutside');
 
     graphic = gca;
-    graphic.FontSize = 18;
+    graphic.FontSize = 24;
 end
 
 function [matches] = compare(data, index, survey)
