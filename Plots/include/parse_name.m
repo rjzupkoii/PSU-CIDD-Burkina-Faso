@@ -24,6 +24,14 @@ function [name, file, label] = parse_name(file)
             name = 'with Private Market Elimination (10 years)';
             file = 'ten';            
             label = 'Market, 10y';
+        case 'bfa-aldp'
+            name = 'with AL/DP MFT (Immediate)';
+            file = 'aldp';
+            label = 'AL/DP';
+        case 'bfa-aldp10'
+            name = 'with AL/DP MFT (10 years)';
+            file = 'aldp10';
+            label = 'AL/DP, 10 y';
         case 'bfa-aldp-tenyear'
             name = 'with AL/DP MFT (Immediate), Private Market Elimiation (10 years)';
             file = 'aldp-tenyear';
@@ -31,9 +39,9 @@ function [name, file, label] = parse_name(file)
         case 'bfa-aldp-rapid'
             name = 'with AL/DP MFT (Immediate), Private Market Elimiation (Immediate)';
             file = 'aldp-rapid';       
-            label = 'AL/DP; Market, 10y';
+            label = 'AL/DP; Market';
         case 'bfa-aldp10-rapid'
-            name = 'with AL/DP (10 years), Private Market Elimiation (Immediate)';
+            name = 'with AL/DP MFT (10 years), Private Market Elimiation (Immediate)';
             file = 'aldp10-rapid';       
             label = 'AL/DP, 10y; Market';            
         case 'bfa-aldp10-tenyear'
