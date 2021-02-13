@@ -37,6 +37,23 @@ where (c.studyid = 3 or c.studyid >4)
   and r.endtime is not null
 order by c.studyid
 
+-- Genotype Frequency query / work in progress
+SELECT replicateid, dayselapsed, year, substring(g.name, 1, 7) as name, frequency
+FROM (
+	SELECT mgd.replicateid, mgd.genomeid, mgd.dayselapsed, 
+		TO_CHAR(TO_DATE('2007-01-01', 'YYYY-MM-DD') + interval '1' day * mgd.dayselapsed, 'YYYY') AS year,
+		mgd.weightedoccurrences / msd.infectedindividuals AS frequency
+	FROM (
+		SELECT md.replicateid, md.id, md.dayselapsed, mgd.genomeid, sum(mgd.weightedoccurrences) AS weightedoccurrences
+		FROM sim.monthlydata md INNER JOIN sim.monthlygenomedata mgd ON mgd.monthlydataid = md.id
+		WHERE md.replicateid = 110962 AND md.dayselapsed > 4015
+		GROUP BY md.id, md.dayselapsed, mgd.genomeid) mgd
+	INNER JOIN (
+		SELECT md.id, sum(msd.infectedindividuals) AS infectedindividuals
+		FROM sim.monthlydata md INNER JOIN sim.monthlysitedata msd ON msd.monthlydataid = md.id
+		WHERE md.replicateid = 110962 AND md.dayselapsed > 4015
+		GROUP BY md.id) msd 
+	ON msd.id = mgd.id) frequency inner join sim.genotype g on g.id = frequency.genomeid
 
 -- October peaks
 select dayselapsed, 
