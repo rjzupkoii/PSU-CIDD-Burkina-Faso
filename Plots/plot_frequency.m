@@ -9,6 +9,9 @@ dataset = readtable('testdata.csv', 'PreserveVariableNames', true);
 dates = table2array(unique(dataset(:, 2)));
 genotypes = table2array(unique(dataset(:, 4)));
 
+% Filter for double-plasmepsin genotypes
+genotypes = genotypes(endsWith(genotypes, '2'));
+
 % Find the distribution of the genotypes
 years = zeros(size(dates, 1), 1);
 distribution = zeros(size(dates, 1), size(genotypes, 1));
@@ -21,6 +24,10 @@ for genotype = 1:size(genotypes)
         years(date) = str2double(frequency.year);
     end
 end
+
+% Filter out any zeroed years
+distribution = distribution(years ~= 0, :);
+years = years(years ~= 0);
 
 % Plot the frequencies
 pcolor(years, 1:size(genotypes), transpose(distribution))
