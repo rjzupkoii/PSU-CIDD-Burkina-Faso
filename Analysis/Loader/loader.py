@@ -267,7 +267,7 @@ def save_genotype_frequencies(label, replicateId, burnIn, modelStartDate):
     data = get_frequency_data(replicateId, burnIn, modelStartDate)
 
     # Save the data to disk as a CSV file. 
-    filename = GENOTYPE_TEMPLATE.format(label, replicateId)
+    filename = FREQUENCIES_TEMPLATE.format(label, replicateId)
     with open(filename, "wb") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["replicateId", "days", "year", "name", "frequency"])
