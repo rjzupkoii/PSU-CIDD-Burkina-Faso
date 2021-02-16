@@ -3,7 +3,7 @@
 ##
 # loader.py
 #
-# This script pulls the relevent study data from the server.
+# This Python2 script pulls the relevent study data from the server.
 ##
 import csv
 import glob
@@ -20,6 +20,7 @@ CONNECTION = "host=masimdb.vmhost.psu.edu dbname=burkinafaso user=sim password=s
 PATH_TEMPLATE = "out/{}"
 
 # Default filename path template for downloaded replicates
+FREQUENCIES_TEMPLATE = "out/{}/{}-genotype-frequencies.csv"
 GENOTYPE_TEMPLATE = "out/{}/{}-genotype-summary.csv"
 TREATMENT_TEMPLATE = "out/{}/{}-treatment-summary.csv"
 
@@ -30,7 +31,7 @@ COMPLETE = 5
 
 
 # Return the components of the frequency data for each cell after the burn-in period is complete
-def get_frequency_subset(replicateId, subset):
+def get_580y_frequency_subset(replicateId, subset):
     sql = """   
         SELECT dayselapsed, l.x, l.y, infectedindividuals,
             sum(clinicaloccurrences) AS clinicaloccurrences,
@@ -73,6 +74,28 @@ def get_replicates(configurationId, label):
     WHERE c.id = %(configurationId)s
       AND r.endtime IS NOT NULL"""
     return select(sql, {'configurationId':configurationId, 'label':label})
+
+
+# Retrive all of the genotype frequency data for the replicate. 
+def get_frequency_data(replicateId, startDay, modelStartDate):
+    sql = """
+        SELECT replicateid, dayselapsed, year, substring(g.name, 1, 7) as name, frequency
+        FROM (
+            SELECT mgd.replicateid, mgd.genomeid, mgd.dayselapsed, 
+                TO_CHAR(TO_DATE(%(modelStartDate)s, 'YYYY-MM-DD') + interval '1' day * mgd.dayselapsed, 'YYYY') AS year,
+                mgd.weightedoccurrences / msd.infectedindividuals AS frequency, msd.infectedindividuals
+            FROM (
+                SELECT md.replicateid, md.id, md.dayselapsed, mgd.genomeid, sum(mgd.weightedoccurrences) AS weightedoccurrences
+                FROM sim.monthlydata md INNER JOIN sim.monthlygenomedata mgd ON mgd.monthlydataid = md.id
+                WHERE md.replicateid = %(replicateId)s AND md.dayselapsed > %(startDay)s
+                GROUP BY md.id, md.dayselapsed, mgd.genomeid) mgd
+            INNER JOIN (
+                SELECT md.id, sum(msd.infectedindividuals) AS infectedindividuals
+                FROM sim.monthlydata md INNER JOIN sim.monthlysitedata msd ON msd.monthlydataid = md.id
+                WHERE md.replicateid = %(replicateId)s AND md.dayselapsed > %(startDay)s
+                GROUP BY md.id) msd 
+            ON msd.id = mgd.id) frequency inner join sim.genotype g on g.id = frequency.genomeid"""
+    return select(sql, {'replicateId':replicateId, 'startDay':startDay, 'modelStartDate':modelStartDate})            
 
 
 # Get the summary data for the given replicate genotype information after the given date
@@ -151,7 +174,7 @@ def process_frequencies(replicates, subset):
             data = {}
 
         # Run a short query to see if we have anything to work with
-        for row in get_frequency_subset(replicate[REPLICATEID], subset):
+        for row in get_580y_frequency_subset(replicate[REPLICATEID], subset):
             days = row[0]
             if days not in data: data[days] = [[[0, 0, 0] for _ in range(nrows)] for _ in range(ncols)]
             c = row[1]
@@ -174,7 +197,7 @@ def process_frequencies(replicates, subset):
 
 
 # Process the summary data by appending it for each complete replicate and day
-def process_summaries(replicates, burnIn):
+def process_summaries(replicates, burnIn, modelStartDate):
     # Update the user
     print("Processing {} replicate summaries...".format(len(replicates)))
 
@@ -196,6 +219,10 @@ def process_summaries(replicates, burnIn):
         filename = TREATMENT_TEMPLATE.format(replicate[LABEL], replicate[REPLICATEID])
         if not os.path.exists(filename):
             save_treatment_summary(replicate[LABEL], replicate[REPLICATEID], burnIn)
+
+        filename = FREQUENCIES_TEMPLATE.format(replicate[LABEL], replicate[REPLICATEID])
+        if not os.path.exists(filename):
+            save_genotype_frequencies(replicate[LABEL], replicate[REPLICATEID], burnIn, modelStartDate)
         
         # Note the progress
         total = total + 1
@@ -228,6 +255,24 @@ def save_frequencies(data, rate):
                     # Save the average of the frequencies recorded
                     frequency = (weightedoccurrences / count) / (infectedindividuals / count)
                     writer.writerow([day, row, col, frequency])
+
+
+# Query for the genotype frequencies data and save it to disk
+def save_genotype_frequencies(label, replicateId, burnIn, modelStartDate):
+    # Create the path if it doesn't exist
+    path = PATH_TEMPLATE.format(label)
+    if not os.path.exists(path): os.makedirs(path)
+
+    # Load the data
+    data = get_frequency_data(replicateId, burnIn, modelStartDate)
+
+    # Save the data to disk as a CSV file. 
+    filename = GENOTYPE_TEMPLATE.format(label, replicateId)
+    with open(filename, "wb") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["replicateId", "days", "year", "name", "frequency"])
+        for row in data:
+            writer.writerow(list(row))
 
 
 # Query for the genotype summary information and save it to disk
@@ -270,7 +315,7 @@ def save_treatment_summary(label, replicateId, burnIn):
             writer.writerow(data)    
 
 
-def main(studyId, burnIn, subset):
+def main(studyId, burnIn, subset, modelStartDate):
 
     # Get the studies
     print("Querying for studies...")
@@ -290,7 +335,7 @@ def main(studyId, burnIn, subset):
         # Process the replicates for this study
         replicates = get_replicates(study[0], study[1])
         process_frequencies(replicates, subset)
-        process_summaries(replicates, burnIn)
+        process_summaries(replicates, burnIn, modelStartDate)
         
         # Update the status for the user
         if len(studies) > 1:
@@ -330,8 +375,11 @@ if __name__ == '__main__':
     studyId = int(sys.argv[1])
     startDay = int(sys.argv[2])
 
+    # TODO Get this from somewhere else
+    MODELSTARTDATE = "2007-01-01"
+
     # TODO Find a better way of getting the subset
     # October every three years starting in 2020 - 5022, 6117, 7213, 8309, 9405, 10866
     # January every five years starting in 2021 - 5114, 6940, 8766, 10592
-    main(studyId, startDay, "5114, 6940, 8766, 10592")
+    main(studyId, startDay, "5114, 6940, 8766, 10592", MODELSTARTDATE)
 
