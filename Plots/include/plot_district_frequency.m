@@ -27,7 +27,7 @@ function [] = generate(directory, startDate, plotTitle, file)
     % Track the ymax so we can set all of the plots
     ymax = 0;
 
-    files = dir(fullfile(directory, '*genotype*.csv'));
+    files = dir(fullfile(directory, '*genotype-summary.csv'));
     for ndx = 1:length(files)
         
         % Load the data, note the unique days

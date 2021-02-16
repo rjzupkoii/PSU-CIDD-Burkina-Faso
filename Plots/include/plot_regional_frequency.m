@@ -27,7 +27,7 @@ function [] = generate(directory, startdate, plotTitle, file)
     % Track the ymax so we can set all of the plots
     ymax = 0;
 
-    files = dir(fullfile(directory, '*genotype*.csv'));
+    files = dir(fullfile(directory, '*genotype-summary.csv'));
     for ndx = 1:length(files)
         filename = fullfile(files(ndx).folder, files(ndx).name);
         [regions, max_value] = append_file(filename, startdate);

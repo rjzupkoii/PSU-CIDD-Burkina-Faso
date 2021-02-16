@@ -26,7 +26,7 @@ function [] = generate(directory, startDate, plotTitle, file)
     hold on;
     
     replicates = 0;
-    files = dir(fullfile(directory, '*genotype*.csv'));
+    files = dir(fullfile(directory, '*genotype-summary.csv'));
     for ndx = 1:length(files)
         % Load the data, note the unique days
         filename = fullfile(files(ndx).folder, files(ndx).name);

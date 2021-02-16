@@ -1,4 +1,4 @@
-% plot_frequency.m
+% plot_frequencies_chart.m
 %
 % Generate a frequency plot of the provided genotype data.
 
