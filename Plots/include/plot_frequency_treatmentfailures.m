@@ -35,10 +35,10 @@ function [] = generate(directory, startDate, plotTitle, file)
     yyaxis left;
     ylabel('Genotype Frequency');
     yyaxis right;
-    ylabel('Treatment Failures');
+    ylabel('Treatment Failures (log_{10})');
     datetick('x', 'yyyy');
     xlabel('Model Year');
-    title(sprintf('%s (%d Replicates)', plotTitle, length(files)));
+    title(sprintf('Frequency and Treatment Failures, %s (%d Replicates)', plotTitle, length(files)));
 
     legend({'Plasmepsin 2-3 2 Copy Frequency', '580Y Frequency', 'TNF---- Frequency', 'KNF---- Frequency', 'Treatment Failures'}, 'Location', 'NorthWest');
     legend('boxoff');
@@ -70,7 +70,6 @@ function [] = addReplicate(frequencyFile, summaryFile, startDate)
     TNF = genotypes(~cellfun('isempty', regexp(genotypes, 'TNF....', 'match')));
     
     % Prepare the data sets
-    years = zeros(size(dates, 1), 1);
     frequencyPlasmespin = zeros(size(dates, 1), 1);
     frequency580Y = zeros(size(dates, 1), 1);
     frequencyTNF = zeros(size(dates, 1), 1);
@@ -83,37 +82,37 @@ function [] = addReplicate(frequencyFile, summaryFile, startDate)
         filtered = frequencyTable(frequencyTable.days == dates(date), :);
         for genotype = 1:size(plasmespin)
             frequency = filtered(string(filtered.name) == plasmespin(genotype), :);
-            if isempty(frequency), continue, end
-            frequencyPlasmespin(date) = frequencyPlasmespin(date) + frequency.frequency;
-            years(date) = frequency.year;
+            if ~isempty(frequency)
+                frequencyPlasmespin(date) = frequencyPlasmespin(date) + frequency.frequency;
+            end
         end
         for genotype = 1:size(c580y)
             frequency = filtered(string(filtered.name) == c580y(genotype), :);
-            if isempty(frequency), continue, end
-            frequency580Y(date) = frequency580Y(date) + frequency.frequency;
-            years(date) = frequency.year;
+            if ~isempty(frequency)
+                frequency580Y(date) = frequency580Y(date) + frequency.frequency;
+            end
         end     
         for genotype = 1:size(TNF)
             frequency = filtered(string(filtered.name) == TNF(genotype), :);
-            if isempty(frequency), continue, end
-            frequencyTNF(date) = frequencyTNF(date) + frequency.frequency;
-            years(date) = frequency.year;
+            if ~isempty(frequency)
+                frequencyTNF(date) = frequencyTNF(date) + frequency.frequency;
+            end
         end    
         for genotype = 1:size(KNF)
             frequency = filtered(string(filtered.name) == KNF(genotype), :);
-            if isempty(frequency), continue, end
-            frequencyKNF(date) = frequencyKNF(date) + frequency.frequency;
-            years(date) = frequency.year;
+            if ~isempty(frequency)
+                frequencyKNF(date) = frequencyKNF(date) + frequency.frequency;
+            end
         end          
         dates(date) = addtodate(datenum(startDate), dates(date), 'day');
     end    
     
     % Add the replicate to the plot
     yyaxis left;
-    plot(dates, frequencyPlasmespin);
-    plot(dates, frequency580Y);
-    plot(dates, frequencyTNF);
-    plot(dates, frequencyKNF);
+    plot(dates, frequencyPlasmespin, 'Color', 'blue', 'LineStyle', '-', 'Marker', 'none');
+    plot(dates, frequency580Y, 'Color', 'red', 'LineStyle', '-', 'Marker', 'none');
+    plot(dates, frequencyTNF, 'Color', 'green', 'LineStyle', '--', 'Marker', 'none');
+    plot(dates, frequencyKNF, 'Color', 'green', 'LineStyle', '-', 'Marker', 'none');
     yyaxis right;
-    plot(dates, failures);    
+    plot(dates, log10(failures), 'Color', 'black', 'LineStyle', '-', 'Marker', 'none');    
 end
