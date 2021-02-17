@@ -5,22 +5,27 @@
 
 clear;
 
-frequencyTable = readtable('genotype-frequencies.csv', 'PreserveVariableNames', true);
+frequencyTable = readtable('C:\Users\Robert\git\PSU-CIDD-Burkina-Faso\Analysis\Loader\out\bfa-fast-no-asaq\111019-genotype-frequencies.csv', 'PreserveVariableNames', true);
 dates = table2array(unique(frequencyTable(:, 2)));
 genotypes = table2array(unique(frequencyTable(:, 4)));
 
 % Filter the genotypes based upon the correct pattern
 C580Y = '.....Y.';
 PLASMEPSIN = '......2';
+AL_RESISTANCE = 'KNF....'; % 'TNF....'
 
 plasmespin = genotypes(~cellfun('isempty', regexp(genotypes, '......2', 'match')));
 c580y = genotypes(~cellfun('isempty', regexp(genotypes, '.....Y.', 'match')));
+KNF = genotypes(~cellfun('isempty', regexp(genotypes, 'KNF....', 'match')));
+TNF = genotypes(~cellfun('isempty', regexp(genotypes, 'TNF....', 'match')));
 
-summaryTable = readtable('treatment-summary.csv', 'PreserveVariableNames', true);
+summaryTable = readtable('C:\Users\Robert\git\PSU-CIDD-Burkina-Faso\Analysis\Loader\out\bfa-fast-no-asaq\111019-treatment-summary.csv', 'PreserveVariableNames', true);
 
 years = zeros(size(dates, 1), 1);
 frequencyPlasmespin = zeros(size(dates, 1), 1);
 frequency580Y = zeros(size(dates, 1), 1);
+frequencyTNF = zeros(size(dates, 1), 1);
+frequencyKNF = zeros(size(dates, 1), 1);
 failures = zeros(size(dates, 1), 1);
 
 for date = 1:size(dates)
@@ -37,13 +42,27 @@ for date = 1:size(dates)
         if isempty(frequency), continue, end
         frequency580Y(date) = frequency580Y(date) + frequency.frequency;
         years(date) = frequency.year;
+    end     
+    for genotype = 1:size(TNF)
+        frequency = filtered(string(filtered.name) == TNF(genotype), :);
+        if isempty(frequency), continue, end
+        frequencyTNF(date) = frequencyTNF(date) + frequency.frequency;
+        years(date) = frequency.year;
     end    
+    for genotype = 1:size(KNF)
+        frequency = filtered(string(filtered.name) == KNF(genotype), :);
+        if isempty(frequency), continue, end
+        frequencyKNF(date) = frequencyKNF(date) + frequency.frequency;
+        years(date) = frequency.year;
+    end          
     dates(date) = addtodate(datenum('2007-01-01'), dates(date), 'day');
 end
 
 hold on;
 plot(dates, frequencyPlasmespin);
 plot(dates, frequency580Y);
+plot(dates, frequencyTNF);
+plot(dates, frequencyKNF);
 ylabel('Genotype Frequency');
 yyaxis right;
 plot(dates, failures);
@@ -55,7 +74,7 @@ xlabel('Model Year');
 
 title('Burkina Faso, Status Quo with no ASAQ');
 
-legend({'Plasmepsin 2-3 2 Copy Frequency', '580Y Frequency', 'Treatment Failures'}, 'Location', 'NorthWest');
+legend({'Plasmepsin 2-3 2 Copy Frequency', '580Y Frequency', 'TNF---- Frequency', 'KNF---- Frequency', 'Treatment Failures'}, 'Location', 'NorthWest');
 legend('boxoff');
 
 graphic = gca;
