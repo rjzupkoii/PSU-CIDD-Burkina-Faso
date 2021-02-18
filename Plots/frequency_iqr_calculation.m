@@ -29,8 +29,8 @@ function [values] = report(path, name)
     
 	% Pretty print the results
     if strcmp(name, 'bfa-import')
-        fprintf("%s: %.2e (IQR: %.2e - %.2e), max: %e.2, count: %d\n", name, result(2), result(1), result(3), max(values), size(values, 2));
+        fprintf("%s: %.3e (IQR: %.3e - %.3e), max: %e.3, count: %d\n", name, result(2), result(1), result(3), max(values), size(values, 2));
         return
     end
-    fprintf("%s: %.2g (IQR %.2g - %.2g), max: %.2g, count: %d\n", name, result(2), result(1), result(3), max(values), size(values, 2));
+    fprintf("%s: %.3g (IQR %.3g - %.3g), max: %.3g, count: %d\n", name, result(2), result(1), result(3), max(values), size(values, 2));
 end

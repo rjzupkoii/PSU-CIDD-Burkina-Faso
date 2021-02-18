@@ -23,7 +23,7 @@ function [tfr] = report(path, name)
         % Find the maximum monthly across the district sum
         monthTfr = 0;
         for day = transpose(unique(data(:, 2)))
-            value = sum(data(data(:, 2) == day, 6)) / sum(data(data(:, 2) == day, 5));
+            value = sum(data(data(:, 2) == day, 6)) / sum(data(data(:, 2) == day, 5)) * 100;
             monthTfr = max(monthTfr, value);
         end
 
@@ -35,5 +35,5 @@ function [tfr] = report(path, name)
     result = prctile(tfr, [25 50 75]);
     
 	% Pretty print the results
-    fprintf("%s: %g (IQR %g - %g), max: %d, count: %d\n", name, result(2), result(1), result(3), max(tfr), size(tfr, 2));
+    fprintf("%s: %.2f%% (IQR %.2f%% - %.2f%%), max: %.2f%%, count: %d\n", name, result(2), result(1), result(3), max(tfr), size(tfr, 2));
 end
