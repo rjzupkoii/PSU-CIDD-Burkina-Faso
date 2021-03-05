@@ -1,6 +1,6 @@
-% bfa_figure_four.m
+% bfa_580y_boxplot.m
 %
-% Figure four plot comparing options for drug policies
+% Box plot of 580Y frequency based upon the various policy options.
 clear;
 
 PATH = '../Analysis/Loader/out';
@@ -39,22 +39,22 @@ handle = axes(fig, 'visible', 'off');
 handle.Title.Visible = 'on';
 handle.XLabel.Visible = 'on';
 handle.YLabel.Visible = 'on';
-ylabel(handle, {'Treatment Failure Rate', ' '});
+ylabel(handle, {'580Y Frequency', ' '});
 xlabel(handle, {' ', 'Model Year'});
 title(handle, {'Drug Policy Options', ' '});
 handle.FontSize = 20;
 
 
-function [maxy] = add_boxplot(directory, plotTitle, maxy)
+function [] = add_boxplot(directory, plotTitle)
     hold on;
-    files = dir(fullfile(directory, '*treatment-summary*'));
+    files = dir(fullfile(directory, '*genotype-summary*'));
     
     dates = [6575 6606 6634 6665 6695 6726 6756 6787 6818 6848 6879 6909;
              8401 8432 8460 8491 8521 8552 8582 8613 8644 8674 8705 8735; 
              10227 10258 10286 10317 10347 10378 10408 10439 10470 10500 10531 10561];
          
-    clinical = zeros(3, length(files)); % 2025 2030 2035
-    failures = zeros(3, length(files));
+    occurrences = zeros(3, length(files)); % 2025 2030 2035
+    infectedindividuals = zeros(3, length(files));
     data = zeros(3, length(files));
     
     for ndx = 1:length(files)
@@ -65,19 +65,22 @@ function [maxy] = add_boxplot(directory, plotTitle, maxy)
         % Total the dates
         for row = 1:size(dates, 1)
             for date = dates(row, :)
-                clinical(row, ndx) = clinical(row, ndx) + sum(raw(raw(:, 2) == date, 5));
-                failures(row, ndx) = failures(row, ndx) + sum(raw(raw(:, 2) == date, 6));
+                occurrences(row, ndx) = occurrences(row, ndx) + sum(raw(raw(:, 2) == date, 7));                 % weightedoccurrences
+                infectedindividuals(row, ndx) = infectedindividuals(row, ndx) + sum(raw(raw(:, 2) == date, 4)); % infectedindividuals
             end
         end        
     end
     
+    % Find the freqeuncy and the maxy
     for ndx = 1:3
-        data(ndx, :) = failures(ndx, :) ./ clinical(ndx, :);
+        data(ndx, :) = occurrences(ndx, :) ./ infectedindividuals(ndx, :);
     end
+            
+    % Generate the box plots
     data = transpose(data);
     boxplot(data, [2025 2030 2035]);
-    ylim([0.04 0.22]);
-    
+    ylim([0.0 0.83]);
+        
     title(plotTitle);
     graphic = gca;
     graphic.FontSize = 14;
