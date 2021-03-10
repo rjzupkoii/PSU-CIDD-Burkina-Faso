@@ -11,3 +11,7 @@
 
 # Ignore other directories as needed
 Analysis/Movement/plots/
+Plots/reference/
+
+# Ignore symlinked data files - the actual data is stored in Dropbox
+Plots/*_data
