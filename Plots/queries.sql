@@ -37,6 +37,27 @@ where (c.studyid = 3 or c.studyid >4)
   and r.endtime is not null
 order by c.studyid
 
+-- Plasmepsin double copy frequency
+select gd.district, gd.dayselapsed, gd.occurances / ld.infectedindividuals as frequency
+from (
+  select l.district, md.dayselapsed, sum(mgd.weightedoccurrences) as occurances
+  from sim.replicate r
+    inner join sim.monthlydata md on md.replicateid = r.id 
+    inner join sim.monthlygenomedata mgd on mgd.monthlydataid = md.id
+    inner join sim.location l on l.id = mgd.locationid
+    inner join sim.genotype g on g.id = mgd.genomeid
+  where r.id = 111390
+    and g.name ~ '^......2.'
+  group by l.district, md.dayselapsed) gd
+inner join (
+  select l.district, md.dayselapsed, sum(msd.infectedindividuals) as infectedindividuals
+  from sim.replicate r
+    inner join sim.monthlydata md on md.replicateid = r.id 
+    inner join sim.monthlysitedata msd on msd.monthlydataid = md.id
+    inner join sim.location l on l.id = msd.locationid
+  where r.id = 111390
+  group by l.district, md.dayselapsed) ld on gd.district = ld.district and gd.dayselapsed = ld.dayselapsed
+
 -- Genotype Frequency query / work in progress
 SELECT replicateid, dayselapsed, year, substring(g.name, 1, 7) as name, frequency
 FROM (
