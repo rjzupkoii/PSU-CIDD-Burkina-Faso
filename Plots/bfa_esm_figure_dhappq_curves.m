@@ -35,7 +35,7 @@ end
 function [] = format_plot(plotTitle, legendItems)
     ylabel('Frequency');
     xlabel('Model Year');
-    datetick('x', 'yyyy')
+    datetick('x', 'yyyy');
 
     legend(legendItems, 'Location', 'NorthWest');
     legend boxoff;
