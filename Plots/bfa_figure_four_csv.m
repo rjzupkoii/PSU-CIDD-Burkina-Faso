@@ -30,7 +30,7 @@ for year = transpose(DATES(:, 1))
     plasmepsinData = table();
     knfData = table();
     knfPlasmepsinData = table();
-        
+            
     % Get the data for each policy for this year
     dates = DATES(DATES(:, 1) == year, 2:end);
     for policy = 1:size(POLICIES, 1)
@@ -42,7 +42,7 @@ for year = transpose(DATES(:, 1))
         treatmentData = [treatmentData; table(data, 'RowNames', POLICIES(policy, 2))];
 
         % 580Y frequency
-        data = get_580y_data(directory, dates);        
+        data = get_frequency_data(directory, '.....Y.', dates);
         c580yData = [c580yData; table(data, 'RowNames', POLICIES(policy, 2))];
 
         % Plasmepsin 2/3 double copy frequency
@@ -60,9 +60,9 @@ for year = transpose(DATES(:, 1))
 
     % Save the data
     filename = sprintf('yr%d_tmfailures.csv', year);
-    writetable(treatmentData, filename, 'WriteVariableNames', false, 'WriteRowNames', true)
+    writetable(treatmentData, filename, 'WriteVariableNames', false, 'WriteRowNames', true);
     filename = sprintf('yr%d_580y.csv', year);
-    writetable(c580yData, filename, 'WriteVariableNames', false, 'WriteRowNames', true)
+    writetable(c580yData, filename, 'WriteVariableNames', false, 'WriteRowNames', true);    
     filename = sprintf('yr%d_plasmespin.csv', year);
     writetable(plasmepsinData, filename, 'WriteVariableNames', false, 'WriteRowNames', true);
 	filename = sprintf('yr%d_knf.csv', year);
@@ -93,28 +93,6 @@ function [data] = get_treatment_data(directory, dates)
     data = transpose(failures ./ clinical);
 end
 
-function [data] = get_580y_data(directory, dates)
-    % Get the files and prepare for the data
-    files = dir(fullfile(directory, '*genotype-summary*'));
-    occurrences = zeros(length(files), 1);
-    infectedindividuals = zeros(length(files), 1);
-    
-    for ndx = 1:length(files)
-        % Load the data
-        filename = fullfile(files(ndx).folder, files(ndx).name);
-        raw = csvread(filename, 1, 0);
-        
-        % Get the data for the indicated date
-        for date = dates
-            occurrences(ndx) = occurrences(ndx) + sum(raw(raw(:, 2) == date, 7));                 
-            infectedindividuals(ndx) = infectedindividuals(ndx) + sum(raw(raw(:, 2) == date, 4));
-        end
-    end
-    
-    % Return the frequency data
-    data = transpose(occurrences ./ infectedindividuals);
-end
-
 function [data] = get_frequency_data(directory, filter, dates) 
     % Get the files and prepare for the data
     files = dir(fullfile(directory, '*genotype-frequencies.csv'));
@@ -141,6 +119,7 @@ function [data] = get_frequency_data(directory, filter, dates)
         end
     end
     
-    % Transpose and return
+    % Transpose and return, note we are dividing by 12 due to 12 months
+    % worth of data
     data = transpose(frequency ./ 12);
 end
