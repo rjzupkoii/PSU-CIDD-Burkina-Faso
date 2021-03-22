@@ -15,3 +15,6 @@ Plots/reference/
 
 # Ignore symlinked data files - the actual data is stored in Dropbox
 Plots/*_data
+
+# Ignore IDE directories
+.vscode
