@@ -11,7 +11,7 @@ import os
 import psycopg2
 import sys
 
-from utility import *
+from utility import progressBar
 
 # Connection string for the database
 CONNECTION = "host=masimdb.vmhost.psu.edu dbname=burkinafaso user=sim password=sim"
@@ -53,6 +53,26 @@ def get_580y_frequency_subset(replicateId, subset):
         INNER JOIN sim.location l on l.id = one.locationid
         GROUP BY dayselapsed, l.x, l.y, infectedindividuals""".format(subset, subset)
     return select(sql, {'replicateId':replicateId, 'startDay':startDay})
+
+
+# Return the aggergated annual data for each of the replicates contained within
+#  the study for the date range (i.e., months) indicated
+def get_annual_data(studyId, dates):
+    sql = """
+        SELECT replace(c.filename, '.yml', '') as filename,
+            md.replicateid,
+            sum(msd.population) / 12 AS population,
+            sum(msd.clinicalepisodes) / 12 AS clinicalepisodes,
+            sum(msd.clinicalepisodes) / (sum(msd.population) / 1000) AS clinicalper1000,
+            sum(msd.pfpr2to10 * msd.population) / sum(msd.population) AS pfpr2to10
+        FROM sim.configuration c
+            INNER JOIN sim.replicate r ON r.configurationid = c.id
+            INNER JOIN sim.monthlydata md ON md.replicateid = r.id
+            INNER JOIN sim.monthlysitedata msd ON msd.monthlydataid = md.id
+        WHERE c.studyid = %(studyId)s
+        AND md.dayselapsed IN %(dates)s
+        group by c.filename, md.replicateid"""
+    return select(sql, {'studyId':studyId, 'dates':dates})
 
 
 # Get a list of all of the studies (i.e., configurations) associated with this studyId
@@ -133,7 +153,8 @@ def get_treatment_summary(replicateId, startDay):
             sum(infectedindividuals) AS infectedindividuals,
             sum(clinicalepisodes) AS clinicalepisodes,
             sum(treatmentfailures) AS treatmentfailures,
-            sum(nontreatment) AS nontreatment
+            sum(nontreatment) AS nontreatment,
+	        sum(population) as population
         FROM (
             SELECT md.id, 
                 msd.locationid, md.dayselapsed, msd.infectedindividuals,
@@ -144,6 +165,33 @@ def get_treatment_summary(replicateId, startDay):
         INNER JOIN sim.location l on l.id = one.locationid
         GROUP BY dayselapsed, l.district"""
     return select(sql, {'replicateId':replicateId, 'startDay':startDay})
+
+
+# Query and save the annual data for the study id provided
+def process_annual_data(studyId):
+    ranges = {
+        2025: (6575, 6606, 6634, 6665, 6695, 6726, 6756, 6787, 6818, 6848, 6879, 6909),
+        2030: (8401, 8432, 8460, 8491, 8521, 8552, 8582, 8613, 8644, 8674, 8705, 8735),
+        2035: (10227, 10258, 10286, 10317, 10347, 10378, 10408, 10439, 10470, 10500, 10531, 10561)
+    }
+
+    # Let the user know what we are doing
+    print("Processing annual data...")
+    count = 0
+    progressBar(count, len(ranges.keys()))
+    
+    for key in ranges.keys():
+        # Query and save the data
+        data = get_annual_data(studyId, ranges[key])
+        with open("out/{}-{}-annual-data.csv".format(key, studyId), "wb") as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(["filename", "replicateid", "population", "clinicalepisodes", "clinicalper1000", "pfpr2to10"])
+            for row in data:
+                writer.writerow(list(row))
+
+        # Note the process
+        count = count + 1
+        progressBar(count, len(ranges.keys()))
 
 
 # Process the frequency data by aggregating it together across all cells and replicates for each rate
@@ -169,7 +217,6 @@ def process_frequencies(replicates, subset):
             if currentRate is not None: 
                 save_frequencies(data, currentRate)
                 del data
-            replicateCount = 0
             currentRate = replicate[0]
             data = {}
 
@@ -324,6 +371,9 @@ def main(studyId, burnIn, subset, modelStartDate):
         print("No studies to process!")
         return
     
+    # Get the annual data
+    process_annual_data(studyId)
+
     # Let the user know what is going on
     if len(studies) == 1:
         print("Processing study...")
@@ -360,9 +410,9 @@ def select(sql, parameters):
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        print "Usage: ./loader.py [studyId] [startDay]"
-        print "studyId  - database id of the study"
-        print "startDay - the first model day to start processing data for"
+        print("Usage: ./loader.py [studyId] [startDay]")
+        print("studyId  - database id of the study")
+        print("startDay - the first model day to start processing data for")
         exit(0)
 
     # Prepare the environment
