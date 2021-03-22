@@ -11,8 +11,8 @@ STARTDATE = '2009-01-01';
 %generate_plot('CyclicCurves_data/_580Y_Sudanian', 'Sudanian (permanent transmission)', STARTDATE);
 
 % Exaggerated 
-%generate_plot('CyclicCurves_data/_580Y_ExaggeratedSahelian', 'Exaggerated Short Transmission', STARTDATE);
-generate_plot('CyclicCurves_data/_580Y_ExaggeratedSahelianToSudanian', 'Exaggerated Short to Permanent Transmission', STARTDATE);
+generate_plot('CyclicCurves_data/_580Y_ExaggeratedSahelian', 'Exaggerated Short Transmission', STARTDATE);
+%generate_plot('CyclicCurves_data/_580Y_ExaggeratedSahelianToSudanian', 'Exaggerated Short to Permanent Transmission', STARTDATE);
 
 
 function [] = generate_plot(directory, region, startDate)
@@ -42,26 +42,22 @@ function [] = generate_plot(directory, region, startDate)
 
 	% Prepare the first plot when shows the frequency of 580Y
     subplot(2, 1, 1);
-
     hold on;
     plot(xValues, agg_data(:, 9) ./ agg_data(:, 3));   % 580yWeighted
     plot(xValues, agg_data(:, 10) ./ agg_data(:, 3));  % 508yUnweighted
 %    add_lines(xValues);    
     hold off;
-
     title(sprintf('580Y Frequency, %s', region));
     format_plot({'580Y Weighted', '580Y Unweighted'}, 'Frequency', false);
     
 	% Prepare the second plot which shows the immunological data
     subplot(2, 1, 2);
-    
     hold on;
     plot(xValues, theta);
     plot(xValues, pr_symptoms);
     plot(xValues, clinical ./ infected);
 %    add_lines(xValues);
     hold off;
-
     title(sprintf('Immunological Data, %s', region));
     format_plot({'Theta', 'Probablity of Asymptomatic', 'Phi (Number Clincial / Number Infected)'}, '', true);
 end
