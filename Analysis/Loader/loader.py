@@ -63,7 +63,7 @@ def get_annual_data(studyId, dates):
             md.replicateid,
             sum(msd.population) / 12 AS population,
             sum(msd.clinicalepisodes) / 12 AS clinicalepisodes,
-            sum(msd.clinicalepisodes) / (sum(msd.population) / 1000) AS clinicalper1000,
+            cast(sum(msd.clinicalepisodes) as float) / (sum(msd.population) / 1000) AS clinicalper1000,
             sum(msd.pfpr2to10 * msd.population) / sum(msd.population) AS pfpr2to10
         FROM sim.configuration c
             INNER JOIN sim.replicate r ON r.configurationid = c.id
