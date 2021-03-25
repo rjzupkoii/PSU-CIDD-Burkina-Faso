@@ -31,13 +31,15 @@ def plot(filter, yaxis, filename):
     
     # Violin plot, grouped by policy
     data_labels = temp.columns
-    data_labels = ['Baseline', '10 year AL/DP MFT', 'Rapid AL/DP MFT',
-       '10 year Private Market Elimination',
-       '10 year Private Market Elimination,\n10 year AL/DP MFT',
-       '10 year Private Market Elimination,\nRapid AL/DP MFT',
-       'Rapid Private Market Elimination',
-       'Rapid Private Market Elimination,\n10 year AL/DP MFT',
-       'Rapid Private Market Elimination,\nRapid AL/DP MFT']
+    data_labels = ['Baseline', 
+        '10 year AL/DP MFT', 
+        'Rapid AL/DP MFT',
+        '10 year Private Market Elimination',
+        '10 year Private Market Elimination,\n10 year AL/DP MFT',
+        '10 year Private Market Elimination,\nRapid AL/DP MFT',
+        'Rapid Private Market Elimination',
+        'Rapid Private Market Elimination,\n10 year AL/DP MFT',
+        'Rapid Private Market Elimination,\nRapid AL/DP MFT']
     fig, axs = plt.subplots(nrows=3, ncols=3, figsize=(20, 25), sharey=True, sharex=True,
                             gridspec_kw={'left':0.09, 'right':0.97, 'top':0.95, 'bottom':0.06, 'wspace':0.2, 'hspace':0.22})
     
