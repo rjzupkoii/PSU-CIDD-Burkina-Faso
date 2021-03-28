@@ -6,10 +6,26 @@ addpath('../Common');
 clear;
 
 STARTDATE = '2007-1-1';
-FILENAME = 'data/validation.csv';
+
+%FILENAME = 'data/validation.csv';
+%FILENAME = 'data/110912-verification-data.csv';
+FILENAME = 'data/data-1616943977557.csv';       % Drawn from a regular run of the model
 
 % Figure one plot
-plotSimuatedVsReferencePfPR(FILENAME);
+%plotSimuatedVsReferencePfPR(FILENAME);
+
+
+% Plot of national change, plus seasonality
+%plot_weighted_pfpr(FILENAME, STARTDATE, 5, 'Under 5');
+%plot_weighted_pfpr(FILENAME, STARTDATE, 6, '2 to 10');
+plot_weighted_pfpr(FILENAME, STARTDATE, 7, 'All');
+
+
+% Various comparison points
+%plot_district_pfpr(FILENAME, STARTDATE, 4, 'Boulkiemdé', 5, 'Under 5');
+%plot_district_pfpr(FILENAME, STARTDATE, 41, 'Soum', 5, 'Under 5');
+%plot_district_pfpr(FILENAME, STARTDATE, 44, 'Kossi', 5, 'Under 5');
+
 
 % Plot the monthly PfPR values
 function [] = monthlyPfPR(filename, startDate, single)
@@ -138,8 +154,9 @@ function [] = plotSimuatedVsReferencePfPR(filename)
     % Load and trim the evaluation data to post-burn-in
     data = csvread(filename, 1, 0);
     data = data(data(:, 1) >= (11 * 365), :);
+    data = data(data(:, 1) <= (16 * 365), :);
     districts = unique(data(:, 2));
-
+    
     % Prepare the color map
     colors = colormap(parula(size(districts, 1)));
 
@@ -165,7 +182,7 @@ function [] = plotSimuatedVsReferencePfPR(filename)
         scatter(expected, abs(mean(minima)), 75, [99 99 99] / 255, 'filled', 'MarkerEdgeColor', 'black');
     end
     hold off;
-
+    
     % Set the limits
     xlim([CENTER_MIN CENTER_MAX]);
     ylim([CENTER_MIN CENTER_MAX]);
@@ -174,9 +191,7 @@ function [] = plotSimuatedVsReferencePfPR(filename)
     % Plot the reference error lines
     data = get(gca, 'YLim');
     line([data(1) data(2)], [data(1)*1.05 data(2)*1.1], 'Color', [0.5 0.5 0.5], 'LineStyle', '-.');
-    % text(data(2) * 0.9, data(2) + 0.5, '+10%', 'FontSize', 16);
     line([data(1) data(2)], [data(1)*1.05 data(2)*1.05], 'Color', [0.5 0.5 0.5], 'LineStyle', '-.');
-    % text(data(2)* 0.95, data(2) + 0.5, '+5%', 'FontSize', 16);
     line([data(1) data(2)], [data(1)*0.95 data(2)*0.95], 'Color', [0.5 0.5 0.5], 'LineStyle', '-.');
     text(data(2), data(2) * 0.95, '-5%', 'FontSize', 16);
     line([data(1) data(2)], [data(1)*0.95 data(2)*0.9], 'Color', [0.5 0.5 0.5], 'LineStyle', '-.');
@@ -186,13 +201,72 @@ function [] = plotSimuatedVsReferencePfPR(filename)
     line([data(1) data(2)], [data(1) data(2)], 'Color', 'black', 'LineStyle', '-.');
     text(data(2), data(2) + 0.5, '\pm0%', 'FontSize', 16);
         
-    ylabel('Simulated {\it Pf}PR_{2 to 10}, mean of peaks');
+    ylabel('Simulated {\it Pf}PR_{2 to 10}');
     xlabel('Reference {\it Pf}PR_{2 to 10}');
 
     title('Burkina Faso, Simuated versus Reference {\it Pf}PR_{2 to 10} values');
 
     graphic = gca;
     graphic.FontSize = 20;
+end
+
+% Plot the PfPR for the district indicated for a five year interval, starting 11 years after the 
+% model start date, assumes paramters for Burkina Faso.
+function [] = plot_district_pfpr(filename, startDate, province, districtName, pfprIndex, subscript)
+    
+    % Load and filter five years of data
+    data = csvread(filename, 1, 0);
+    data = data(data(:, 1) >= (11 * 365), :);
+    data = data(data(:, 1) <= (16 * 365), :);
+    
+    % Filter the district
+    data = data(data(:, 2) == province, :);
+    
+    % Plot
+    plot(data(:, 1) + datenum(startDate), data(:, pfprIndex));
+    
+    % Format
+    xlabel('Model Year');
+    ylabel(sprintf('PfPR_{%s}', subscript));
+    title(sprintf('Five Year PfPR_{%s} for Province of %s, Burkina Faso', subscript, districtName));
+    
+    datetick('x', 'mmm yyyy');
+    axis tight;
+        
+    graphic = gca;
+    graphic.FontSize = 18;    
+end
+
+% Plot the population wehighted PfPR for a five year interval, starting 11 years after the 
+% model start date, assumes paramters for Burkina Faso.
+function [] = plot_weighted_pfpr(filename, startDate, index, subscript)
+    data = csvread(filename, 1, 0);
+    data = data(data(:, 1) >= (11 * 365), :);
+    data = data(data(:, 1) <= (16 * 365), :);
+    
+    dates = unique(data(:, 1));
+    pfpr = zeros(size(dates, 1), 1);
+
+    for ndx = 1:size(dates, 1)
+        values = data(data(:, 1) == dates(ndx), :);
+        for district = 1:45
+            pfpr(ndx) = pfpr(ndx) + (values(district, 3) * values(district, index));
+        end
+        pfpr(ndx) = pfpr(ndx) / sum(values(:, 3));
+    end
+
+    plot(dates + datenum(startDate), pfpr);
+    yline(mean(pfpr), '--', sprintf('Mean PfPR_{%s} (%.2f%%)', subscript, mean(pfpr)), 'FontSize', 12);
+
+    xlabel('Model Year');
+    ylabel(sprintf('Population Weighted Mean PfPR_{%s}', subscript));
+    title(sprintf('National Popuation Weighted Mean PfPr_{%s} for Five Years', subscript));
+
+    datetick('x', 'mmm yyyy');
+    axis tight;
+    
+    graphic = gca;
+    graphic.FontSize = 18;
 end
 
 % Plot the error summary in PfPR to the refernce data, presuming the
