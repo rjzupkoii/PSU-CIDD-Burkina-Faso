@@ -57,22 +57,33 @@ def get_580y_frequency_subset(replicateId, subset):
 
 # Return the aggergated annual data for each of the replicates contained within
 #  the study for the date range (i.e., months) indicated
-def get_annual_data(studyId, dates):
+def get_annual_data(studyId, dates, publicmarket):
     sql = """
-        SELECT replace(c.filename, '.yml', '') as filename,
-            md.replicateid,
-            sum(msd.population) / 12 AS population,
-            sum(msd.clinicalepisodes) / 12 AS clinicalepisodes,
-            cast(sum(msd.clinicalepisodes) as float) / (sum(msd.population) / 1000) AS clinicalper1000,
-            sum(msd.pfpr2to10 * msd.population) / sum(msd.population) AS pfpr2to10
-        FROM sim.configuration c
-            INNER JOIN sim.replicate r ON r.configurationid = c.id
-            INNER JOIN sim.monthlydata md ON md.replicateid = r.id
-            INNER JOIN sim.monthlysitedata msd ON msd.monthlydataid = md.id
-        WHERE c.studyid = %(studyId)s
-        AND md.dayselapsed IN %(dates)s
-        group by c.filename, md.replicateid"""
-    return select(sql, {'studyId':studyId, 'dates':dates})
+        SELECT filename,
+            replicateid,
+            max(population) AS population,
+            sum(cases) AS cases,
+            round(sum(treatedcases) * %(publicmarket)s, 0) AS reportedcases,
+            round((sum(treatedcases) * %(publicmarket)s) / (max(population) / 1000), 0) AS clinicalper1000,
+            round(cast(sum(pfpr2to10 * population) / sum(population) as numeric), 2) AS pfpr2to10
+        FROM (
+            SELECT replace(c.filename, '.yml', '') AS filename,
+                md.replicateid, 
+                md.dayselapsed,
+                sum(msd.population) AS population,
+                sum(msd.clinicalepisodes) AS cases,
+                sum(msd.treatments) AS treatedcases,
+                sum(msd.pfpr2to10 * msd.population) / sum(msd.population) AS pfpr2to10
+            FROM sim.configuration c
+                INNER JOIN sim.replicate r ON r.configurationid = c.id
+                INNER JOIN sim.monthlydata md ON md.replicateid = r.id
+                INNER JOIN sim.monthlysitedata msd ON msd.monthlydataid = md.id
+            WHERE c.studyid = %(studyId)s
+            AND md.dayselapsed IN %(dates)s
+            GROUP BY c.filename, md.replicateid, md.dayselapsed) iq
+        GROUP BY replicateid, filename
+        ORDER BY filename"""
+    return select(sql, {'publicmarket':publicmarket, 'studyId':studyId, 'dates':dates})
 
 
 # Get a list of all of the studies (i.e., configurations) associated with this studyId
@@ -169,6 +180,15 @@ def get_treatment_summary(replicateId, startDay):
 
 # Query and save the annual data for the study id provided
 def process_annual_data(studyId):
+    # Percentage of public market treatments, drawn from configuration
+    publicmarket = {
+        3: {2025: 0.832, 2030: 0.832, 2035: 0.832},
+        5: {2025: 1.0, 2030: 1.0, 2035: 1.0},
+        7: {2025: 0.916, 2030: 1.0, 2035: 1.0},
+        8: {2025: 0.832, 2030: 0.832, 2035: 0.832}
+    }
+
+    # Range of dates for the year
     ranges = {
         2025: (6575, 6606, 6634, 6665, 6695, 6726, 6756, 6787, 6818, 6848, 6879, 6909),
         2030: (8401, 8432, 8460, 8491, 8521, 8552, 8582, 8613, 8644, 8674, 8705, 8735),
@@ -182,10 +202,10 @@ def process_annual_data(studyId):
     
     for key in ranges.keys():
         # Query and save the data
-        data = get_annual_data(studyId, ranges[key])
+        data = get_annual_data(studyId, ranges[key], publicmarket[studyId][key])
         with open("out/{}-{}-annual-data.csv".format(key, studyId), "wb") as csvfile:
             writer = csv.writer(csvfile)
-            writer.writerow(["filename", "replicateid", "population", "clinicalepisodes", "clinicalper1000", "pfpr2to10"])
+            writer.writerow(["filename", "replicateid", "population", "cases", "reportedcases", "clinicalper1000", "pfpr2to10"])
             for row in data:
                 writer.writerow(list(row))
 
