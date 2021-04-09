@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import datetime 
 import psycopg2
@@ -6,19 +6,13 @@ import psycopg2
 # Connection string for the database
 CONNECTION = "host=masimdb.vmhost.psu.edu dbname=burkinafaso user=sim password=sim"
 
-# Delete replicates attached to studies
-# REPLICATES = """
-# select r.id
-# from sim.replicate r
-#   inner join sim.configuration c on c.id = r.configurationid
-# where c.studyid > 2"""
-
 # Delete replicates attached to the calibration
 REPLICATES = """
 select r.id
 from sim.configuration c
   inner join sim.replicate r on r.configurationid = c.id
-where c.studyid = 1"""
+where c.studyid = 12
+"""
 
 # Delete empty configuration
 CONFIGURATIONS = """
@@ -62,14 +56,14 @@ def delete(sql, parameter):
 def deleteConfigurations():
   configurations = getResults(CONFIGURATIONS)
   for row in configurations:
-    print "{} - Deleting {}".format(datetime.datetime.now(), row[0])
+    print("{} - Deleting configuration {}".format(datetime.datetime.now(), row[0]))
     delete("CALL delete_configuration(%(configurationId)s)", {'configurationId': row[0]})
 
 
 def deleteReplicates():
   replicates = getResults(REPLICATES)
   for row in replicates:
-    print "{} - Deleting {}".format(datetime.datetime.now(), row[0])
+    print("{} - Deleting replicate {}".format(datetime.datetime.now(), row[0]))
     delete("CALL delete_replicate(%(replicateId)s)", {'replicateId': row[0]})
 
 
