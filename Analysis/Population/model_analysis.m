@@ -2,24 +2,19 @@
 %
 % Generate plots that allow us to compare how the model performs at scale 
 % when working with seasonal and non-seasonal data.
+%
+% TODO Go through this script and move anything useful over to the support
+% TODO repostiory. The plotSimuatedVsReferencePfPR should NOT be used since
+% TODO the correct one exists in the supprot repository.
 addpath('../Common');
 clear;
 
 STARTDATE = '2007-1-1';
 
-%FILENAME = 'data/validation.csv';
-%FILENAME = 'data/110912-verification-data.csv';
-FILENAME = 'data/data-1616943977557.csv';       % Drawn from a regular run of the model
-
-% Figure one plot
-%plotSimuatedVsReferencePfPR(FILENAME);
-
-
 % Plot of national change, plus seasonality
 %plot_weighted_pfpr(FILENAME, STARTDATE, 5, 'Under 5');
 %plot_weighted_pfpr(FILENAME, STARTDATE, 6, '2 to 10');
-plot_weighted_pfpr(FILENAME, STARTDATE, 7, 'All');
-
+%plot_weighted_pfpr(FILENAME, STARTDATE, 7, 'All');
 
 % Various comparison points
 %plot_district_pfpr(FILENAME, STARTDATE, 4, 'Boulkiemdé', 5, 'Under 5');
@@ -146,7 +141,7 @@ end
 % Generate the simuated versus reference PfPR values, which can be used as
 % figure one for a manuscript.
 function [] = plotSimuatedVsReferencePfPR(filename)
-    CENTER_MIN = 0; CENTER_MAX = 60;
+    CENTER_MIN = 0; CENTER_MAX = 80;
 
     % Load the reference data
     reference = csvread('../Common/weighted_pfpr.csv');
@@ -158,30 +153,44 @@ function [] = plotSimuatedVsReferencePfPR(filename)
     districts = unique(data(:, 2));
     
     % Prepare the color map
-    colors = colormap(parula(size(districts, 1)));
+    count = max(reference(:, 2));
+    colors = colormap(parula(count));
 
+    % Since the MAP values are the mean, we want to compare against the
+    % mean of our data, but highlight the seasonal minima and maxima
     hold on;
     for district = transpose(districts)
         expected = reference(reference(:, 1) == district, 2);
         pfpr = data(data(:, 2) == district, 6); 
-
+        
         % We want the seasonal maxima, filter out the local maxima, once
         % this is done we should only have six points left
         maxima = pfpr(pfpr > mean(pfpr));
         maxima = maxima(maxima > maxima - std(maxima));
         maxima = findpeaks(maxima);
-
-        pfpr = pfpr .* -1;
-        minima = pfpr(pfpr > mean(pfpr));
+        
+        % Repeat the same process for the minima as the maxima
+        minima = pfpr(pfpr < mean(pfpr)) .* -1;
         minima = minima(minima > minima - std(minima));
         minima = findpeaks(minima);
 
         % Plot from the maxima to the minima, connected by a line
         line([expected expected], [mean(maxima) abs(mean(minima))], 'LineStyle', '--', 'LineWidth', 1.5, 'Color', 'black');
-        scatter(expected, mean(maxima), 100, colors(district, :), 'filled', 'MarkerEdgeColor', 'black');
+        scatter(expected, mean(maxima), 100, [99 99 99] / 255, 'filled', 'MarkerEdgeColor', 'black');
+        scatter(expected, mean(pfpr), 100, colors(district, :), 'filled', 'MarkerEdgeColor', 'black');
         scatter(expected, abs(mean(minima)), 75, [99 99 99] / 255, 'filled', 'MarkerEdgeColor', 'black');
     end
     hold off;
+    
+%     text(18, 15, 'Bazega: 265 per 1000');   % 21
+%     text(16, 15, 'All ages incidence: 444 to 527');
+%     
+%     text(30, 17, 'Houet: 268 per 1000');    % 8
+%     text(28, 17, '313 to 449');
+%     
+%     text(57, 47, 'Soum: 449 per 1000');     % 41
+%     text(55, 47, '243 to 353');
+    
     
     % Set the limits
     xlim([CENTER_MIN CENTER_MAX]);
