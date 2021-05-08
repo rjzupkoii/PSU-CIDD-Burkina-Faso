@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#PBS -A mfb9_b_g_sc_default
+#PBS -l pmem=96gb
+#PBS -l nodes=1:ppn=1:rhel7:stmem
+#PBS -l walltime=96:00:00
+
+# Change to the directory we launched the script from and launch the simulation
+cd $PBS_O_WORKDIR
+./MaSim -i bfa-al-only.yml -s 5
