@@ -22,7 +22,7 @@ initial_seed_number: 0
 connection_string: "host=masimdb.vmhost.psu.edu dbname=burkinafaso user=sim password=sim connect_timeout=60"
 
 # Record the genomic data
-record_genome_db: true
+record_genome_db: false
 
 # Report to GUI and console every 30 days
 report_frequency: 30
@@ -159,7 +159,7 @@ immune_system_information:
 
   # mix and max probabilities of experiencing symptoms as a result of a new infection
   # the actual probability will depend on the host's immunity
-  min_clinical_probability: 0.001
+  min_clinical_probability: 0.005
   max_clinical_probability: 0.99
 
   # slope of sigmoidal prob-v-immunity function (parameter z in supplement of 2015 LGH paper) 

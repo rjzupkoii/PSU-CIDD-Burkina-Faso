@@ -41,8 +41,8 @@ start_of_comparison_period: 2018/1/1
 # Ending date is 2018 plus 20 years
 ending_date: 2038/1/1
 
-# Discard the first five years worth of data
-start_collect_data_day: 1825 
+# Date to start collecting data, 1 year before start of comparison
+start_collect_data_day: 1826 
 
 # Number of days to keep track total number of parasites in population
 number_of_tracking_days: 11
@@ -76,7 +76,7 @@ raster_db:
 
   # Raster files defining treatments
   pr_treatment_under5: "bfa_treatment.asc"
-  pr_treatment_over5: "bfa_treatment.asc"  
+  pr_treatment_over5: "bfa_o5_treatment.asc"  
   
   # Raster file containing the calibrated beta value
   beta_raster: "bfa_beta.asc"
@@ -97,16 +97,16 @@ raster_db:
   beta_by_location: [ -1 ]
 
 # Seasonality of malaria in Burkina Faso
-# 0: Sahelian zone (Short)  / 0.5, 0.5, 2.5, 146
-# 1: Sudano-Sahelian zone (Long) / 0.5, 0.5, 2.3, 155
-# 2: Sudanian zone (Permanent) / 1, 0, 1, 0
+# 0: Sahelian zone (3 month)        / 0.4, 0.6, 2.5, 146
+# 1: Sudano-Sahelian zone (4 month) / 0.4, 0.6, 2.3, 155
+# 2: Sudanian zone (5 month)        / 0.4, 0.6, 1.9, 155
 seasonal_info:
   enable: true
   raster: true
-  base: [ 0.5, 0.5, 1]
-  a:    [ 0.5, 0.5, 0]
-  b:    [ 2.5, 2.3, 1]
-  phi:  [ 146, 155, 0]
+  base: [ 0.4, 0.4, 0.4]
+  a:    [ 0.6, 0.6, 0.6]
+  b:    [ 2.5, 2.3, 1.9]
+  phi:  [ 146, 155, 155]
   
 # Country specific movement model and calibration
 spatial_model:
@@ -137,7 +137,7 @@ parasite_density_level:
   log_parasite_density_clinical_from:   3.301    # corresponds to 2000 parasites per microliter of blood (total 10^10)
   log_parasite_density_clinical_to:     5.301    # corresponds to 200,000 parasites per microliter of blood (total 10^12)
   log_parasite_density_detectable:      1.000    # corresponds to 10 parasites per microliter of blood
-  log_parasite_density_detectable_pfpr: 2.000    # corresponds to 100 parasites per microliter of blood
+  log_parasite_density_detectable_pfpr: 1.699    # corresponds to 100 parasites per microliter of blood
   log_parasite_density_pyrogenic:       3.398    # corresponds to 2500 parasites per microliter of blood
 
 immune_system_information:
@@ -161,17 +161,20 @@ immune_system_information:
 
   # mix and max probabilities of experiencing symptoms as a result of a new infection
   # the actual probability will depend on the host's immunity
-  min_clinical_probability: 0.05
+  min_clinical_probability: 0.005
   max_clinical_probability: 0.99
 
   # slope of sigmoidal prob-v-immunity function (parameter z in supplement of 2015 LGH paper) 
-  immune_effect_on_progression_to_clinical: 4
+  immune_effect_on_progression_to_clinical: 4.5
 
   # age at which immune function is mature
   age_mature_immunity: 10
 
   # parameter kappa in supplement of 2015 LGH paper
   factor_effect_age_mature_immunity: 1
+
+  # Adjust the infliction point in the curve
+  midpoint: 0.15
 
 # Settings that determine how long an individual stays in a given location
 circulation_info:
