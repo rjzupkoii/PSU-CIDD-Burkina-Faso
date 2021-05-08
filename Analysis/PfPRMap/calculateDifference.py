@@ -3,7 +3,7 @@
 
 import csv
 
-from include.ascFile import *
+from include.ascFile import load_asc
 from include.basicStats import *
 
 MODELVALUES = 'data/bf-11nb-bounded.csv'

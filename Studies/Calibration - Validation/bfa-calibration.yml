@@ -22,7 +22,7 @@ initial_seed_number: 0
 connection_string: "host=masimdb.vmhost.psu.edu dbname=burkinafaso user=sim password=sim connect_timeout=60"
 
 # Record the genomic data
-record_genome_db: true
+record_genome_db: false
 
 # Report to GUI and console every 30 days
 report_frequency: 30
@@ -33,11 +33,11 @@ report_frequency: 30
 # Starting date is calibration year minus 11 years of burn-in
 starting_date: 2007/1/1
 
-# Start recording in 2018 since that's the major shift took place
+# 2018 is the target calibration year
 start_of_comparison_period: 2018/1/1
 
-# Ending date is 2018 plus 20 years
-ending_date: 2038/1/1
+# Ending date is 2023 so we have some extra data to check
+ending_date: 2023/12/31
 
 # Date to start collecting data, 1 year before start of comparison
 start_collect_data_day: 1826 
@@ -56,40 +56,34 @@ age_structure: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 15, 20, 60, 100]
 # Age structure used when initializing the model at T-0
 initial_age_structure: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 25, 35, 45, 55, 65, 100]
 
-# Scaling of the population in the model, 0.25 rate based upon scaling test
-artificial_rescaling_of_population_size: 0.25
+# Scaling of the population in the model
+artificial_rescaling_of_population_size: 1.0
 
 # ---------------------------------------------------------------
 # Rasters to be used in conjunction with the location_db, note 
 # that the paths are relative to the binary file for the simulation
 # ---------------------------------------------------------------
 raster_db:
-  # Adjusted population to account for burn-in up to 2017 start
-  population_raster: "bfa_init_pop.asc"
-    
-  # Raster files defining the country
-  district_raster: "bfa_admin.asc"
-  ecoclimatic_raster: "bfa_ecozone.asc"
-  travel_raster: "bfa_travel.asc"
+  # Raster file that contains the site specific population data
+  population_raster: "#POPULATION#.asc"
 
-  # Raster files defining treatments
-  pr_treatment_under5: "bfa_treatment.asc"
-  pr_treatment_over5: "bfa_o5_treatment.asc"  
+  # Raster file that points at which climate zone to use
+  ecoclimatic_raster: "#ZONE#.asc"
   
-  # Raster file containing the calibrated beta value
-  beta_raster: "bfa_beta.asc"
+  # transmission intensity
+  beta_by_location: [#BETA#]
   
   # Set the cell size used by raster, in sq.km
   cell_size: 5
 
   # Approximate national age distribution for Burkina Faso
   age_distribution_by_location: [[0.0449, 0.0449, 0.0449, 0.0449, 0.0315, 0.0315, 0.0315, 0.0315, 0.0315, 0.0268, 0.0268, 0.0268, 0.0268, 0.0268, 0.1990, 0.1251, 0.0855, 0.0560, 0.0346, 0.0289, 0.0000]]
-
+  
   # probability that a symptomatic and infected individual seeks and receives antimalarial treatment
   #if the number of values less than number of locations, the first value will be applied for all locations
   # this is the initial value, the modification values can be change by setting in events node
-  p_treatment_for_less_than_5_by_location: [ -1 ]
-  p_treatment_for_more_than_5_by_location: [ -1 ]
+  p_treatment_for_less_than_5_by_location: [#ACCESSU5#]
+  p_treatment_for_more_than_5_by_location: [#ACCESSO5#]
 
   # Will be overridden by beta_raster
   beta_by_location: [ -1 ]
@@ -105,16 +99,15 @@ seasonal_info:
   a:    [ 0.6, 0.6, 0.6]
   b:    [ 2.5, 2.3, 1.9]
   phi:  [ 146, 155, 155]
-  
-# Country specific movement model and calibration
+
+# Effectively disable movement during the beta run
 spatial_model:
-  name: "BurkinaFaso"
-  BurkinaFaso:
-    alpha: 1.27
-    log_rho: 0.25
-    tau: 1.342
-    capital: 14
-    penalty: 12
+  name: "Wesolowski"
+  Wesolowski:
+    kappa: 0
+    alpha: 0
+    beta:  0
+    gamma: 0
 
 # Crude Birth Rate: 41.2 based upon INSD 2018 data
 birth_rate: 0.0412
@@ -159,7 +152,7 @@ immune_system_information:
 
   # mix and max probabilities of experiencing symptoms as a result of a new infection
   # the actual probability will depend on the host's immunity
-  min_clinical_probability: 0.001
+  min_clinical_probability: 0.005
   max_clinical_probability: 0.99
 
   # slope of sigmoidal prob-v-immunity function (parameter z in supplement of 2015 LGH paper) 
@@ -192,12 +185,6 @@ circulation_info:
     sd: 10
 
 # Definition for initial parasite
-#
-# 1. loc 
-# 2. id (this is the resistance type of the parasite) 
-# 3. prevalence unweighted by biting rate
-#
-# location id is -1 results in all locations having the same initial parasites
 initial_parasite_info:
   - location_id: -1
     parasite_info:
@@ -212,50 +199,12 @@ initial_parasite_info:
       # TYY--C1x
       - parasite_type_id: 72
         prevalence: 0.05
-        
+
 # Events for Burkina Faso
 events:
-  - name: annual_coverage_update_event
-    info:
-      - day: 2019/1/1
-        rate: 0.03
   - name: turn_off_mutation
     info:
       - day: 2007/1/1
-  - name: turn_on_mutation
-    info:
-      # Artemisinin
-      - day: 2018/1/1
-        drug_id: 0
-        mutation_probability: 0.001983 
-      # Amodiaquine
-      - day: 2018/1/1
-        drug_id: 1
-        mutation_probability: 0.001983 
-      # Sulfadoxine/pyrimethamine
-      - day: 2018/1/1
-        drug_id: 2
-        mutation_probability: 0.0      
-      # Chloroquine
-      - day: 2018/1/1
-        drug_id: 3
-        mutation_probability: 0.001983 
-      # Lumefantrine
-      - day: 2018/1/1
-        drug_id: 4
-        mutation_probability: 0.001983   
-      # Piperaquine
-      - day: 2018/1/1
-        drug_id: 5
-        mutation_probability: 0.001983 
-      # Mefloquine
-      - day: 2018/1/1
-        drug_id: 6
-        mutation_probability: 0.001983 
-      # Quinine
-      - day: 2018/1/1
-        drug_id: 7
-        mutation_probability: 0.0                 
 
 # Drug Information
 #
@@ -468,6 +417,7 @@ drug_db:
        .5... : 1.1
        .6... : 1.1
        .7... : 1.1
+       
   7:
     name: "QUIN"       # Quinine
     half_life: 18
@@ -482,7 +432,7 @@ drug_db:
       # K----
       0....: 1.41
       # T----
-      1....: 1.41
+      1....: 1.41     
          
 # Drug IDs for the model
 artemisinin_drug_id: 0
@@ -605,6 +555,31 @@ update_frequency: 7
 # if an infected and asymptomatic host is bitten and infected by a new 
 # parasite clone, this setting allows the new infection to cause symptoms
 allow_new_coinfection_to_cause_symtoms: true
+
+# TODO, is this used elsewhere in the code?
+# this functionality works, but it was not used in any analyses for the 2015 LGH paper
+external_population_circulation_information:
+  max_relative_moving_value: 35
+  number_of_moving_levels: 100
+  moving_level_distribution:
+    #  distribution: Exponential
+    distribution: Gamma
+    Exponential:
+      scale: 0.17
+    Gamma:
+      mean: 5
+      sd: 10
+  circulation_percent: [0.0, 0.01, 0.01, 0.01, 0.01 ]
+  length_of_stay:
+    # drawn from gamma distribution?
+    mean: 5
+    sd: 10
+  daily_EIR: [0.01,0.01,0.01,0.01,0.1]
+  seasonal_EIR:
+    a: [1]
+    phi: [180]
+    period: 360
+    min_value: 0.1
 
 # free recombination among the drug resistance loci
 using_free_recombination: true
