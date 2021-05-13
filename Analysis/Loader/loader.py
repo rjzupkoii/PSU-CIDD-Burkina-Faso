@@ -168,7 +168,7 @@ def get_treatment_summary(replicateId, startDay):
 	        sum(population) as population
         FROM (
             SELECT md.id, 
-                msd.locationid, md.dayselapsed, msd.infectedindividuals,
+                msd.locationid, md.dayselapsed, msd.infectedindividuals, msd.population,
                 msd.clinicalepisodes, msd.treatmentfailures, msd.nontreatment
         FROM sim.monthlydata md
             INNER JOIN sim.monthlysitedata msd ON msd.monthlydataid = md.id
@@ -181,11 +181,17 @@ def get_treatment_summary(replicateId, startDay):
 # Query and save the annual data for the study id provided
 def process_annual_data(studyId):
     # Percentage of public market treatments, drawn from configuration
+    # 3: Status Quo
+    # 4: Rapid Private Market Elimination
+    # 5: Ten Year Private Market Elimination
+    # 6: Status Quo
+    # 7: Rapid Private Market Elimination
     publicmarket = {
         3: {2025: 0.832, 2030: 0.832, 2035: 0.832},
-        5: {2025: 1.0, 2030: 1.0, 2035: 1.0},
-        7: {2025: 0.916, 2030: 1.0, 2035: 1.0},
-        8: {2025: 0.832, 2030: 0.832, 2035: 0.832}
+        4: {2025: 1.0, 2030: 1.0, 2035: 1.0},
+        5: {2025: 0.916, 2030: 1.0, 2035: 1.0},
+        6: {2025: 0.832, 2030: 0.832, 2035: 0.832},
+        7: {2025: 1.0, 2030: 1.0, 2035: 1.0}
     }
 
     # Range of dates for the year
