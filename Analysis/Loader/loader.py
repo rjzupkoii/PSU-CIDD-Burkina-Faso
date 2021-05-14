@@ -382,7 +382,7 @@ def save_treatment_summary(label, replicateId, burnIn):
     filename = TREATMENT_TEMPLATE.format(label, replicateId) 
     with open(filename, "wb") as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(["replicateId", "days", "district", "infectedindividuals", "clinicalepisodes", "treatmentfailures", "nontreatment"])
+        writer.writerow(["replicateId", "days", "district", "infectedindividuals", "clinicalepisodes", "treatmentfailures", "nontreatment", "population"])
         for row in data:
             data = [replicateId] + list(row)
             writer.writerow(data)    

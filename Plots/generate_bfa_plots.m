@@ -23,4 +23,4 @@ plot_national_frequency(DIRECTORY, STARTDATE);
 plot_frequency_treatmentfailures(DIRECTORY, STARTDATE);
 
 plot_treatment_data(DIRECTORY, STARTDATE);
-plot_treatment_failures(DIRECTORY, STARTDATE);
+% plot_treatment_failures(DIRECTORY, STARTDATE);
