@@ -201,6 +201,11 @@ def process_annual_data(studyId):
         2035: (10227, 10258, 10286, 10317, 10347, 10378, 10408, 10439, 10470, 10500, 10531, 10561)
     }
 
+    # Exit if a study was not provided
+    if studyId not in publicmarket.keys():
+        print("Invalid study provided, {}".format(studyId))
+        exit(1)
+
     # Let the user know what we are doing
     print("Processing annual data...")
     count = 0
