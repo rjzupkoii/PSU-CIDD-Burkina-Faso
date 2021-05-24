@@ -63,7 +63,8 @@ order by modeldays desc
 
 -- Count of running replicates
 select c.studyid, c.filename, count(r.id) as replicates,
-  sum(case when r.endtime is null then 1 else 0 end) as running
+  sum(case when r.endtime is null then 1 else 0 end) as running,
+  sum(case when r.endtime is not null then 1 else 0 end) as complete
 from sim.configuration c
   inner join sim.replicate r on r.configurationid = c.id
 where c.studyid > 2
