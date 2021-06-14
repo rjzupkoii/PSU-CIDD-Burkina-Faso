@@ -7,6 +7,7 @@ import csv
 import glob
 import matplotlib.pyplot as plt 
 import numpy as np 
+import os
 import pandas as pd
 
 from matplotlib import rc_file
@@ -61,21 +62,30 @@ def plot(filter, yaxis, filename):
 # Convert the temp from the loader to the expected format
 def clean():
     PATH = "../Analysis/Loader/out/annual-data"
+    POLICIES = ['bfa-fast-no-asaq',
+                'bfa-aldp10',
+                'bfa-aldp',
+                'bfa-tenyear',
+                'bfa-aldp10-tenyear',
+                'bfa-aldp-tenyear',
+                'bfa-rapid',
+                'bfa-aldp10-rapid',
+                'bfa-aldp-rapid']
 
     for year in (2025, 2030, 2035):
-        for file in glob.glob("{}/{}-*.csv".format(PATH, year)):
-            temp = pd.read_csv(file)
-            for column in temp.filename.unique():
+        for current in POLICIES:        
+            for file in glob.glob("{}/{}-*.csv".format(PATH, year)):
+                temp = pd.read_csv(file)
+                for column in temp.filename.unique():
+                    
+                    # Only write the current column to preserve order
+                    if column == current:
 
-                # All of the studies should be prefixed with the country code
-                if not column.startswith("bfa-"):
-                    continue
-
-                # Filter the temp and write it
-                clinical = temp[temp.filename == column].clinicalper1000.to_numpy()
-                pfpr = temp[temp.filename == column].pfpr2to10.to_numpy()
-                write_row("data/yr{}_clinical.csv".format(year), [column] + list(clinical))
-                write_row("data/yr{}_pfpr.csv".format(year), [column] + list(pfpr))
+                        # Filter the temp and write it
+                        clinical = temp[temp.filename == column].clinicalper1000.to_numpy()
+                        pfpr = temp[temp.filename == column].pfpr2to10.to_numpy()
+                        write_row("data/yr{}_clinical.csv".format(year), [column] + list(clinical))
+                        write_row("data/yr{}_pfpr.csv".format(year), [column] + list(pfpr))
 
 
 def write_row(filename, temp):
@@ -85,6 +95,10 @@ def write_row(filename, temp):
 
 
 if __name__ == "__main__":
-    clean()
-    plot("yr{}_pfpr.csv", "PfPR 2 to 10", "out/bfa-2025to2035-pfpr.png")
+    if not os.path.isfile("data/yr2025_clinical.csv"):
+        clean()
+    plot("yr{}_pfpr.csv", "$\it{Pf}$PR$_{2-10}$", "out/bfa-2025to2035-pfpr.png")
     plot("yr{}_clinical.csv", "Clinical Cases per 1000", "out/bfa-2025to2035-clinical.png")
+    plot("yr{}_tmfailures.csv", "Treatment Failure Rate", "out/bfa-2025to2035-treatmentfailures.png")
+    plot("yr{}_580y.csv", "580Y Frequency", "out/bfa-2025to2035-580y.png")
+    plot("yr{}_plasmespin.csv", "Frequency of \nmulticopy $\it{Plasmepsin}$ 2,3", "out/bfa-2025to2035-plasmepsin.png")

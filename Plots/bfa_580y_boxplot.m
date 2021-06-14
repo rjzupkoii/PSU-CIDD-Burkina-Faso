@@ -79,7 +79,7 @@ function [] = add_boxplot(directory, plotTitle)
     % Generate the box plots
     data = transpose(data);
     boxplot(data, [2025 2030 2035]);
-    ylim([0.0 0.83]);
+    ylim([0.0 0.50]);
         
     title(plotTitle);
     graphic = gca;
