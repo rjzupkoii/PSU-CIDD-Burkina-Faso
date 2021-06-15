@@ -9,7 +9,7 @@ axes.grid          : True   ## display grid or not
 axes.titlesize     : 20     ## fontsize of the axes title
 axes.titlepad      : 18     ## pad between axes and title in points
 axes.labelsize     : 20     ## fontsize of the x any y labels
-axes.labelpad      : 17     ## space between label and axis
+axes.labelpad      : 10     ## space between label and axis
 axes.xmargin       : .1
 axes.ymargin       : .1
 
@@ -23,14 +23,14 @@ legend.framealpha    : 0.7      ## legend patch transparency
 legend.fontsize      : 20
 
 ## figure size
-figure.figsize     : 20, 25    ## figure size in inches
+figure.figsize     : 21, 25    ## figure size in inches
 figure.dpi         : 100       ## figure dots per inch
 
 ## The figure subplot parameters.  All dimensions are a fraction of the figure width and height.
-figure.subplot.left   : 0.11  ## the left side of the subplots of the figure
-figure.subplot.right  : 0.94    ## the right side of the subplots of the figure
-figure.subplot.bottom : 0.12   ## the bottom of the subplots of the figure
-figure.subplot.top    : 0.90   ## the top of the subplots of the figure
+figure.subplot.left   : 0.15    ## the left side of the subplots of the figure
+figure.subplot.right  : 0.95    ## the right side of the subplots of the figure
+figure.subplot.bottom : 0.12    ## the bottom of the subplots of the figure
+figure.subplot.top    : 0.90    ## the top of the subplots of the figure
 figure.subplot.wspace : 0.16    
 figure.subplot.hspace : 0.3
 
