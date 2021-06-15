@@ -119,8 +119,8 @@ if __name__ == "__main__":
 
     # Plots that should have data from Matlab
     plot_core("yr{}_580y.csv", "580Y Frequency", "out/bfa-2025to2035-580y.png")
-    plot_core("yr{}_knf_plasmepsin.csv", "Frequency of \n 3x3$\it{knf}$ and multicopy $\it{Plasmepsin}$ 2,3", "out/BF-2025_2035-3x3_knf_plasmepsin.png")
-    plot_core("yr{}_knf.csv", "Frequency of \n$\it{Pfcrt}$-k76 $\it{Pfmrd}$1-N86 $\it{Pfmrd}$1-184F", "out/BF-2025_2035-3x3_knf.png")
+    plot_core("yr{}_knf_plasmepsin.csv", "Frequency of \n 3x3$\it{knf}$ and multicopy $\it{Plasmepsin}$ 2,3", "out/bfa-2025_2035-3x3_knf_plasmepsin.png")
+    plot_core("yr{}_knf.csv", "Frequency of \n$\it{Pfcrt}$-k76 $\it{Pfmrd}$1-N86 $\it{Pfmrd}$1-184F", "out/bfa-2025_2035-3x3_knf.png")
     plot_core("yr{}_plasmespin.csv", "Frequency of \nmulticopy $\it{Plasmepsin}$ 2,3", "out/bfa-2025to2035-plasmepsin.png")
     plot_core("yr{}_tmfailures.csv", "Treatment Failure Rate", "out/bfa-2025to2035-treatmentfailures.png")
     
