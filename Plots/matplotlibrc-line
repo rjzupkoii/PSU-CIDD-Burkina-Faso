@@ -23,5 +23,5 @@ legend.framealpha    : 0.7      ## legend patch transparency
 legend.fontsize      : 20
 
 ## figure size
-figure.figsize     : 30, 20    ## figure size in inches
+figure.figsize     : 35, 20    ## figure size in inches
 figure.dpi         : 100       ## figure dots per inch

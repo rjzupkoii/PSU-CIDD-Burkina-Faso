@@ -100,6 +100,7 @@ def plot(studyDate, title, filename, data, dates, replicates):
     # Finalize the formatting and save
     plt.legend(frameon=False)
     plt.savefig(filename)
+    plt.close()
     print("Saved as: {}".format(filename))
 
 
@@ -110,6 +111,10 @@ if __name__ == "__main__":
         'KNF':r'KNF....',
         'TNF':r'TNF....'}
 
-    # Immediate AL/DP MFT plus private market elimination
+    # Immediate AL/DP MFT and private market elimination
     intermediary = prepare('../Analysis/Loader/out/bfa-aldp-rapid/*-frequencies.csv', genotypes)
-    plot('2007-01-01', 'Genotype Frequency with Immediate AL/DHA-PPQ MFT and Private Market Elimination', 'working.png', *intermediary)
+    plot('2007-01-01', 'Genotype Frequency with Immediate AL/DHA-PPQ MFT and Private Market Elimination', 'bfa-aldp-rapid-genotype-frequency.png', *intermediary)
+
+    # Ten-year phase in of AL/DP MFT and private market elimination
+    intermediary = prepare('../Analysis/Loader/out/bfa-aldp10-tenyear/*-frequencies.csv', genotypes)
+    plot('2007-01-01', 'Genotype Frequency with Phased in AL/DHA-PPQ MFT and Private Market Elimination over 10 years', 'bfa-aldp10-tenyear-genotype-frequency.png', *intermediary)    
