@@ -84,7 +84,7 @@ def plot(studyDate, title, filename, data, dates, replicates):
     axes.set_yscale('log')
     axes.set_xlim([min(dates), max(dates)])
     axes.set_title(title)
-    axes.set_ylabel('Genotype Frequency')
+    axes.set_ylabel('Genotype Frequency (log$_{10}$)')
     axes.set_xlabel('Model Year')
 
     # Generate the plot
