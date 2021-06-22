@@ -81,7 +81,7 @@ def plot(studyDate, title, filename, data, dates, replicates):
     # Format the plot
     rc_file("matplotlibrc-line")
     axes = plt.axes()
-    axes.set_ylim([0, 1])
+    axes.set_yscale('log')
     axes.set_xlim([min(dates), max(dates)])
     axes.set_title(title)
     axes.set_ylabel('Genotype Frequency')
