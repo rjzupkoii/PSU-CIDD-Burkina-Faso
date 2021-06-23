@@ -14,13 +14,13 @@ import sys
 from matplotlib import rc_file
 
 
-def iqr(data):
+def iqr(data, range=[25, 75]):
     '''Calculate the interquartile range (IQR) of the dictionary of arrays provided
     
-    Returns a matrix in which the first row is the 25th percentile and the second row is the 75th percentile'''
+    Returns a matrix in which the first row is the first percentile and the second row is the second percentile'''
     results = [[], []]
     for key in data:
-        q25, q75 = np.percentile(data[key], [25, 75])
+        q25, q75 = np.percentile(data[key], range)
         results[0].append(q25)
         results[1].append(q75)
     return results
@@ -93,7 +93,7 @@ def plot(studyDate, title, filename, data, dates, replicates):
         sums = np.true_divide(sums, replicates)
         plt.plot(dates, sums, label=genotype)
 
-        results = iqr(data[genotype])
+        results = iqr(data[genotype], [10, 90])
         color = scale_luminosity(plt.gca().lines[-1].get_color(), 1)
         plt.fill_between(dates, results[0], results[1], alpha=0.5, facecolor=color)
 

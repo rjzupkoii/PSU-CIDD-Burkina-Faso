@@ -39,7 +39,7 @@ def plot_mft(filter, yaxis, filename):
 
 def plot(filter, yaxis, filename, labels):
     # Set our formatting
-    rc_file("matplotlibrc-custom")
+    rc_file("matplotlibrc-violin")
 
     # Read the first CSV file and prepare the temp
     path_root = Path('data')
