@@ -1,4 +1,4 @@
-% irq_scan.m
+% scan.m
 % 
 % Scan the path provided for data files and call the reporting function
 % when they are found. This script is intended to be used with the IRQ 
