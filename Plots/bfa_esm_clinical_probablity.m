@@ -4,40 +4,39 @@
 % symptoms.
 clear;
 
+% Fixed variables
+p_min = 0.005;
 p_max = 0.99;
-p_min = 0.05;
+z = 4.5;
 
-% Range of Z values to plot
-Z = [1 2:2:14];
+% Bounds of immunity
+M = 0:0.01:1;
+
+% Midpoint values
+midpoint = 0.1:0.05:1.0;
 
 % Prepare variable connected to Z range
-labels = cell(1, size(Z, 2));
-color = hsv(size(Z, 2));
-
-% Bounds of the probablity
-M = 0:0.01:1;
-midpoint = 0.4;
+labels = cell(1, size(midpoint, 2));
+color = winter(size(midpoint, 2));
 
 % Plot all off the Z-value curves, note the legends
 hold on;
 ndx = 1;
-for z= Z    
-    p_clinical = (p_max  ./ ( 1 + (M / midpoint).^z ) ) ;
-    plot(M, p_clinical, 'color', color(ndx,:), 'linewidth',1.3); 
+for mid = midpoint
+    p_clinical = (p_max  ./ (1 + (M / mid) .^ z)) ;
     
-    labels{1 ,ndx} = sprintf('z=%0.2f', z);
-    ndx = ndx+1;
+    plot(M, p_clinical, 'color', color(ndx,:), 'linewidth',1.3); 
+    labels{1 ,ndx} = sprintf('%0.2f', mid);
+    ndx = ndx + 1;
 end 
 
 xlabel('Immunity Level');
-ylabel('Probability of developing symptoms');
+ylabel('Probability of Developing Symptoms');
+title('Change in Probablity of Developing Symtoms as Midpoint Changes');
 legend(labels);
 legend boxoff;
 
 graphic = gca;
-graphic.FontSize = 18;
+graphic.FontSize = 20;
 
-jFrame = get(handle(gcf), 'JavaFrame');
-jFrame.setMaximized(true);
-
-set(gcf, 'Color', 'w');
+set(gcf, 'Position', get(0, 'Screensize'));

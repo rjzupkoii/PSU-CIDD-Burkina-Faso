@@ -8,10 +8,10 @@ STARTDATE = '2009-01-01';
 % Burkina Faso, calibrated ecozones
 %generate_plot('CyclicCurves_data/_580Y_Sahelian', 'Sahelian (short transmission)', STARTDATE);
 %generate_plot('CyclicCurves_data/_580Y_Sudano-Sahelian', 'Sudano-Sahelian (long transmission)', STARTDATE);
-%generate_plot('CyclicCurves_data/_580Y_Sudanian', 'Sudanian (permanent transmission)', STARTDATE);
+generate_plot('CyclicCurves_data/_580Y_Sudanian', 'Permanent Transmission ', STARTDATE);
 
 % Exaggerated 
-generate_plot('CyclicCurves_data/_580Y_ExaggeratedSahelian', 'Exaggerated Short Transmission', STARTDATE);
+%generate_plot('CyclicCurves_data/_580Y_ExaggeratedSahelian', 'Exaggerated Short Transmission', STARTDATE);
 %generate_plot('CyclicCurves_data/_580Y_ExaggeratedSahelianToSudanian', 'Exaggerated Short to Permanent Transmission', STARTDATE);
 
 
