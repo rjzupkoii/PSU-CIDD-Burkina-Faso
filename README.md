@@ -19,3 +19,7 @@ Studies     - Configuration files used for model validation and *de novo* mutati
 ## Model Execution
 
 All simulations were performed on the Pennsylvania State University’s Institute for Computational and Data Sciences’ Roar supercomputer using the configurations present in [Studies](Studies/) and the replicate queuing scripts present in [Studies/Replicates](Studies/Replicates).
+
+# Sources
+
+Adam Auton (2021). Red Blue Colormap (https://www.mathworks.com/matlabcentral/fileexchange/25536-red-blue-colormap), MATLAB Central File Exchange. Retrieved August 9, 2021.

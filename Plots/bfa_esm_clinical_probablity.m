@@ -24,9 +24,15 @@ hold on;
 ndx = 1;
 for mid = midpoint
     p_clinical = (p_max  ./ (1 + (M / mid) .^ z)) ;
+            
+    if abs(mid - 0.1500) < eps(0.5)
+        plot(M, p_clinical, 'color', color(ndx,:), 'linewidth', 5.0);     
+        labels{1 ,ndx} = sprintf('{\\bf %0.2f}', mid);
+    else
+        plot(M, p_clinical, 'color', color(ndx,:), 'linewidth', 1.0);     
+        labels{1 ,ndx} = sprintf('%0.2f', mid);
+    end           
     
-    plot(M, p_clinical, 'color', color(ndx,:), 'linewidth',1.3); 
-    labels{1 ,ndx} = sprintf('%0.2f', mid);
     ndx = ndx + 1;
 end 
 
