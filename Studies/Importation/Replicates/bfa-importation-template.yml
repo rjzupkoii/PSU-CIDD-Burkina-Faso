@@ -222,16 +222,10 @@ events:
         rate: 0.03
   - name: importation_periodically_random_event
     info:
-      - day: 2018/1/1
+      - day: 2018/#MONTH#/1
         genotype_id: 68
-        count: 1
-        # Symptomatic infection
-        log_parasite_density: 4.301
-      - day: 2018/2/1
-        genotype_id: 76
-        count: 1
-        # Asymptomatic infection
-        log_parasite_density: 3.0
+        count: #IMPORTATIONS#
+        log_parasite_density: #PARASITEDENSITY#
   - name: turn_off_mutation
     info:
       - day: 2007/1/1
@@ -240,7 +234,7 @@ events:
       # Artemisinin
       - day: 2018/1/1
         drug_id: 0
-        mutation_probability: 0.001983 
+        mutation_probability: #MUTATION# 
       # Amodiaquine
       - day: 2018/1/1
         drug_id: 1
