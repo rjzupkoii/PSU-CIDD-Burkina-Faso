@@ -9,14 +9,12 @@ source ./calibrationLib.sh
 
 # Settings for the cluster
 user='rbz5100'
+replicates=0
 
 # Replicate settings for studies
 DENSITY_LIST="4.301 3.0"
 IMPORTATION_LIST="3 6 9"
 MUTATION_LIST="0 0.01983"
-
-# Note that studies 1 and 2 are reserved for calibration and validation respectively.
-study=3
 
 # Iterate over all of the key variables and create the studies
 for month in `seq 1 1 12`; do
@@ -25,23 +23,22 @@ for month in `seq 1 1 12`; do
       for mutation in $MUTATION_LIST; do
 
         # Prepare the files
-        file="bfa-import-$month-$importation-$density-$mutation.yml"
-        sed 's/#MONTH#/'"$month"'/g' bfa-importation-template.yml > $file
-        sed -i 's/#PARASITEDENSITY#/'"$density"'/g' $file
-        sed -i 's/#IMPORTATIONS#/'"$importation"'/g' $file
-        sed -i 's/#MUTATION#/'"$mutation"'/g' $file
+        configuration="bfa-import-$month-$importation-$density-$mutation.yml"
+        sed 's/#MONTH#/'"$month"'/g' bfa-importation-template.yml > $configuration
+        sed -i 's/#PARASITEDENSITY#/'"$density"'/g' $configuration
+        sed -i 's/#IMPORTATIONS#/'"$importation"'/g' $configuration
+        sed -i 's/#MUTATION#/'"$mutation"'/g' $configuration
 
-        file="bfa-import-$month-$importation-$density-$mutation.pbs"
-        sed 's/#FILENAME#/'"$file"'/g' template.job > $file
-        sed -i 's/#STUDY#/'"$study"'/g' $file       
+        job="bfa-import-$month-$importation-$density-$mutation.pbs"
+        sed 's/#FILENAME#/'"$configuration"'/g' template.job > $job
 
         # Queue a single job
         check_delay $user
-        qsub $file
-        let "study+=1"
+        qsub $job
+        let "replicates+=1"
       done
     done
   done
 done
 
-echo "Jobs run: $((study - 3))"
+echo "Jobs run: $replicates"

@@ -20,7 +20,7 @@ days_between_notifications: 30
 initial_seed_number: 0
 
 # Connection string for the PostgreSQL database
-connection_string: "host=masimdb.vmhost.psu.edu dbname=burkinafaso user=sim password=sim connect_timeout=60"
+connection_string: "host=masimdb.vmhost.psu.edu dbname=burkinafaso_seasonal user=sim password=sim connect_timeout=60"
 
 # Record the genomic data
 record_genome_db: true
@@ -223,7 +223,8 @@ events:
   - name: importation_periodically_random_event
     info:
       - day: 2018/#MONTH#/1
-        genotype_id: 68
+        # TNY--Y1x
+        genotype_id: 69
         count: #IMPORTATIONS#
         log_parasite_density: #PARASITEDENSITY#
   - name: turn_off_mutation

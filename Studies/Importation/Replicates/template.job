@@ -2,8 +2,8 @@
 
 #PBS -A mfb9_b_g_sc_default
 #PBS -l pmem=96gb
-#PBS -l nodes=1:ppn=1:rhel7:steam
+#PBS -l nodes=1:ppn=1:rhel7:stmem
 #PBS -l walltime=96:00:00
 
 cd $PBS_O_WORKDIR
-./MaSim -i #FILENAME# -s #STUDY# -r DbReporterDistrict
+./MaSim -i #FILENAME# -s 3 -r DbReporterDistrictls
