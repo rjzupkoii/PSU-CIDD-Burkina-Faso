@@ -1,9 +1,9 @@
 -- All 580Y genotypes
 select sd.replicateid,
-  cast((regexp_match(c.filename, '-(\d)-(\d)-([\d.]*)-(\d.\d*)'))[1] as integer) AS month,
-  cast((regexp_match(c.filename, '-(\d)-(\d)-([\d.]*)-(\d.\d*)'))[2] as integer) AS imports,
-  case when ((regexp_match(c.filename, '-(\d)-(\d)-([\d.]*)-(\d.\d*)'))[3] = '3.0') then 0 else 1 end AS symptomatic,
-  case when ((regexp_match(c.filename, '-(\d)-(\d)-([\d.]*)-(\d.\d*)'))[4] = '0.') then 0 else 1 end AS mutations,
+  cast((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[1] as integer) AS month,
+  cast((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[2] as integer) AS imports,
+  case when ((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[3] = '3.0') then 0 else 1 end AS symptomatic,
+  case when ((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[4] = '0.') then 0 else 1 end AS mutations,
   sd.dayselapsed, 
   infectedindividuals, 
   clinicalepisodes, 
@@ -34,10 +34,10 @@ order by replicateid, dayselapsed
 	
 -- TNY--Y1x importations only
 select sd.replicateid,
-  cast((regexp_match(c.filename, '-(\d)-(\d)-([\d.]*)-(\d.\d*)'))[1] as integer) AS month,
-  cast((regexp_match(c.filename, '-(\d)-(\d)-([\d.]*)-(\d.\d*)'))[2] as integer) AS imports,
-  case when ((regexp_match(c.filename, '-(\d)-(\d)-([\d.]*)-(\d.\d*)'))[3] = '3.0') then 0 else 1 end AS symptomatic,
-  case when ((regexp_match(c.filename, '-(\d)-(\d)-([\d.]*)-(\d.\d*)'))[4] = '0.') then 0 else 1 end AS mutations,
+  cast((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[1] as integer) AS month,
+  cast((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[2] as integer) AS imports,
+  case when ((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[3] = '3.0') then 0 else 1 end AS symptomatic,
+  case when ((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[4] = '0.') then 0 else 1 end AS mutations,
   sd.dayselapsed, 
   infectedindividuals, 
   clinicalepisodes, 
@@ -65,3 +65,17 @@ inner join sim.configuration c on c.id = r.configurationid
 where r.endtime is not null
 order by replicateid, dayselapsed
 	
+
+-- Count of running replicates
+select c.studyid, c.filename, count(r.id) as replicates,
+  case when ((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[3] = '3.0') then 0 else 1 end AS symptomatic,
+  case when ((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[4] = '0.') then 0 else 1 end AS mutations,
+  cast((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[1] as integer) AS month,
+  cast((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[2] as integer) AS imports,
+  sum(case when r.endtime is null then 1 else 0 end) as running,
+  sum(case when r.endtime is not null then 1 else 0 end) as complete
+from sim.configuration c
+  inner join sim.replicate r on r.configurationid = c.id
+where c.studyid > 2
+group by c.studyid, c.filename
+order by symptomatic, mutations, month, imports

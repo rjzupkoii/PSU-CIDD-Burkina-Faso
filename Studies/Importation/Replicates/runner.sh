@@ -14,7 +14,7 @@ replicates=0
 # Replicate settings for studies
 DENSITY_LIST="4.301 3.0"
 IMPORTATION_LIST="3 6 9"
-MUTATION_LIST="0 0.01983"
+MUTATION_LIST="0 0.001983"
 
 # Iterate over all of the key variables and create the studies
 for month in `seq 1 1 12`; do
