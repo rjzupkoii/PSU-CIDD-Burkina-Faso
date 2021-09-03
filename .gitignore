@@ -9,6 +9,9 @@
 /**/data/
 /**/out/
 
+# Ignore replicate CSV files
+/Studies/**/replicates.csv
+
 # Ignore other directories as needed
 Analysis/Movement/plots/
 Plots/reference/
