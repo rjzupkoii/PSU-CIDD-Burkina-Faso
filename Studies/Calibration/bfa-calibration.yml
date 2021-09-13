@@ -150,13 +150,12 @@ immune_system_information:
   # (per year) age-dependent faster acquisition of immunity from age 1 to age 10
   immune_inflation_rate: 0.01
 
-  # mix and max probabilities of experiencing symptoms as a result of a new infection
+  # Max probability of experiencing symptoms as a result of a new infection
   # the actual probability will depend on the host's immunity
-  min_clinical_probability: 0.005
   max_clinical_probability: 0.99
 
   # slope of sigmoidal prob-v-immunity function (parameter z in supplement of 2015 LGH paper) 
-  immune_effect_on_progression_to_clinical: 4.5
+  immune_effect_on_progression_to_clinical: 4
 
   # age at which immune function is mature
   age_mature_immunity: 10
@@ -165,7 +164,7 @@ immune_system_information:
   factor_effect_age_mature_immunity: 1
 
   # Adjust the infliction point in the curve
-  midpoint: 0.15
+  midpoint: 0.4
 
 # Settings that determine how long an individual stays in a given location
 circulation_info:
@@ -555,31 +554,6 @@ update_frequency: 7
 # if an infected and asymptomatic host is bitten and infected by a new 
 # parasite clone, this setting allows the new infection to cause symptoms
 allow_new_coinfection_to_cause_symtoms: true
-
-# TODO, is this used elsewhere in the code?
-# this functionality works, but it was not used in any analyses for the 2015 LGH paper
-external_population_circulation_information:
-  max_relative_moving_value: 35
-  number_of_moving_levels: 100
-  moving_level_distribution:
-    #  distribution: Exponential
-    distribution: Gamma
-    Exponential:
-      scale: 0.17
-    Gamma:
-      mean: 5
-      sd: 10
-  circulation_percent: [0.0, 0.01, 0.01, 0.01, 0.01 ]
-  length_of_stay:
-    # drawn from gamma distribution?
-    mean: 5
-    sd: 10
-  daily_EIR: [0.01,0.01,0.01,0.01,0.1]
-  seasonal_EIR:
-    a: [1]
-    phi: [180]
-    period: 360
-    min_value: 0.1
 
 # free recombination among the drug resistance loci
 using_free_recombination: true
