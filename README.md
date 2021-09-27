@@ -20,6 +20,14 @@ Studies     - Configuration files used for model validation and *de novo* mutati
 
 All simulations were performed on the Pennsylvania State University’s Institute for Computational and Data Sciences’ Roar supercomputer using the configurations present in [Studies](Studies/) and the replicate queuing scripts present in [Studies/Replicates](Studies/Replicates).
 
+## Model Validation
+
+The model validation can be checked using the `plot_validation.m` MATLAB function in [PSU-CIDD-MaSim-Support](https://github.com/bonilab/PSU-CIDD-MaSim-Support) with the following parameters:
+
+```MATLAB
+plot_validation('cases', 'data/bfa-17576-verification-data.csv', 'data/bfa-weighted_pfpr.csv', 'ci', [605 360 990], 'treated', 0.832)
+```
+
 # Sources
 
 Adam Auton (2021). Red Blue Colormap (https://www.mathworks.com/matlabcentral/fileexchange/25536-red-blue-colormap), MATLAB Central File Exchange. Retrieved August 9, 2021.
