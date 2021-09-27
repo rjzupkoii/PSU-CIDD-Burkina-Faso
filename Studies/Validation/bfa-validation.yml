@@ -36,8 +36,8 @@ starting_date: 2007/1/1
 # Start recording in 2018 since that's the major shift took place
 start_of_comparison_period: 2018/1/1
 
-# Ending date is 2018 plus 5 years for validatoin
-ending_date: 2023/1/1
+# Ending date is 2023 plus 5 years for validation
+ending_date: 2023/12/31
 
 # Date to start collecting data, 1 year before start of comparison
 start_collect_data_day: 1826 
@@ -157,9 +157,8 @@ immune_system_information:
   # (per year) age-dependent faster acquisition of immunity from age 1 to age 10
   immune_inflation_rate: 0.01
 
-  # mix and max probabilities of experiencing symptoms as a result of a new infection
+  # Max probability of experiencing symptoms as a result of a new infection
   # the actual probability will depend on the host's immunity
-  min_clinical_probability: 0.005
   max_clinical_probability: 0.99
 
   # slope of sigmoidal prob-v-immunity function (parameter z in supplement of 2015 LGH paper) 
@@ -192,12 +191,6 @@ circulation_info:
     sd: 10
 
 # Definition for initial parasite
-#
-# 1. loc 
-# 2. id (this is the resistance type of the parasite) 
-# 3. prevalence unweighted by biting rate
-#
-# location id is -1 results in all locations having the same initial parasites
 initial_parasite_info:
   - location_id: -1
     parasite_info:

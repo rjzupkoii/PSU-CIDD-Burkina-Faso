@@ -155,7 +155,7 @@ immune_system_information:
   max_clinical_probability: 0.99
 
   # slope of sigmoidal prob-v-immunity function (parameter z in supplement of 2015 LGH paper) 
-  immune_effect_on_progression_to_clinical: 4
+  immune_effect_on_progression_to_clinical: 4.5
 
   # age at which immune function is mature
   age_mature_immunity: 10
@@ -164,7 +164,7 @@ immune_system_information:
   factor_effect_age_mature_immunity: 1
 
   # Adjust the infliction point in the curve
-  midpoint: 0.4
+  midpoint: 0.15
 
 # Settings that determine how long an individual stays in a given location
 circulation_info:
