@@ -6,4 +6,4 @@
 #PBS -l walltime=96:00:00
 
 cd $PBS_O_WORKDIR
-./MaSim -i bfa-fast-no-asaq.yml -s 3
+./MaSim -i bfa-fast-no-asaq.yml -s 3 -r DbReporter

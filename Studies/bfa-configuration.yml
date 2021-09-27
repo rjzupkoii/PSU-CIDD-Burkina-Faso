@@ -544,10 +544,6 @@ strategy_db:
     distribution: [0.68, 0.025, 0.013, 0.049, 0.124, 0.022, 0.015, 0.056, 0.016]
 initial_strategy_id: 0
 
-# This number use to determine whether a therapy is "useful" or not and it is used to calculate 
-# the useful therapeutic duration of a therapy
-tf_rate: 0.1
-
 # Days from end of liver-stage infection to appearance of symptoms
 days_to_clinical_under_five: 4
 days_to_clinical_over_five: 6
