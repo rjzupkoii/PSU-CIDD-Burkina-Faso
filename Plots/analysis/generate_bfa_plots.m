@@ -16,12 +16,12 @@ if ~exist('out', 'dir'), mkdir('out'); end
 %      exact sizes can be changed though
 plot_heatmaps(FREQUENCY, STARTDATE);
 
-% plot_district_frequency(DIRECTORY, STARTDATE);
-% plot_regional_frequency(DIRECTORY, STARTDATE);
-% plot_national_frequency(DIRECTORY, STARTDATE);
-%  
-% plot_frequency_treatmentfailures(DIRECTORY, STARTDATE);
-% plot_genotype_frequency(DIRECTORY, STARTDATE);
-% 
-% plot_treatment_data(DIRECTORY, STARTDATE);
-% plot_treatment_failures(DIRECTORY, STARTDATE);
+plot_district_frequency(DIRECTORY, STARTDATE);
+plot_regional_frequency(DIRECTORY, STARTDATE);
+plot_national_frequency(DIRECTORY, STARTDATE);
+ 
+plot_frequency_treatmentfailures(DIRECTORY, STARTDATE);
+plot_genotype_frequency(DIRECTORY, STARTDATE);
+
+plot_treatment_data(DIRECTORY, STARTDATE);
+plot_treatment_failures(DIRECTORY, STARTDATE);
