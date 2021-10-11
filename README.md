@@ -6,15 +6,15 @@ The origin repository for the simulation can be found at [maciekboni/PSU-CIDD-Ma
 
 ## Organization
 
-Analysis    - Scripts and data related to analysis subtasks (ex., movement calibration).
+- `Analysis` contains Scripts and data related to analysis subtasks (ex., movement calibration).
 
-GIS         - GIS files for Burkina Faso, as prepared for the simulation.
+- `GIS` contains the GIS files for Burkina Faso, as prepared for the simulation.
 
-Plots       - MATLAB and Python scripts used to generate analysis and manuscript plots.
+- `Plots` contains the MATLAB and Python scripts used to generate analysis and manuscript plots.
 
-Replicates - Code needed to run the replicates on the ACI cluster.
+- `Replicates` contains the scripts and files needed to run the replicates on the ACI cluster.
 
-Studies     - Configuration files used for model validation and *de novo* mutation simulations (business as usual, private market elimination, and multiple-first line therapies).
+- `Studies` contains the configuration files used for model validation and *de novo* mutation simulations (business as usual, private market elimination, and multiple-first line therapies).
 
 ## Model Execution
 
