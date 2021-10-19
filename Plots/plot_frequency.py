@@ -136,8 +136,8 @@ if __name__ == "__main__":
 
     # Immediate AL/DP MFT and private market elimination
     intermediary = prepare('../Analysis/Loader/out/bfa-aldp-rapid/*-frequencies.csv', genotypes)
-    plot('2007-01-01', 'Genotype Frequency with Immediate AL/DHA-PPQ MFT and Private Market Elimination', 'bfa-aldp-rapid-genotype-frequency.png', *intermediary)
+    plot('2007-01-01', 'Genotype Frequency with Immediate AL/DHA-PPQ MFT and Private Market Elimination', 'out/bfa-aldp-rapid-genotype-frequency.png', *intermediary)
 
     # Ten-year phase in of AL/DP MFT and private market elimination
     intermediary = prepare('../Analysis/Loader/out/bfa-aldp10-tenyear/*-frequencies.csv', genotypes)
-    plot('2007-01-01', 'Genotype Frequency with Phased in AL/DHA-PPQ MFT and Private Market Elimination over 10 years', 'bfa-aldp10-tenyear-genotype-frequency.png', *intermediary)    
+    plot('2007-01-01', 'Genotype Frequency with Phased in AL/DHA-PPQ MFT and Private Market Elimination over 10 years', 'out/bfa-aldp10-tenyear-genotype-frequency.png', *intermediary)    

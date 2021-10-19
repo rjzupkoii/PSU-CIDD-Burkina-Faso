@@ -3,6 +3,10 @@
 # plot_violin.py
 #
 # Clean the temp from the loader and plot is as violin plots.
+#
+# Note that this script is fairly fragile since it assumes that all of the 
+# replicates have been completed, CSV files generated with the MATLAB script
+# and annual data files are in the correct path.
 import csv
 import glob
 import matplotlib.pyplot as plt 
