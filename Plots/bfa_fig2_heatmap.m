@@ -7,7 +7,7 @@
 clear;
 
 % Setup our enviornment
-addpath('../Analysis/Common');
+addpath('include');
 if ~exist('out', 'dir'), mkdir('out'); end
 
 % Settings for the specific study being plotted
