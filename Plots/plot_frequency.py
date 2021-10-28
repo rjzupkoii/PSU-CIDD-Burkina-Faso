@@ -140,4 +140,15 @@ if __name__ == "__main__":
 
     # Ten-year phase in of AL/DP MFT and private market elimination
     intermediary = prepare('../Analysis/Loader/out/bfa-aldp10-tenyear/*-frequencies.csv', genotypes)
-    plot('2007-01-01', 'Genotype Frequency with Phased in AL/DHA-PPQ MFT and Private Market Elimination over 10 years', 'out/bfa-aldp10-tenyear-genotype-frequency.png', *intermediary)    
+    plot('2007-01-01', 'Genotype Frequency with Phased in AL/DHA-PPQ MFT and Private Market Elimination over 10 years', 'out/bfa-aldp10-tenyear-genotype-frequency.png', *intermediary) 
+
+    # Sensitivity analysis
+    intermediary = prepare('../Analysis/Loader/out/bfa-0.01983/*-frequencies.csv', genotypes)
+    plot('2007-01-01', 'Genotype Frequency with Very Fast Mutation Rate (0.01983)', 'out/bfa-0.01983-genotype-frequency.png', *intermediary)
+    intermediary = prepare('../Analysis/Loader/out/bfa-0.009915/*-frequencies.csv', genotypes)
+    plot('2007-01-01', 'Genotype Frequency with Fast Mutation Rate (0.009915)', 'out/bfa-0.009915-genotype-frequency.png', *intermediary)
+    intermediary = prepare('../Analysis/Loader/out/bfa-0.0003966/*-frequencies.csv', genotypes)
+    plot('2007-01-01', 'Genotype Frequency with Slow Mutation Rate (0.0003966)', 'out/bfa-0.0003966-genotype-frequency.png', *intermediary)
+    intermediary = prepare('../Analysis/Loader/out/bfa-0.0001983/*-frequencies.csv', genotypes)
+    plot('2007-01-01', 'Genotype Frequency with Very Slow Mutation Rate (0.0001983)', 'out/bfa-0.0001983-genotype-frequency.png', *intermediary)
+    
