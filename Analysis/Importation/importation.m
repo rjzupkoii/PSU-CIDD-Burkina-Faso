@@ -5,13 +5,13 @@
 addpath('include');
 clear;
 
-%generate(@plot_importation_replicates, 'data/data.csv', 'out/replicates-%d-symptomatic-%d-mutations-%d.png');
+generate(@plot_importation_replicates, 'data/data.csv', 'out/replicates-%d-symptomatic-%d-mutations-%d.png');
 generate(@plot_importation_stats, 'data/data.csv', 'out/summary-%d-symptomatic-%d-mutations-%d.png');
 
 function [] = generate(plotter, filename, imagename)
     for imports = 3:3:9
         for symptomatic = 0:1
-            for mutations = 0:1 
+            for mutations = 0:1
                 % Render the image
                 plotter(filename, symptomatic, mutations, imports);
                                                 
