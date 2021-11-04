@@ -41,6 +41,17 @@ def plot_mft(filter, yaxis, filename, showmeans=True):
     plot(filter, yaxis, filename, labels, showmeans)
 
 
+def plot_sensitivity(filter, yaxis, filename, showmeans=True):
+    labels = [
+        'Very Fast',
+        'Fast',
+        'Rapid Private Market Elimination\nBaseline',
+        'Slow',
+        'Very Slow'
+    ]
+    plot(filter, yaxis, filename, labels, showmeans)
+
+
 def plot(filter, yaxis, filename, labels, showmeans):
     # Set our formatting
     rc_file("matplotlibrc-violin")
@@ -56,24 +67,30 @@ def plot(filter, yaxis, filename, labels, showmeans):
     data = np.zeros((len(years), replicates, studies))
     for i, yr in enumerate(years):
         data[i,:,:] = pd.read_csv(Path(path_root, filter.format(yr)), index_col=0, header=None).T
-    
+
+    # Determine the divisor for the data set - this gives us the rows and columns
+    if len(labels) % 3 == 0:
+        divisor = 3
+    elif len(labels) % 5 == 0:
+        divisor = 5
+    else:
+        print("Unbalanced number of entries {}, expected divisor of 3 or 5".format(len(labels)))
+        exit(1)
+
     # Violin plot, grouped by policy
     data_labels = temp.columns
     data_labels = labels
-    fig, axs = plt.subplots(nrows=int(len(labels) / 3), ncols=3, figsize=(20, 25), sharey=True, sharex=True,
+    fig, axs = plt.subplots(nrows=int(len(labels) / divisor), ncols=divisor, figsize=(20, 25), sharey=True, sharex=True,
                             gridspec_kw={'left':0.09, 'right':0.97, 'top':0.95, 'bottom':0.06, 'wspace':0.2, 'hspace':0.22})
-    
+
     # Format the sub plots
     for ax, (il, l) in zip(axs.flat, enumerate(data_labels)):
-        if showmeans:
-            ax.violinplot(data[:,:,il].T, positions=range(len(years)), showmeans=True)
-        else:
-            ax.violinplot(data[:,:,il].T, positions=range(len(years)))
+        ax.violinplot(data[:,:,il].T, positions=range(len(years)), showmeans=showmeans)
         ax.set_xticks(range(len(years)))
         ax.set_xticklabels(years)
-        if il % 3 == 0:
+        if il % divisor == 0:
             ax.set_ylabel(yaxis)
-        if il // 3 == 2:
+        if il // divisor == 2:
             ax.set_xlabel('Model year')
         ax.set_title(l, fontsize=20)
 
@@ -130,6 +147,5 @@ if __name__ == "__main__":
     plot_core("yr{}_knf.csv", "Frequency of \n$\it{Pfcrt}$-k76 $\it{Pfmrd}$1-N86 $\it{Pfmrd}$1-184F", "out/bfa-2025_2035-3x3_knf.png")
     plot_core("yr{}_plasmespin.csv", "Frequency of \nmulticopy $\it{Plasmepsin}$ 2,3", "out/bfa-2025to2035-plasmepsin.png", False)
     plot_core("yr{}_tmfailures.csv", "Treatment Failure Rate", "out/bfa-2025to2035-treatmentfailures.png")
-    
-    plot_mft("yr{}_mft_580y.csv", "580Y Frequency", "out/bfa-2025to2035-mft-580y.png")
-    
+    plot_mft("yr{}_mft_580y.csv", "580Y Frequency", "out/bfa-2025to2035-mft-580y.png")    
+    plot_sensitivity('yr{}_sensitivity_580y.csv', '580Y Frequency', 'out/bfa-2025to2035-sensitivity-580y.png')
