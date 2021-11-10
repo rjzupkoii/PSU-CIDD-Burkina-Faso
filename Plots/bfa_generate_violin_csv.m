@@ -18,7 +18,6 @@ DATES = [2025 [6575 6606 6634 6665 6695 6726 6756 6787 6818 6848 6879 6909];
 generate_core_csv(PATH, DATES);
 generate_mft_csv(PATH, DATES);
 generate_sensitivity_csv(PATH, DATES);
-     
 
 % Generate the CSV files for the core policies in the study        
 function [] = generate_core_csv(path, dates)
@@ -96,6 +95,11 @@ end
 % Generate the CSV files for the sensitivity analysis
 function [] = generate_sensitivity_csv(path, dates)
    policies = {
+       'bfa-0.01983', 'Status Quo, Very Fast Mutation Rate';
+       'bfa-0.009915', 'Status Quo, Fast Mutation Rate';
+       'bfa-fast-no-asaq', 'Status Quo, Baseline Mutation Rate';
+       'bfa-0.0003966', 'Status Quo, Slow Mutation Rate';
+       'bfa-0.0001983', 'Status Quo, Very Slow Mutation Rate';
        'bfa-aldp-0.01983' 'Rapid AL/DP MFT, Very Fast Mutation Rate';
        'bfa-aldp-0.009915' 'Rapid AL/DP MFT, Fast Mutation Rate';
        'bfa-aldp', 'Rapid AL/DP MFT, Baseline Mutation Rate';

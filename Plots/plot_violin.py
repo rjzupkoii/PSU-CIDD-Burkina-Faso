@@ -45,14 +45,27 @@ def plot_sensitivity(filter, yaxis, filename, showmeans=True):
     labels = [
         'Very Fast',
         'Fast',
+        'Status Quo\nBaseline',
+        'Slow',
+        'Very Slow',
+        'Very Fast',
+        'Fast',
+        'Rapid AL/DHA-PPQ MFT\nBaseline',
+        'Slow',
+        'Very Slow',
+        'Very Fast',
+        'Fast',
         'Rapid Private Market Elimination\nBaseline',
         'Slow',
-        'Very Slow'
+        'Very Slow'                
     ]
     plot(filter, yaxis, filename, labels, showmeans)
 
 
 def plot(filter, yaxis, filename, labels, showmeans):
+    # Note the colors used
+    COLORS = ['#1b9e77', '#d95f02', '#7570b3']
+
     # Set our formatting
     rc_file("matplotlibrc-violin")
 
@@ -69,10 +82,10 @@ def plot(filter, yaxis, filename, labels, showmeans):
         data[i,:,:] = pd.read_csv(Path(path_root, filter.format(yr)), index_col=0, header=None).T
 
     # Determine the divisor for the data set - this gives us the rows and columns
-    if len(labels) % 3 == 0:
-        divisor = 3
-    elif len(labels) % 5 == 0:
+    if len(labels) % 5 == 0:
         divisor = 5
+    elif len(labels) % 3 == 0:
+        divisor = 3        
     else:
         print("Unbalanced number of entries {}, expected divisor of 3 or 5".format(len(labels)))
         exit(1)
@@ -85,7 +98,10 @@ def plot(filter, yaxis, filename, labels, showmeans):
 
     # Format the sub plots
     for ax, (il, l) in zip(axs.flat, enumerate(data_labels)):
-        ax.violinplot(data[:,:,il].T, positions=range(len(years)), showmeans=showmeans)
+        # Generate the plot, hold on to the object for formatting
+        vp = ax.violinplot(data[:,:,il].T, positions=range(len(years)), showmeans=showmeans)
+
+        # Format the plot
         ax.set_xticks(range(len(years)))
         ax.set_xticklabels(years)
         if il % divisor == 0:
@@ -93,6 +109,17 @@ def plot(filter, yaxis, filename, labels, showmeans):
         if il // divisor == 2:
             ax.set_xlabel('Model year')
         ax.set_title(l, fontsize=20)
+
+        # Adjust the color of the plot, assuming each row is a similar concept
+        # HOWEVER, this for the MFT plot since all items are related
+        if len(data_labels) == 6:
+            continue
+        index = int(il / divisor)
+        for part in ('cbars','cmins','cmaxes','cmeans', 'cmedians'):
+            if part in vp:
+                vp[part].set_edgecolor(COLORS[index])
+        for body in vp['bodies']:
+            body.set_facecolor(COLORS[index])
 
     # Save the figure to disk
     fig.savefig(filename)
@@ -143,7 +170,7 @@ if __name__ == "__main__":
 
     # Plots that should have data from Matlab, plasmespin needs to be plotted without means
     plot_core("yr{}_580y.csv", "580Y Frequency", "out/bfa-2025to2035-580y.png")
-    plot_core("yr{}_knf_plasmepsin.csv", "Frequency of \n 3x3$\it{knf}$ and multicopy $\it{Plasmepsin}$ 2,3", "out/bfa-2025_2035-3x3_knf_plasmepsin.png")
+    plot_core("yr{}_knf_plasmepsin.csv", "3x3$\it{knf}$ and multicopy $\it{Plasmepsin}$ 2,3", "out/bfa-2025_2035-3x3_knf_plasmepsin.png")
     plot_core("yr{}_knf.csv", "Frequency of \n$\it{Pfcrt}$-k76 $\it{Pfmrd}$1-N86 $\it{Pfmrd}$1-184F", "out/bfa-2025_2035-3x3_knf.png")
     plot_core("yr{}_plasmespin.csv", "Frequency of \nmulticopy $\it{Plasmepsin}$ 2,3", "out/bfa-2025to2035-plasmepsin.png", False)
     plot_core("yr{}_tmfailures.csv", "Treatment Failure Rate", "out/bfa-2025to2035-treatmentfailures.png")
