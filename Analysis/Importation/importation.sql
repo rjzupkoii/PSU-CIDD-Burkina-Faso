@@ -1,3 +1,27 @@
+-- Query to generate list of replicates that need to be run
+select replace(filename, '.yml', '.pbs') as filename, 
+  target - count as goal
+from (
+select filename, 
+  symptomatic, mutations, month, imports,
+  running + complete as count,
+  case when mutations = 0 then 50 else 10 end as target
+from (
+select c.studyid, c.filename, count(r.id) as replicates,
+  case when ((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[3] = '3.0') then 0 else 1 end AS symptomatic,
+  case when ((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[4] = '0.') then 0 else 1 end AS mutations,
+  cast((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[1] as integer) AS month,
+  cast((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[2] as integer) AS imports,
+  sum(case when r.endtime is null then 1 else 0 end) as running,
+  sum(case when r.endtime is not null then 1 else 0 end) as complete
+from sim.configuration c
+  inner join sim.replicate r on r.configurationid = c.id
+where c.studyid = 7
+group by c.studyid, c.filename) iq) xls
+where (target - count) != 0
+order by mutations desc, symptomatic, month, imports
+
+
 -- All 580Y genotypes
 select sd.replicateid,
   cast((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[1] as integer) AS month,
