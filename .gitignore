@@ -11,6 +11,7 @@
 
 # Ignore replicate CSV files
 /Studies/**/replicates.csv
+/Replicates/**/replicates.csv
 
 # Ignore other directories as needed
 Analysis/Movement/plots/
