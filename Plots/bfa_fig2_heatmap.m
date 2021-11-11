@@ -4,6 +4,10 @@
 % the PLOS GPH manuscript. Note that orginally heatmaps were generated for
 % each of the study type, but the final manuscirpt was limited to just hte
 % one de novo plot.
+%
+% NOTE that the data used to generate the heatmaps in MATLAB is also being
+% exported to CSV for processing in ArcGIS Pro. Converting the CSV files to
+% ASC files for import was done by just editing them in Notepad++.
 clear;
 
 % Setup our enviornment
@@ -32,7 +36,7 @@ function [] = parse_file(filename, name, startdate)
         generate(raw, day, startdate);
         ndx = ndx + 1;
     end
-    
+        
     sgtitle(sprintf("580Y Frequency %s", name), 'FontSize', 24);
 end
 
@@ -51,6 +55,9 @@ function [hm] = generate(raw, date, startDate)
         map(row, col) = values(4);    
     end
     
+    % Write the data to a CSV file
+    writematrix(map, sprintf('map-%d.csv', date));
+        
     % Covert the data, prepare the title
     days = addtodate(datenum(startDate), date, 'day');
     title = datestr(datetime(days, 'ConvertFrom', 'datenum'), 'mmmm yyyy');
