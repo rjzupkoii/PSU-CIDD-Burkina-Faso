@@ -123,7 +123,11 @@ def plot(studyDate, title, filename, data, dates, replicates, type='median', yli
 
     # Finalize the formatting and save
     plt.legend(frameon=False)
-    plt.savefig(filename)
+    # Save the figure to disk
+    if filename.endswith('tif'):
+        plt.savefig(filename, dpi=300, format="tiff", pil_kwargs={"compression": "tiff_lzw"})
+    else:
+        plt.savefig(filename)
     plt.close()
     print("Generated plot with {} line".format(type))
     if ylimit is not None: print("Used fixed y-axis limits")

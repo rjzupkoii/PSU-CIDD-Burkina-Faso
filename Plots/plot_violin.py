@@ -122,8 +122,10 @@ def plot(filter, yaxis, filename, labels, showmeans):
             body.set_facecolor(COLORS[index])
 
     # Save the figure to disk
-    fig.savefig(filename)
-
+    if filename.endswith('tif'):
+        fig.savefig(filename, dpi=300, format="tiff", pil_kwargs={"compression": "tiff_lzw"})
+    else:
+        fig.savefig(filename)
 
 
 # Convert the temp from the loader to the expected format
