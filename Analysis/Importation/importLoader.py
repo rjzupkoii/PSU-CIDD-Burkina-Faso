@@ -4,6 +4,9 @@
 # importLoader.py
 #
 # This Python script pulls the relevent importation study data from the server.
+# 
+# Once the configuration replicates are downloaded they can be merged via sed:
+# sed 1d bfa-importation*.csv > bfa-merged.csv
 ##
 import csv
 import os
