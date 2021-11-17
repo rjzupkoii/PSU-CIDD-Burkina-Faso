@@ -109,8 +109,14 @@ order by symptomatic, mutations, month, imports
 
 -- View for replicate data
 CREATE OR REPLACE VIEW public.v_importation_replicates AS
- SELECT c.id AS configurationid, r.id AS replicateid,
-  (regexp_match(c.filename::text, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'::text))[2]::integer AS imports
-FROM sim.configuration c
-  JOIN sim.replicate r ON r.configurationid = c.id
-WHERE c.studyid = 7
+SELECT iq.configurationid, iq.replicates, iq.mutations,
+  CASE WHEN iq.mutations = 0::double precision THEN 50 ELSE 10 END AS target
+  FROM (
+    SELECT c.id AS configurationid,
+      count(r.id) AS replicates,
+      (regexp_match(c.filename::text, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'::text))[4]::double precision AS mutations
+    FROM sim.configuration c
+      JOIN sim.replicate r ON r.configurationid = c.id
+    WHERE c.studyid = 7
+    GROUP BY c.id, c.filename) iq;
+ALTER TABLE public.v_importation_replicates OWNER TO sim;
