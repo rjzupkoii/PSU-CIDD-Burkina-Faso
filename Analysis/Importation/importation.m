@@ -5,7 +5,7 @@
 addpath('include');
 clear;
 
-generate(@plot_importation_replicates, 'data/bfa-merged.csv', 'out/replicates-%d-symptomatic-%d-mutations-%d.png');
+generate(@plot_importation_replicates, 'data/bfa-merged.csv', 'out/imports-%d-symptomatic-%d-mutations-%d.png');
 generate(@plot_importation_stats, 'data/bfa-merged.csv', 'out/summary-%d-symptomatic-%d-mutations-%d.png');
 
 function [] = generate(plotter, filename, imagename)
