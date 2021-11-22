@@ -9,6 +9,7 @@
 # sed 1d bfa-importation*.csv > bfa-merged.csv
 ##
 import csv
+import glob
 import os
 import psycopg2
 import sys
@@ -16,8 +17,16 @@ import sys
 sys.path.insert(1, '../Loader')
 from utility import progressBar
 
+
 # Connection string for the database
 CONNECTION = "host=masimdb.vmhost.psu.edu dbname=burkinafaso user=sim password=sim"
+
+# Header to use for the merged CSV file
+HEADER = ["replicateid","month","imports","symptomatic","mutations","dayselapsed","infectedindividuals","clinicalepisodes","clinicaloccurrences","weightedoccurrences"]
+
+# Filename and path fo the merged CSV file
+MERGED = "data/bfa-merged.csv"
+
 
 def get_configurations():
     sql = """
@@ -90,6 +99,15 @@ def main():
         count = count + 1
         progressBar(count, len(configurations))
 
+    print("Merging files...")
+    os.remove(MERGED)
+    with open(MERGED, "wb") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(HEADER)
+        for file in glob.glob("data/*.csv"):
+            with open(file) as infile:
+                csvfile.write(infile.read())
+            
 
 def select(sql, parameters):
     # Open the connection
