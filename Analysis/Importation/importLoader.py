@@ -11,6 +11,7 @@
 import csv
 import glob
 import os
+import pandas as pd
 import psycopg2
 import sys
 
@@ -30,7 +31,7 @@ MERGED = "data/bfa-merged.csv"
 
 def get_configurations():
     sql = """
-        SELECT configurationid, replicates = target as done
+        SELECT configurationid, replicates = target as done, cast(replicates as int) as replicates
         FROM v_importation_replicates"""
     return select(sql, {})
 
@@ -88,16 +89,26 @@ def main():
     for row in configurations:
         # Query for the data if we don't have have the complete data
         filename = "data/bfa-importation-{}.csv".format(row[0])
-        if not(os.path.exists(filename) and row[1]):
-            data = get_replicates(row[0])
-            with open(filename, "wb") as csvfile:
-                writer = csv.writer(csvfile)
-                for row in data:
-                    writer.writerow(list(row))
+
+        # Don't update when we have all the records
+        if os.path.exists(filename) and row[1]:
+            df = pd.read_csv(filename, header=None)
+            count = len(df[0].unique())
+            if row[2] == count: continue
+
+        # Query and update the record
+        data = get_replicates(row[0])
+        with open(filename, "wb") as csvfile:
+            writer = csv.writer(csvfile)
+            for row in data:
+                writer.writerow(list(row))
 
         # Note the progress
         count = count + 1
         progressBar(count, len(configurations))
+        
+    # Print the final 100% progress bar
+    progressBar(len(configurations), len(configurations))
 
     print("Merging files...")
     os.remove(MERGED)
@@ -107,7 +118,7 @@ def main():
         for file in glob.glob("data/*.csv"):
             with open(file) as infile:
                 csvfile.write(infile.read())
-            
+
 
 def select(sql, parameters):
     # Open the connection
