@@ -4,9 +4,6 @@
 # importLoader.py
 #
 # This Python script pulls the relevent importation study data from the server.
-# 
-# Once the configuration replicates are downloaded they can be merged via sed:
-# sed 1d bfa-importation*.csv > bfa-merged.csv
 ##
 import csv
 import glob
@@ -93,8 +90,7 @@ def main():
         # Don't update when we have all the records
         if os.path.exists(filename) and row[1]:
             df = pd.read_csv(filename, header=None)
-            count = len(df[0].unique())
-            if row[2] == count: continue
+            if row[2] == len(df[0].unique()): continue
 
         # Query and update the record
         data = get_replicates(row[0])
