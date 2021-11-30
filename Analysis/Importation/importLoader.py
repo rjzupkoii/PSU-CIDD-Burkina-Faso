@@ -107,11 +107,11 @@ def main():
     progressBar(len(configurations), len(configurations))
 
     print("Merging files...")
-    os.remove(MERGED)
+    if os.path.exists(MERGED): os.remove(MERGED)
     with open(MERGED, "wb") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(HEADER)
-        for file in glob.glob("data/*.csv"):
+        for file in glob.glob("data/bfa-importation-*.csv"):
             with open(file) as infile:
                 csvfile.write(infile.read())
 
