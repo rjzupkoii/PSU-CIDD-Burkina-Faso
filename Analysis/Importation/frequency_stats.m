@@ -2,10 +2,47 @@
 % 
 % Parse the data from the simuation and calcluate the statistical power of
 % the observations.
+warning('off', 'MATLAB:MKDIR:DirectoryExists');
 addpath('include');
 clear;
 
-process('data/bfa-merged.csv', true);
+% Process the data sets
+mkdir('intermediate');
+process('data/bfa-merged.csv', false);
+
+% TODO Clip results < -4 since the importation proximy to end of model can
+% skew the results. Repeat for -3.5 and -3 for MS
+
+% Perform some stats
+%wilcoxon(3, 0);
+
+
+filename = sprintf('intermediate/final-frequency-%d-symptomatic-%d.csv', 3, 0);
+data = readmatrix(filename);
+[p, tbl, stats] = kruskalwallis(data, [], 'off');
+multcompare(stats);
+
+
+function [] = wilcoxon(imports, symptomatic)
+    % Read the data
+    filename = sprintf('intermediate/final-frequency-%d-symptomatic-%d.csv', imports, symptomatic);
+    data = readmatrix(filename);
+    
+    % Generate the p-values
+    p = nan(12, 12);
+    for ndx = 1:12
+        for ndy = ndx:12
+            p(ndx, ndy) = ranksum(data(:, ndx), data(:, ndy));
+        end
+    end
+
+    % Generate the plot
+    map = heatmap(p);
+    map.Title = sprintf('Wilcoxon rank sum (Importations: %d/mo, Symptomatic: %s)', imports, yesno(symptomatic));
+    map.XDisplayLabels = months;
+    map.YDisplayLabels = months;
+    map.MissingDataColor = [200 200 200] / 255;
+end
 
 function [] = process(filename, plot)
     % Load the data and drop de novo studies
@@ -34,10 +71,10 @@ function [] = process(filename, plot)
                 frequency(length(frequency) + 1:50) = NaN;
                 block(:, month) = frequency;
             end
-%            block(block == -Inf) = NaN;        % TODO Determine if this is valid
+%            block(block == -Inf) = -9;        % TODO Determine if this is valid
     
             % Save the data for the figure to disk
-            file = sprintf('out/final-frequency-%d-symptomatic-%d.csv', imports, symptomatic);
+            file = sprintf('intermediate/final-frequency-%d-symptomatic-%d.csv', imports, symptomatic);
             writematrix(block, file);
     
             if plot; generate_plot(block, imports, symptomatic); end
@@ -47,8 +84,7 @@ end
 
 function [] = generate_plot(block, imports, symptomatic)
     % Prepare the boxplot
-    boxplot(block, {'Janurary', 'Feburary', 'March', 'April', 'May', 'June', ...
-        'July', 'August', 'September', 'October', 'November', 'December'});
+    boxplot(block, months);
     sgtitle(sprintf('Importations: %d/mo, Symptomatic: %s', imports, yesno(symptomatic)), 'FontSize', 18);
     ylabel('580Y Frequency (log_{10})');
     graphic = gca;
