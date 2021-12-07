@@ -17,7 +17,8 @@ process('data/bfa-merged.csv', false);
 %     end
 % end
 
-generate_probablity_plot();
+generate_probablity_plot(-3.5);
+generate_probablity_plot(-3);
 
 function [] = process(filename, plot)
     % Load the data and drop de novo studies
@@ -72,7 +73,7 @@ function [] = generate_plot(block, imports, symptomatic)
     save_figure(sprintf('out/boxplot-%d-symptomatic-%d.png', imports, symptomatic));
 end
 
-function [] = generate_probablity_plot()
+function [] = generate_probablity_plot(threshold)
     labels = {};
     hold on;
     for imports = 3:3:9
@@ -84,18 +85,26 @@ function [] = generate_probablity_plot()
     
             % Calculate the probablities
             probabilities = zeros(1, 12);
+            errors = zeros(1, 12);
             for month = 1:12
-                established = sum(data(:, month) > -3.5);
+                established = sum(data(:, month) > threshold);
                 replicates = sum(~isnan(data(:, month)));
                 probabilities(month) = (established / replicates) * 100.0;
+                errors(month) = 1.96 * sqrt(abs((probabilities(month) * (1 - probabilities(month))) / replicates));
             end
     
             % Add to the plot
             scatter(1:12, probabilities, 'filled');
             labels{end + 1} = sprintf('Importations: %d/mo, Symptomatic: %s', imports, yesno(symptomatic));
+
+            ax = gca;
+            errorbar(1:12, probabilities, errors, 'LineStyle','none', ...
+                'Color', ax.ColorOrder(ax.ColorOrderIndex - 1, :), ...
+                'LineWidth', 2);
+            labels{end + 1} = '';
         end
     end
-    
+
     % Note the bounds of the rainy season
     xl = xline(6, '-.', 'Start Rainy Season');
     xl.LabelVerticalAlignment = 'middle';
@@ -107,17 +116,15 @@ function [] = generate_probablity_plot()
     legend boxoff;
     
     % Format the plot
-    title('Probablity of Establishment');
+    title(sprintf('Probablity of Establishment (threshold > %0.1f)', threshold));
     ylabel('Establishment Probablity');
-    xlabel('');
-    xlim([1 12]);
     xticks(1:12);
     xticklabels(months);
     graphic = gca;
     graphic.FontSize = 18;
 
     % Save the image to disk
-    save_figure('out/probablity_plot.png');
+    save_figure(sprintf('out/probablity%0.1f-threshold.png', threshold));
 end
 
 function [] = wilcoxon(imports, symptomatic)
