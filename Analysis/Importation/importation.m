@@ -18,7 +18,7 @@ function [] = generate(plotter, filename, imagename)
                 % Save the image to disk
                 set(gcf, 'Position',  [0, 0, 2560, 1440]);
                 image = sprintf(imagename, imports, symptomatic, mutations);
-                print('-dtiff', '-r300', image);
+                print('-dpng', '-r300', image);
                 clf;
                 close;               
             end

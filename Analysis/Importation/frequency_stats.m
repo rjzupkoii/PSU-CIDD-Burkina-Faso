@@ -8,15 +8,10 @@ clear;
 
 % Process the data sets
 mkdir('intermediate');
-process('data/bfa-merged.csv', false);
+process('data/bfa-merged.csv', true);
 
-% Generate the p-value plots
-for imports = 3:3:9
-    for symptomatic = 0:1
-        wilcoxon(imports, symptomatic);
-    end
-end
-
+% Generate the plots for the manuscript
+generate_pairwise_plots();
 generate_probablity_plot(-3.5);
 generate_probablity_plot(-3);
 
@@ -61,6 +56,14 @@ function [] = process(filename, plot)
     end
 end
 
+function [] = generate_pairwise_plots()
+    for imports = 3:3:9
+        for symptomatic = 0:1
+            wilcoxon(imports, symptomatic);
+        end
+    end
+end
+
 function [] = generate_plot(block, imports, symptomatic)
     % Prepare the boxplot
     boxplot(block, months);
@@ -74,8 +77,7 @@ function [] = generate_plot(block, imports, symptomatic)
 end
 
 function [] = generate_probablity_plot(threshold)
-    
-    % Reset for the figure
+    % Prepare for the figure
     fig = figure;
     ndx = 0;
     ymax = 0;
@@ -135,6 +137,7 @@ function [] = format(plot_title)
     xline(6, '-.', 'Start Rainy Season');
     xline(10, '-.', 'End Rainy Season');
 
+    % Append the title
     title(plot_title, 'FontWeight', 'normal', 'FontSize', 16);
 
     % Generic formatting

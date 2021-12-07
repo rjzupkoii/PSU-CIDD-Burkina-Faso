@@ -1,4 +1,5 @@
 function [] = add_rainy_season(days, ylimit)
+% Add the bounds of the rainy season to the plot
 
     % Get the unique dates and convert them to months
     days = unique(days);
