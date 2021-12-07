@@ -10,39 +10,14 @@ clear;
 mkdir('intermediate');
 process('data/bfa-merged.csv', false);
 
-% TODO Clip results < -4 since the importation proximy to end of model can
-% skew the results. Repeat for -3.5 and -3 for MS
+% Generate the p-value plots
+% for imports = 3:3:9
+%     for symptomatic = 0:1
+%         wilcoxon(imports, symptomatic);
+%     end
+% end
 
-% Perform some stats
-%wilcoxon(3, 0);
-
-
-filename = sprintf('intermediate/final-frequency-%d-symptomatic-%d.csv', 3, 0);
-data = readmatrix(filename);
-[p, tbl, stats] = kruskalwallis(data, [], 'off');
-multcompare(stats);
-
-
-function [] = wilcoxon(imports, symptomatic)
-    % Read the data
-    filename = sprintf('intermediate/final-frequency-%d-symptomatic-%d.csv', imports, symptomatic);
-    data = readmatrix(filename);
-    
-    % Generate the p-values
-    p = nan(12, 12);
-    for ndx = 1:12
-        for ndy = ndx:12
-            p(ndx, ndy) = ranksum(data(:, ndx), data(:, ndy));
-        end
-    end
-
-    % Generate the plot
-    map = heatmap(p);
-    map.Title = sprintf('Wilcoxon rank sum (Importations: %d/mo, Symptomatic: %s)', imports, yesno(symptomatic));
-    map.XDisplayLabels = months;
-    map.YDisplayLabels = months;
-    map.MissingDataColor = [200 200 200] / 255;
-end
+generate_probablity_plot();
 
 function [] = process(filename, plot)
     % Load the data and drop de novo studies
@@ -71,7 +46,10 @@ function [] = process(filename, plot)
                 frequency(length(frequency) + 1:50) = NaN;
                 block(:, month) = frequency;
             end
-%            block(block == -Inf) = -9;        % TODO Determine if this is valid
+
+            % Convert frequencies below 10^-5 to zero since these are
+            % likely a model artifact
+            block(block < -5) = -Inf;
     
             % Save the data for the figure to disk
             file = sprintf('intermediate/final-frequency-%d-symptomatic-%d.csv', imports, symptomatic);
@@ -91,9 +69,77 @@ function [] = generate_plot(block, imports, symptomatic)
     graphic.FontSize = 18;
     
     % Save the image to disk
-    set(gcf, 'Position',  [0, 0, 2560, 1440]);
-    image = sprintf('out/boxplot-%d-symptomatic-%d.png', imports, symptomatic);
-    print('-dtiff', '-r300', image);
-    clf;
-    close;
+    save_figure(sprintf('out/boxplot-%d-symptomatic-%d.png', imports, symptomatic));
+end
+
+function [] = generate_probablity_plot()
+    labels = {};
+    hold on;
+    for imports = 3:3:9
+        for symptomatic = 0
+    
+            % Load the data
+            filename = sprintf('intermediate/final-frequency-%d-symptomatic-%d.csv', imports, symptomatic);
+            data = readmatrix(filename);
+    
+            % Calculate the probablities
+            probabilities = zeros(1, 12);
+            for month = 1:12
+                established = sum(data(:, month) > -3.5);
+                replicates = sum(~isnan(data(:, month)));
+                probabilities(month) = (established / replicates) * 100.0;
+            end
+    
+            % Add to the plot
+            scatter(1:12, probabilities, 'filled');
+            labels{end + 1} = sprintf('Importations: %d/mo, Symptomatic: %s', imports, yesno(symptomatic));
+        end
+    end
+    
+    % Note the bounds of the rainy season
+    xl = xline(6, '-.', 'Start Rainy Season');
+    xl.LabelVerticalAlignment = 'middle';
+    xl = xline(10, '-.', 'End Rainy Season');
+    xl.LabelVerticalAlignment = 'middle';
+    
+    % Add the legend
+    legend(labels);
+    legend boxoff;
+    
+    % Format the plot
+    title('Probablity of Establishment');
+    ylabel('Establishment Probablity');
+    xlabel('');
+    xlim([1 12]);
+    xticks(1:12);
+    xticklabels(months);
+    graphic = gca;
+    graphic.FontSize = 18;
+
+    % Save the image to disk
+    save_figure('out/probablity_plot.png');
+end
+
+function [] = wilcoxon(imports, symptomatic)
+    % Read the data
+    filename = sprintf('intermediate/final-frequency-%d-symptomatic-%d.csv', imports, symptomatic);
+    data = readmatrix(filename);
+    
+    % Generate the p-values
+    p = nan(12, 12);
+    for ndx = 1:12
+        for ndy = ndx:12
+            p(ndx, ndy) = ranksum(data(:, ndx), data(:, ndy));
+        end
+    end
+
+    % Generate the plot
+    map = heatmap(p);
+    map.Title = sprintf('Wilcoxon rank sum (Importations: %d/mo, Symptomatic: %s)', imports, yesno(symptomatic));
+    map.XDisplayLabels = months;
+    map.YDisplayLabels = months;
+    map.MissingDataColor = [200 200 200] / 255;
+
+    % Save the image to disk
+    save_figure(sprintf('out/wilcoxon-%d-symptomatic-%d.png', imports, symptomatic));
 end
