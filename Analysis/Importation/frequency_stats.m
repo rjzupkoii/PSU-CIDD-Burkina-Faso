@@ -11,11 +11,11 @@ mkdir('intermediate');
 process('data/bfa-merged.csv', false);
 
 % Generate the p-value plots
-% for imports = 3:3:9
-%     for symptomatic = 0:1
-%         wilcoxon(imports, symptomatic);
-%     end
-% end
+for imports = 3:3:9
+    for symptomatic = 0:1
+        wilcoxon(imports, symptomatic);
+    end
+end
 
 generate_probablity_plot(-3.5);
 generate_probablity_plot(-3);
@@ -74,11 +74,15 @@ function [] = generate_plot(block, imports, symptomatic)
 end
 
 function [] = generate_probablity_plot(threshold)
-    labels = {};
-    hold on;
-    for imports = 3:3:9
-        for symptomatic = 0
     
+    % Reset for the figure
+    fig = figure;
+    ndx = 0;
+    ymax = 0;
+    titles = cell(6);
+
+    for symptomatic = 0:1
+        for imports = 3:3:9
             % Load the data
             filename = sprintf('intermediate/final-frequency-%d-symptomatic-%d.csv', imports, symptomatic);
             data = readmatrix(filename);
@@ -93,38 +97,52 @@ function [] = generate_probablity_plot(threshold)
                 errors(month) = 1.96 * sqrt(abs((probabilities(month) * (1 - probabilities(month))) / replicates));
             end
     
-            % Add to the plot
-            scatter(1:12, probabilities, 'filled');
-            labels{end + 1} = sprintf('Importations: %d/mo, Symptomatic: %s', imports, yesno(symptomatic));
+            % Note the ymax
+            if ymax < max(probabilities + errors)
+                ymax = max(probabilities + errors);
+            end
 
-            ax = gca;
-            errorbar(1:12, probabilities, errors, 'LineStyle','none', ...
-                'Color', ax.ColorOrder(ax.ColorOrderIndex - 1, :), ...
-                'LineWidth', 2);
-            labels{end + 1} = '';
+            % Move to the next subplot
+            ndx = ndx + 1;
+            subplot(2, 3, ndx);            
+                
+            % Add to the plot
+            hold on;
+            titles{ndx} = sprintf('Importations: %d/mo, Symptomatic: %s', imports, yesno(symptomatic));
+            scatter(1:12, probabilities, 15, [100 100 100] / 255, 'filled');
+            errorbar(1:12, probabilities, errors, 'LineStyle','none', 'Color', 'black');
         end
     end
 
-    % Note the bounds of the rainy season
-    xl = xline(6, '-.', 'Start Rainy Season');
-    xl.LabelVerticalAlignment = 'middle';
-    xl = xline(10, '-.', 'End Rainy Season');
-    xl.LabelVerticalAlignment = 'middle';
-    
-    % Add the legend
-    legend(labels);
-    legend boxoff;
-    
+    for ndx = 1:6
+        subplot(2, 3, ndx);
+        ylim([0 ymax]);
+        format(titles{ndx});
+    end
+
     % Format the plot
-    title(sprintf('Probablity of Establishment (threshold > %0.1f)', threshold));
-    ylabel('Establishment Probablity');
-    xticks(1:12);
-    xticklabels(months);
-    graphic = gca;
-    graphic.FontSize = 18;
+    sgtitle(sprintf('Probablity of Establishment (threshold > %0.1f)', threshold), 'FontSize', 18);
+    han = axes(fig, 'visible','off'); 
+    han.YLabel.Visible = 'on';
+    ylabel(han, {'Establishment Probablity', ''}, 'FontSize', 18);
 
     % Save the image to disk
     save_figure(sprintf('out/probablity%0.1f-threshold.png', threshold));
+end
+
+function [] = format(plot_title)
+    % Note the bounds of the rainy season
+    xline(6, '-.', 'Start Rainy Season');
+    xline(10, '-.', 'End Rainy Season');
+
+    title(plot_title, 'FontWeight', 'normal', 'FontSize', 16);
+
+    % Generic formatting
+    xticks(1:12);
+    xticklabels(months);
+    ytickformat('percentage');
+    graphic = gca;
+    graphic.FontSize = 14;
 end
 
 function [] = wilcoxon(imports, symptomatic)
