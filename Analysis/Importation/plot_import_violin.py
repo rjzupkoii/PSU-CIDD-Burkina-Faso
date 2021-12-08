@@ -12,12 +12,13 @@ from matplotlib import rc_file
 IMAGEFILE = 'out/bfa_summary_figure.png'
 
 # Note the common properties
-COLORS = ['#1b9e77', '#d95f02']
+COLOR = ['#67a9cf', '#ef8a62']
+MARKER_COLOR = ['#0571b0', '#ca0020']
 SYMPTOMATIC_LABEL = ['Asymptomatic', 'Symptomatic']
 
 # Prepare the figure to work with
 rc_file('include/matplotlibrc-violin')
-fig, axs = plt.subplots(nrows=2, ncols=3)
+fig, axs = plt.subplots(nrows=2, ncols=3, sharey=True, sharex=True)
 plot = 0
 
 # Iterate over the primary combinations
@@ -46,14 +47,15 @@ for symptomatic in [0, 1]:
         index = int(plot / 4)
         for part in ('cbars','cmins','cmaxes','cmeans', 'cmedians'):
             if part in vp:
-                vp[part].set_edgecolor(COLORS[index])
+                vp[part].set_edgecolor(COLOR[index])
         for body in vp['bodies']:
-            body.set_facecolor(COLORS[index])
+            body.set_facecolor(COLOR[index])
 
         # Update the median marker
         xy = [[l.vertices[:,0].mean(), l.vertices[0,1]] for l in vp['cmedians'].get_paths()]
         xy = np.array(xy)
-        ax.scatter(xy[:,0], xy[:,1], s=121, c=COLORS[index], marker="x", zorder=3)
+        ax.scatter(xy[:,0], xy[:,1], s=121, c=MARKER_COLOR[index], marker="x", zorder=3)
+        vp['cmedians'].set_visible(False)
 
         # Set the axis labels
         if plot in [1, 4]:
