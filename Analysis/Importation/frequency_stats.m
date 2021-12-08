@@ -6,16 +6,19 @@ warning('off', 'MATLAB:MKDIR:DirectoryExists');
 addpath('include');
 clear;
 
+% Filter to use when preparing data
+filter = NaN;
+
 % Process the data sets
 mkdir('intermediate');
-process('data/bfa-merged.csv', true);
+process('data/bfa-merged.csv', filter, false);
 
 % Generate the plots for the manuscript
 generate_pairwise_plots();
 generate_probablity_plot(-3.5);
 generate_probablity_plot(-3);
 
-function [] = process(filename, plot)
+function [] = process(filename, filter, plot)
     % Load the data and drop de novo studies
     data = readtable(filename, 'PreserveVariableNames', true);
     data = data(data.mutations == 0, :);
@@ -43,9 +46,10 @@ function [] = process(filename, plot)
                 block(:, month) = frequency;
             end
 
-            % Convert frequencies below 10^-5 to zero since these are
-            % likely a model artifact
-            block(block < -5) = -Inf;
+            % Filter out frequencies below the given value, if given
+            if ~isnan(filter)
+                block(block < filter) = -Inf;
+            end
     
             % Save the data for the figure to disk
             file = sprintf('intermediate/final-frequency-%d-symptomatic-%d.csv', imports, symptomatic);

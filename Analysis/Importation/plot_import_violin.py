@@ -60,7 +60,7 @@ for symptomatic in [0, 1]:
         # Set the axis labels
         if plot in [1, 4]:
             ax.set_ylabel('580Y Frequency')
-        if index > 3:
+        if plot > 3:
             ax.set_xlabel('Month of Year')
 
 # Save the figure to disk

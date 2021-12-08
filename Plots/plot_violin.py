@@ -2,7 +2,7 @@
 
 # plot_violin.py
 #
-# Clean the temp from the loader and plot is as violin plots.
+# Use the intermediate files from the MATLAB script to generate violin plots.
 #
 # Note that this script is fairly fragile since it assumes that all of the 
 # replicates have been completed, CSV files generated with the MATLAB script
