@@ -36,26 +36,30 @@ for frequency in [3, 6, 9]:
         plot = plot + 1
 
         # Add the violin plot
-        vp = ax.violinplot(data, positions=range(12), showmedians=True, showextrema=True)
+        vp = ax.violinplot(data, positions=range(12), showextrema=False)
+
+        # Calculate the IQRs
+        medians = []
+        quartile = [[],[]]
+        for values in data:
+            q1, median, q3 = np.percentile(values, [25, 50, 75])
+            medians.append(median)
+            quartile[0].append(q1)
+            quartile[1].append(q3)           
+        
+        # Add the median and IQRs
+        index = int(plot % 2)
+        ax.scatter(range(12), medians, s=121, c=MARKER_COLOR[index], marker=".")
+        ax.vlines(range(12), quartile[0], quartile[1], color=MARKER_COLOR[index])
 
         # Parse the filename to get the imporation rate and symptomatic status, set the title
         ax.set_title("{}/month, {}".format(frequency, SYMPTOMATIC_LABEL[symptomatic]))
         ax.set_xticks(range(12))
         ax.set_xticklabels(range(1, 13))
 
-        # Set the colors
-        index = int(plot % 2)
-        for part in ('cbars','cmins','cmaxes','cmeans', 'cmedians'):
-            if part in vp:
-                vp[part].set_edgecolor(COLOR[index])
+        # Set the body color
         for body in vp['bodies']:
             body.set_facecolor(COLOR[index])
-
-        # Update the median marker
-        xy = [[l.vertices[:,0].mean(), l.vertices[0,1]] for l in vp['cmedians'].get_paths()]
-        xy = np.array(xy)
-        ax.scatter(xy[:,0], xy[:,1], s=121, c=MARKER_COLOR[index], marker="x", zorder=3)
-        vp['cmedians'].set_visible(False)
 
         # Set the axis labels
         if plot % 2 == 1:
