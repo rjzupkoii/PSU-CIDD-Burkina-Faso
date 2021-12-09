@@ -12,18 +12,18 @@ from matplotlib import rc_file
 IMAGEFILE = 'out/bfa_summary_figure.png'
 
 # Note the common properties
-COLOR = ['#67a9cf', '#ef8a62']
-MARKER_COLOR = ['#0571b0', '#ca0020']
+COLOR = ['#ef8a62', '#67a9cf']
+MARKER_COLOR = ['#ca0020', '#0571b0']
 SYMPTOMATIC_LABEL = ['Asymptomatic', 'Symptomatic']
 
 # Prepare the figure to work with
 rc_file('include/matplotlibrc-violin')
-fig, axs = plt.subplots(nrows=2, ncols=3, sharey=True, sharex=True)
+fig, axs = plt.subplots(nrows=3, ncols=2, sharey=True, sharex=True)
 plot = 0
 
 # Iterate over the primary combinations
-for symptomatic in [0, 1]:
-    for frequency in [3, 6, 9]:
+for frequency in [3, 6, 9]:
+    for symptomatic in [0, 1]:
 
         # Load the data from disk and mask out the infinate values and NaN
         filename = "intermediate/final-frequency-{}-symptomatic-{}.csv".format(frequency, symptomatic)
@@ -44,7 +44,7 @@ for symptomatic in [0, 1]:
         ax.set_xticklabels(range(1, 13))
 
         # Set the colors
-        index = int(plot / 4)
+        index = int(plot % 2)
         for part in ('cbars','cmins','cmaxes','cmeans', 'cmedians'):
             if part in vp:
                 vp[part].set_edgecolor(COLOR[index])
@@ -58,9 +58,9 @@ for symptomatic in [0, 1]:
         vp['cmedians'].set_visible(False)
 
         # Set the axis labels
-        if plot in [1, 4]:
+        if plot % 2 == 1:
             ax.set_ylabel('580Y Frequency')
-        if plot > 3:
+        if plot > 4:
             ax.set_xlabel('Month of Year')
 
 # Save the figure to disk
