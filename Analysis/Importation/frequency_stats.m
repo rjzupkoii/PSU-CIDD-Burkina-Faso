@@ -6,7 +6,7 @@ warning('off', 'MATLAB:MKDIR:DirectoryExists');
 addpath('include');
 clear;
 
-% Filter to use when preparing data
+% Filter to use when preparing data, NaN disables filtering
 filter = NaN;
 
 % Process the data sets
