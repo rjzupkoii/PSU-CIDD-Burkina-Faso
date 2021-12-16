@@ -89,9 +89,13 @@ def main():
 
         # Don't update when we have all the records
         if os.path.exists(filename) and row[1]:
-            df = pd.read_csv(filename, header=None)
-            if row[2] == len(df[0].unique()): continue
-
+            try:
+                df = pd.read_csv(filename, header=None)
+                if row[2] == len(df[0].unique()): continue
+            except pd.errors.EmptyDataError:
+                # If the file is empty then continue on to querying for the data
+                pass
+            
         # Query and update the record
         data = get_replicates(row[0])
         with open(filename, "wb") as csvfile:
