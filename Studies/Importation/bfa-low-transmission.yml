@@ -37,8 +37,8 @@ starting_date: 2007/1/1
 # Start recording in 2018 since that's the major shift took place
 start_of_comparison_period: 2018/1/1
 
-# Ending date is 2023, five years of data
-ending_date: 2023/1/1
+# Ending date is 2018 plus 20 years
+ending_date: 2038/1/1
 
 # Date to start collecting data, 1 year before start of comparison
 start_collect_data_day: 1826 
@@ -221,15 +221,18 @@ events:
     info:
       - day: 2019/1/1
         rate: 0.03
+  - name: importation_periodically_random_event
+    info:
+      - day: 2018/3/1
+        # TNY--Y1x
+        genotype_id: 69
+        count: 9
+        log_parasite_density: 4.301
   - name: turn_off_mutation
     info:
       - day: 2007/1/1
   - name: turn_on_mutation
     info:
-      # Artemisinin
-      - day: 2018/1/1
-        drug_id: 0
-        mutation_probability: 0.001983
       # Amodiaquine
       - day: 2018/1/1
         drug_id: 1
