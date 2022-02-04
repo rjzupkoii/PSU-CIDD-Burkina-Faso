@@ -65,7 +65,7 @@ for frequency in [3, 6, 9]:
         if plot % 2 == 1:
             ax.set_ylabel('580Y Frequency')
         if plot > 4:
-            ax.set_xlabel('Month of Year')
+            ax.set_xlabel('Month of Importation')
 
 # Save the figure to disk
 if IMAGEFILE.endswith('tif'):
