@@ -19,27 +19,44 @@ CLINICAL_PROBABILITY, MIDPOINT, IMMUNE_EFFECT = 0.99, 0.15, 4.5
 
 COLUMN, PARTNER, YLABEL = 0, 1, 2  
 REPORT_LAYOUT = {
-    'clones' : ['Multiclonal', None, 'Proportion Multiclonal'],
-    'failures' : ['TreatmentFailure', None, 'Treatment Failures'], 
+    # Reports for manuscript
+    'unweighted' : ['508yUnweighted', None, '580Y Clone Count'],
+    'moi' : ['MARKER', None, 'Multiplicity of Infection'],
+    'symptoms' : ['MARKER', None, 'Probability of Symptoms'],                                       # This need to be based on median!
     'theta' : ['Theta', None, 'Theta'],
-    'clinical-theta' : ['ClinicalIndividuals', 'theta', 'Clinical Cases, per 1000'],
-    'clinical-failures' : ['ClinicalIndividuals', 'failures', 'Clinical Cases, per 1000'],
-    'infections-failures' : ['InfectedIndividuals', 'failures', 'Infections, per 1000'],
-    'treatments-theta' : ['Treatments', 'theta', 'Treatments'],
-    'unweighted-clones' : ['508yUnweighted', 'clones', '580Y Clone Count'],
-    'unweighted-failures' : ['508yUnweighted', 'failures', '580Y Clone Count'],
+    'clinical-symptoms' : ['ClinicalIndividuals', 'symptoms', 'Clinical Cases, per 1000'],
+    'clinical-unweighted' : ['ClinicalIndividuals', 'unweighted', 'Clinical Cases, per 1000'],      # Nine panel plot
+    'multiclonal-moi' : ['Multiclonal', 'moi', 'Prevalence of Multiclonal Infections'],
+    'newinfections-symptoms' : ['NewInfections', 'symptoms', 'New Infections'],
+    'theta-moi' : ['Theta', 'moi', 'Theta'],
+    'theta-unweighted' : ['Theta', 'unweighted', 'Theta'],
+    
+
+    # 'frequency' : ['MARKER', None, '580Y Frequency'],
+    # 'infections-moi' : ['InfectedIndividuals', 'moi', 'Infections, per 1000'],
+    # 'failures' : ['TreatmentFailure', None, 'Treatment Failures'], 
+    # 'multiclonal' : ['Multiclonal', None, 'Prevalence of Multiclonal Infections'],
+    # 'theta' : ['Theta', None, 'Theta'],
+    # 'clinical-theta' : ['ClinicalIndividuals', 'theta', 'Clinical Cases, per 1000'],
+    # 'clinical-failures' : ['ClinicalIndividuals', 'failures', 'Clinical Cases, per 1000'],
+    # 'clinical-moi' : ['ClinicalIndividuals', 'moi', 'Clinical Cases, per 1000'],
+    # 'infections-failures' : ['InfectedIndividuals', 'failures', 'Infections, per 1000'],
+    # 'infections-multiclonal' : ['InfectedIndividuals', 'multiclonal', 'Infections, per 1000'],
+    # 'treatments-theta' : ['Treatments', 'theta', 'Treatments'],
+    # 'unweighted-multiclonal' : ['508yUnweighted', 'multiclonal', '580Y Clone Count'],
+    # 'unweighted-moi' : ['508yUnweighted', 'moi', '580Y Clone Count'],
+    # 'unweighted-failures' : ['508yUnweighted', 'failures', '580Y Clone Count'],
 
     # 'clinical' : ['ClinicalIndividuals', None, 'Clinical Cases, per 1000'],
-    # 'frequency' : ['MARKER', 'theta', '580Y Frequency'],
     # 'infections' : ['InfectedIndividuals', None, 'Infections, per 1000'],
     # 'newinfections' : ['NewInfections', None, 'New Infections, per 1000'],
     # 'phi' : ['MARKER', None, 'Phi'],
-    # 'symptoms' : ['MARKER', None, 'Probability of Symptoms'],
+    # 
     # 'treatments' : ['Treatments', None, 'Treatments'],
     # 'unweighted' : ['508yUnweighted', None, '580Y Clone Count'],
     # 'clinical-phi' : ['ClinicalIndividuals', 'treatments', 'Clinical Cases, per 1000'],
     # 'failures-phi' : ['TreatmentFailure', 'phi', 'Failures, per 1000'],
-    # 'infections-clones' : ['InfectedIndividuals', 'clones', 'Infections, per 1000'],
+    # 'infections-multiclonal' : ['InfectedIndividuals', 'multiclonal', 'Infections, per 1000'],
     # 'symptoms-failures' : ['MARKER', 'failures', 'Probability of Symptoms'],
     # 'symptoms-phi' : ['MARKER', 'phi', 'Probability of Symptoms'],
     # 'symptoms-treatments' : ['MARKER', 'treatments', 'Probability of Symptoms'],
@@ -94,12 +111,14 @@ def prepare(path):
                 # Prepare the row value
                 if key.startswith('clinical'):
                     row = byZone['ClinicalIndividuals'] / (byZone['Population'] / 1000.0)
-                elif key.startswith('clones'):
-                    row = byZone['Multiclonal'] / byZone['InfectedIndividuals']
                 elif key.startswith('frequency'):
                     row = byZone['580yWeighted'] / byZone['InfectedIndividuals']
                 elif key.startswith('infections'):
                     row = byZone['InfectedIndividuals'] / (byZone['Population'] / 1000.0)
+                elif key.startswith('multiclonal'):
+                    row = (byZone['Multiclonal'] / byZone['InfectedIndividuals']) * 100.0
+                elif key.startswith('moi'):
+                    row = (byZone['ParasiteClones'] - (byZone['InfectedIndividuals'] - byZone['Multiclonal'])) / byZone['Multiclonal']
                 elif key.startswith('phi'):
                     row = byZone['ClinicalIndividuals'] / byZone['InfectedIndividuals']
                 elif key.startswith('symptoms'):
@@ -134,13 +153,13 @@ def report(dates, data, title, out):
     for key in REPORT_LAYOUT:
         figure, axes = plt.subplots(3, 1)
         for zone in range(3):
-            # Add the base plot       
-            add_plot(axes[zone], dates, data[zone][key], REPORT_LAYOUT[key][YLABEL], '#0571b0')
+            # Add the base plot
+            add_plot(axes[zone], dates, data[zone][key], REPORT_LAYOUT[key][YLABEL], '#0571b0', zone)
 
             # Add the partner plot if one is provided
             if REPORT_LAYOUT[key][PARTNER] != None:
                 partner = REPORT_LAYOUT[key][PARTNER]
-                add_plot(axes[zone].twinx(), dates, data[zone][partner], REPORT_LAYOUT[partner][YLABEL], '#ca0020')
+                add_plot(axes[zone].twinx(), dates, data[zone][partner], REPORT_LAYOUT[partner][YLABEL], '#ca0020', zone)
 
             # Set the subplot title
             axes[zone].title.set_text(ZONES[zone])
@@ -158,7 +177,7 @@ def report(dates, data, title, out):
         progressBar(count, len(REPORT_LAYOUT))
 
 
-def add_plot(axis, dates, values, ylabel, color):
+def add_plot(axis, dates, values, ylabel, color, index):
     # Generate the percentiles
     upper = np.percentile(values, 97.5, axis=0)
     median = np.percentile(values, 50, axis=0)
@@ -169,8 +188,9 @@ def add_plot(axis, dates, values, ylabel, color):
     color = scale_luminosity(axis.lines[-1].get_color(), 1)
     axis.fill_between(dates, lower, upper, alpha=0.5, facecolor=color)
 
-    # Label the axis
-    axis.set_ylabel(ylabel, color=color)
+    # Label the y-label if we are centered
+    if index == 1:
+        axis.set_ylabel(ylabel, color=color)
 
 
 if __name__ == '__main__':
