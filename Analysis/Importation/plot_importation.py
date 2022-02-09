@@ -32,14 +32,20 @@ PRIMARY, SECONDARY = '#0571b0', '#ca0020'
 # TODO Figure out how to sync the y-limits without needing to hard code them
 YLIMIT, YYLIMIT = 0, 1
 FINAL_REPORTS = {
+    '580Ymulticlonal-proportion' : [[], []],
+    '580Ymulticlonal-treatments' : [[], []],
     'multiclonal-moi': [[31, 80], [2.7, 3.8]],
+    'treatments-proportion' : [[], []],
+    'theta-treatments' : [[], []],
+    'unweighted-580Ymulticlonal' : [[], []],
     'unweighted-clinical' : [[], []],
     'unweighted-theta' : [[], []]
 }
 
 COLUMN, PARTNER, YLABEL = range(3)
 REPORT_LAYOUT = {
-    # Single reports that are used for analysis or in the final reports
+    # Single reports that are used for analysis or in the final reports 580yMulticlonal
+    '580Ymulticlonal' : ['580yMulticlonal', None, '580Y Multiclonal Infections'],
     'clinical' : ['ClinicalIndividuals', None, 'Clinical Cases, per 1000'],
     'failures' : ['TreatmentFailure', None, 'Treatment Failures'], 
     'frequency' : ['MARKER', None, '580Y Frequency'],
@@ -48,15 +54,18 @@ REPORT_LAYOUT = {
     'multiclonal' : ['Multiclonal', None, 'Prevalence of Multiclonal Infections'],
     'newinfections' : ['NewInfections', None, 'New Infections, per 1000'],
     'phi' : ['MARKER', None, 'Phi'],
+    'proportion' : ['MARKER', None, 'Proportion of 580Y Multiclonal Infections'],
     'symptoms' : ['MARKER', None, 'Probability of Symptoms'],
-    'theta' : ['Theta', None, 'Theta'],
+    'theta' : ['MeanTheta', None, 'Theta'],
     'treatments' : ['Treatments', None, 'Treatments'],
-    'unweighted' : ['508yUnweighted', None, '580Y Clone Count'],
+    'unweighted' : ['580yUnweighted', None, '580Y Clone Count'],
 
     # Overlay reports used in the analysis
     'clinical-symptoms' : ['ClinicalIndividuals', 'symptoms', 'Clinical Cases, per 1000'],
     'newinfections-symptoms' : ['NewInfections', 'symptoms', 'New Infections'],
-    'theta-moi' : ['Theta', 'moi', 'Theta'],
+    'theta-moi' : ['MeanTheta', 'moi', 'Theta'],
+    'treatments-580Ymulticlonal' : ['Treatments', '580Ymulticlonal', 'Treatments'],
+    'unweighted-580Ymulticlonal' : ['580yUnweighted', '580Ymulticlonal', '580Y Clone Count'],
 }
 
 ZONES = ['Sahelian (3 month)', 'Sudano-Sahelian (4 month)', 'Sudanian (5 month)']
@@ -121,8 +130,10 @@ def prepare(path):
                     row = (byZone['ParasiteClones'] - (byZone['InfectedIndividuals'] - byZone['Multiclonal'])) / byZone['Multiclonal']
                 elif key.startswith('phi'):
                     row = byZone['ClinicalIndividuals'] / byZone['InfectedIndividuals']
+                elif key.startswith('proportion'):
+                    row = byZone['580yMulticlonal'] / byZone['Multiclonal']
                 elif key.startswith('symptoms'):
-                    row = CLINICAL_PROBABILITY / (1 + pow((byZone['Theta'] / MIDPOINT), IMMUNE_EFFECT))
+                    row = CLINICAL_PROBABILITY / (1 + pow((byZone['MeanTheta'] / MIDPOINT), IMMUNE_EFFECT))
                 else:        
                     row = byZone[REPORT_LAYOUT[key][COLUMN]].to_numpy()
                     
@@ -181,28 +192,18 @@ def final_reports(aggregate_dates, aggregate_data):
 
         # Apply the general formatting to the plot
         for ax in axes.flat:
+            # Set the x-axis limits
             ax.set_xlim([min(dates), max(dates)])
 
-            # Are we maniplating the y-tick labels?
-            if max(ax.get_yticks().tolist()) > 1000:
-                values, ticks = [], []
-                for tick in ax.get_yticks().tolist():
-                    if tick >= 500:
-                        ticks.append('%.1fK' % (tick / 1000))
-                    elif tick >= 0:
-                        ticks.append(str(tick))
-                    if tick >= 0:
-                        values.append(tick)
+            # Format the y-axis ticks
+            format_ticks(ax)
+            format_ticks(ax.get_shared_x_axes().get_siblings(ax)[0])
 
-                # Let Matplotlib know we are keeping the same ticks bound before setting the labels
-                ax.set_yticks(values)
-                ax.set_yticklabels(ticks)
-
-            else:
-                if len(FINAL_REPORTS[key][YLIMIT]) != 0:
-                    ax.set_ylim(FINAL_REPORTS[key][YLIMIT])
-                if len(FINAL_REPORTS[key][YYLIMIT]) != 0:
-                    ax.get_shared_x_axes().get_siblings(ax)[0].set_ylim(FINAL_REPORTS[key][YYLIMIT])
+            # Apply the y-axis limits if provided
+            if len(FINAL_REPORTS[key][YLIMIT]) != 0:
+                ax.set_ylim(FINAL_REPORTS[key][YLIMIT])
+            if len(FINAL_REPORTS[key][YYLIMIT]) != 0:
+                ax.get_shared_x_axes().get_siblings(ax)[0].set_ylim(FINAL_REPORTS[key][YYLIMIT])
 
         # Save the report
         os.makedirs('plots/manuscript', exist_ok=True)
@@ -212,6 +213,26 @@ def final_reports(aggregate_dates, aggregate_data):
         # Update the progress bar
         count += 1
         progressBar(count, len(FINAL_REPORTS))
+
+
+def format_ticks(ax):
+    # Return if there is nothing to do
+    if max(ax.get_yticks().tolist()) < 1000:
+        return
+
+    # Extract the ticks and format them
+    values, ticks = [], []
+    for tick in ax.get_yticks().tolist():
+        if tick >= 500:
+            ticks.append('%.1fK' % (tick / 1000))
+        elif tick >= 0:
+            ticks.append(str(tick))
+        if tick >= 0:
+            values.append(tick)
+
+    # Set the values and their labels
+    ax.set_yticks(values)
+    ax.set_yticklabels(ticks)    
 
 
 def working_reports(dates, data, title, out):
