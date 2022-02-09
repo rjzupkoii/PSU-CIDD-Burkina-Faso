@@ -15,6 +15,7 @@
 /Replicates/**/replicates.csv
 
 # Ignore other directories as needed
+Analysis/Importation/plots
 Analysis/Movement/plots/
 Plots/reference/
 
