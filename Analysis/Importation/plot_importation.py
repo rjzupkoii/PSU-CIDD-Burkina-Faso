@@ -36,7 +36,7 @@ FINAL_REPORTS = {
     '580Ymulticlonal-proportion' : [[], [], '#44AA99', '#CC6677' ],     # Fig. 4
     '580Ymulticlonal-treatments' : [[], [], '#44AA99', '#7570b3' ],     # Fig. 5
     '580Ysolitary-treatments' : [[], [], '#1f78b4', '#7570b3' ],        # Fig. 6
-    'theta-unweighted' : [[], [], '#882255', '#d95f02' ],               # Fig. 7
+    'clinical-unweighted' : [[], [], '#882255', '#d95f02' ],            # Fig. 7
 
     # '580Ymulticlonal-treatments' : [[], []],
     # 'multiclonal-moi': [[31, 80], [2.7, 3.8]],
