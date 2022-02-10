@@ -27,24 +27,30 @@ CLINICAL_PROBABILITY, MIDPOINT, IMMUNE_EFFECT = 0.99, 0.15, 4.5
 # Constants related to the report generation
 ANALYSIS_FORMAT = '../../Plots/matplotlibrc-line'
 MANUSCRIPT_FORMAT = 'matplotlibrc-line'
-PRIMARY, SECONDARY = '#0571b0', '#ca0020'
-
+ 
 # TODO Figure out how to sync the y-limits without needing to hard code them
-YLIMIT, YYLIMIT = 0, 1
+YLIMIT, YYLIMIT, PRIMARY, SECONDARY = range(4)
 FINAL_REPORTS = {
-    '580Ymulticlonal-proportion' : [[], []],
-    '580Ymulticlonal-treatments' : [[], []],
-    'multiclonal-moi': [[31, 80], [2.7, 3.8]],
-    'treatments-proportion' : [[], []],
-    'theta-treatments' : [[], []],
-    'unweighted-580Ymulticlonal' : [[], []],
-    'unweighted-clinical' : [[], []],
-    'unweighted-theta' : [[], []]
+    'unweighted-treatments' : [[], [], '#d95f02', '#7570b3'],           # Fig. 2
+    'frequency-' : [[], [], '#117733', ''],                             # Fig. 3
+    '580Ymulticlonal-proportion' : [[], [], '#44AA99', '#CC6677' ],     # Fig. 4
+    '580Ymulticlonal-treatments' : [[], [], '#44AA99', '#7570b3' ],     # Fig. 5
+    '580Ysolitary-treatments' : [[], [], '#1f78b4', '#7570b3' ],        # Fig. 6
+    'theta-unweighted' : [[], [], '#882255', '#CC6677' ],               # Fig. 7
+
+    # '580Ymulticlonal-treatments' : [[], []],
+    # 'multiclonal-moi': [[31, 80], [2.7, 3.8]],
+    # 'treatments-proportion' : [[], []],
+    # 'theta-treatments' : [[], []],
+    # 'unweighted-580Ymulticlonal' : [[], []],
+    # 'unweighted-clinical' : [[], []],
+    # 'unweighted-theta' : [[], []]
 }
 
 COLUMN, PARTNER, YLABEL = range(3)
 REPORT_LAYOUT = {
-    # Single reports that are used for analysis or in the final reports 580yMulticlonal
+    # Single reports that are used for analysis or in the final reports
+    '580Ysolitary' : ['MARKER', None, 'Proportion Solitary 580Y Infections (Approx)'],
     '580Ymulticlonal' : ['580yMulticlonal', None, '580Y Multiclonal Infections'],
     'clinical' : ['ClinicalIndividuals', None, 'Clinical Cases, per 1000'],
     'failures' : ['TreatmentFailure', None, 'Treatment Failures'], 
@@ -58,6 +64,7 @@ REPORT_LAYOUT = {
     'symptoms' : ['MARKER', None, 'Probability of Symptoms'],
     'theta' : ['MeanTheta', None, 'Theta'],
     'treatments' : ['Treatments', None, 'Treatments'],
+    'weighted' : ['580yWeighted', None, 'Weighted 580Y Clone Count'],
     'unweighted' : ['580yUnweighted', None, '580Y Clone Count'],
 
     # Overlay reports used in the analysis
@@ -132,6 +139,8 @@ def prepare(path):
                     row = byZone['ClinicalIndividuals'] / byZone['InfectedIndividuals']
                 elif key.startswith('proportion'):
                     row = byZone['580yMulticlonal'] / byZone['Multiclonal']
+                elif key.startswith('580Ysolitary'):
+                    row = (byZone['580yUnweighted'] - byZone['580yMulticlonal']) / byZone['580yUnweighted']
                 elif key.startswith('symptoms'):
                     row = CLINICAL_PROBABILITY / (1 + pow((byZone['MeanTheta'] / MIDPOINT), IMMUNE_EFFECT))
                 else:        
@@ -158,6 +167,7 @@ def final_reports(aggregate_dates, aggregate_data):
     count = 0
     for key in FINAL_REPORTS:
         primary, secondary = key.split('-')
+        primary_color, secondary_color = FINAL_REPORTS[key][PRIMARY], FINAL_REPORTS[key][SECONDARY]
         figure, axes = plt.subplots(3, 3)
 
         for study in DATA_SETS:
@@ -171,15 +181,16 @@ def final_reports(aggregate_dates, aggregate_data):
 
             for zone in range(3):
                 # Add the main plot, and ylabel if we are in the right spot
-                add_plot(axes[zone, column], dates, aggregate_data[study][zone][primary], PRIMARY)
-                axes[zone, column].tick_params(axis='y', colors=PRIMARY)
+                add_plot(axes[zone, column], dates, aggregate_data[study][zone][primary], primary_color)
+                axes[zone, column].tick_params(axis='y', colors=primary_color)
                 
                 # Add the overlay plot, set the tick colors, label if in the right location
-                overlay = axes[zone, column].twinx()
-                add_plot(overlay, dates, aggregate_data[study][zone][secondary], SECONDARY)
-                overlay.tick_params(axis='y', colors=SECONDARY)
-                if column == 2 and zone == 1:
-                    overlay.set_ylabel(REPORT_LAYOUT[secondary][YLABEL], color=SECONDARY)
+                if secondary is not '':
+                    overlay = axes[zone, column].twinx()
+                    add_plot(overlay, dates, aggregate_data[study][zone][secondary], secondary_color)
+                    overlay.tick_params(axis='y', colors=secondary_color)
+                    if column == 2 and zone == 1:
+                        overlay.set_ylabel(REPORT_LAYOUT[secondary][YLABEL], color=secondary_color)
 
                 # Set the subplot title
                 if zone == 0:
@@ -188,7 +199,7 @@ def final_reports(aggregate_dates, aggregate_data):
                     axes[zone, column].title.set_text(ZONES[zone])
 
             # Add the primary, secondary y-label
-            axes[1, 0].set_ylabel(REPORT_LAYOUT[primary][YLABEL], color=PRIMARY)
+            axes[1, 0].set_ylabel(REPORT_LAYOUT[primary][YLABEL], color=primary_color)
 
         # Apply the general formatting to the plot
         for ax in axes.flat:
@@ -207,7 +218,7 @@ def final_reports(aggregate_dates, aggregate_data):
 
         # Save the report
         os.makedirs('plots/manuscript', exist_ok=True)
-        plt.savefig('plots/manuscript/{}.png'.format(key))
+        plt.savefig('plots/manuscript/{}.png'.format(key), bbox_inches='tight')
         plt.close()
 
         # Update the progress bar
