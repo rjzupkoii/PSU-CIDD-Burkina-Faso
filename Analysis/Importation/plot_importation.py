@@ -36,7 +36,7 @@ FINAL_REPORTS = {
     '580Ymulticlonal-proportion' : [[], [], '#44AA99', '#CC6677' ],     # Fig. 4
     '580Ymulticlonal-treatments' : [[], [], '#44AA99', '#7570b3' ],     # Fig. 5
     '580Ysolitary-treatments' : [[], [], '#1f78b4', '#7570b3' ],        # Fig. 6
-    'theta-unweighted' : [[], [], '#882255', '#CC6677' ],               # Fig. 7
+    'theta-unweighted' : [[], [], '#882255', '#d95f02' ],               # Fig. 7
 
     # '580Ymulticlonal-treatments' : [[], []],
     # 'multiclonal-moi': [[31, 80], [2.7, 3.8]],
@@ -89,7 +89,7 @@ def main():
     for key in DATA_SETS:
         print(DATA_SETS[key][TITLE])
         dates, data = prepare(DATA_SETS[key][DATA_PATH])
-        working_reports(dates, data, DATA_SETS[key][TITLE], DATA_SETS[key][PLOT_OUTPUT])
+#        working_reports(dates, data, DATA_SETS[key][TITLE], DATA_SETS[key][PLOT_OUTPUT])
 
         # Update the aggregate data sets
         aggregate_data[key] = data
