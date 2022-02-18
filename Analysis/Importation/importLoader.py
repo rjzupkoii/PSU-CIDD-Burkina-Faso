@@ -36,10 +36,16 @@ def get_configurations():
 def get_replicates(configurationId):
     sql = """
         SELECT sd.replicateid,
-            cast((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[1] AS integer) AS month,
-            cast((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[2] AS integer) AS imports,
-            CASE WHEN ((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[3] = '3.0') THEN 0 ELSE 1 END AS symptomatic,
-            CASE WHEN ((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[4] = '0.') THEN 0 ELSE 1 END AS mutations,
+			CASE WHEN strpos(c.filename, '-monthly-') > 0 THEN 0
+			  ELSE cast((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[1] AS integer) END AS month,
+			CASE WHEN strpos(c.filename, '-monthly-') > 0 
+			  THEN cast((regexp_match(c.filename, '-([\d.]*)-(\d.\d*)'))[1] AS integer)
+			  ELSE cast((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[2] AS integer) END AS imports,
+			CASE WHEN strpos(c.filename, '-monthly-') > 0		
+			  THEN CASE WHEN ((regexp_match(c.filename, '-([\d.]*)-(\d.\d*)'))[2] = '3.0') THEN 0 ELSE 1 END 
+              ELSE CASE WHEN ((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[3] = '3.0') THEN 0 ELSE 1 END END AS symptomatic,
+			CASE WHEN strpos(c.filename, '-monthly-') > 0 THEN 0			
+              ELSE CASE WHEN ((regexp_match(c.filename, '-(\d*)-(\d)-([\d.]*)-(\d.\d*)'))[4] = '0.') THEN 0 ELSE 1 END END AS mutations,
             sd.dayselapsed, 
             infectedindividuals, 
             clinicalepisodes, 

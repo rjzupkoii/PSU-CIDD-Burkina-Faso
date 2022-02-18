@@ -118,5 +118,15 @@ SELECT iq.configurationid, iq.replicates, iq.mutations,
     FROM sim.configuration c
       JOIN sim.replicate r ON r.configurationid = c.id
     WHERE c.studyid = 7
+	    AND r.endtime IS NOT NULL    
+    GROUP BY c.id, c.filename
+    UNION
+    SELECT c.id AS configurationid,
+      count(r.id) AS replicates,
+      0 AS mutations
+    FROM sim.configuration c
+      JOIN sim.replicate r ON r.configurationid = c.id
+    WHERE c.studyid = 8
+	    AND r.endtime IS NOT NULL 
     GROUP BY c.id, c.filename) iq;
 ALTER TABLE public.v_importation_replicates OWNER TO sim;
