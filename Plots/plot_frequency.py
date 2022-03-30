@@ -158,4 +158,7 @@ if __name__ == "__main__":
     plot('2007-01-01', 'Genotype Frequency with Slow Mutation Rate (0.0003966)', 'out/bfa-0.0003966-genotype-frequency.png', *intermediary, ylimit=[pow(10, -8), pow(10, 0)])
     intermediary = prepare('../Analysis/Loader/out/bfa-0.0001983/*-frequencies.csv', genotypes)
     plot('2007-01-01', 'Genotype Frequency with Very Slow Mutation Rate (0.0001983)', 'out/bfa-0.0001983-genotype-frequency.png', *intermediary, ylimit=[pow(10, -8), pow(10, 0)])
-    
+
+    # Figure for Keystone symposium
+    intermediary = prepare('../Analysis/Loader/out/bfa-fast-no-asaq/*-frequencies.csv', genotypes)
+    plot('2007-01-01', 'Burkina Faso, Drug Resistance Markers Under Status Quo Conditions', 'out/bfa-status-quo.png', *intermediary, ylimit=[pow(10, -8), pow(10, 0)])
