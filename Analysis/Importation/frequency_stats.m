@@ -11,12 +11,49 @@ filter = NaN;
 
 % Process the data sets
 mkdir('intermediate');
-process('data/bfa-merged.csv', filter, false);
+% process('data/bfa-merged.csv', filter, false);
+process_year('data/bfa-merged.csv', filter);
 
-% Generate the plots for the manuscript
-generate_pairwise_plots();
-generate_probablity_plot(-3.5);
-generate_probablity_plot(-3);
+% % Generate the plots for the manuscript
+% generate_pairwise_plots();
+% generate_probablity_plot(-3.5);
+% generate_probablity_plot(-3);
+
+function [] = process_year(filename, filter)
+    % Load the data and drop de novo studies
+    data = readtable(filename, 'PreserveVariableNames', true);
+    data = data(data.mutations == 0, :);
+    
+    % Restrict the data to the last recorded date
+    dates = unique(data.dayselapsed);
+    data = data(data.dayselapsed == max(dates), :);
+    
+    % Calcluate the frequency and store as log10
+    data.frequency = log10(data.weightedoccurrences ./ data.infectedindividuals);
+    
+    % Generate the counts
+    for imports = 3:3:9
+        for symptomatic = 0:1
+            % First pass filtering
+            filtered = data(data.imports == imports, :);
+            filtered = filtered(filtered.symptomatic == symptomatic, :);
+            
+            % Filter to the month prepare the block data
+            yearly = filtered(filtered.month == 0, :);
+            frequency = yearly.frequency;
+            frequency(length(frequency) + 1:50) = NaN;
+
+            % Filter out frequencies below the given value, if given
+            if ~isnan(filter)
+                frequency(frequency < filter) = -Inf;
+            end
+    
+            % Save the data for the figure to disk
+            file = sprintf('intermediate/year-frequency-%d-symptomatic-%d.csv', imports, symptomatic);
+            writematrix(frequency, file);
+        end
+    end
+end
 
 function [] = process(filename, filter, plot)
     % Load the data and drop de novo studies
