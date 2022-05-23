@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 ##
 # importLoader.py
@@ -10,6 +10,7 @@ import glob
 import os
 import pandas as pd
 import psycopg2
+import re
 import sys
 
 sys.path.insert(1, '../Loader')
@@ -82,7 +83,11 @@ def get_replicates(configurationId):
 
 def main():
     if not os.path.exists("data"): os.makedirs("data")
+    importation_study()
+    seasonal_study()
 
+
+def importation_study():
     print("Querying for configuration list...")
     configurations = get_configurations()
     
@@ -124,6 +129,41 @@ def main():
         for file in glob.glob("data/bfa-importation-*.csv"):
             with open(file) as infile:
                 csvfile.write(infile.read())
+
+
+def seasonal_study():
+    print("Generating seasonal data files...")
+    for item in os.scandir("data"):
+        if not item.is_dir(): continue
+        
+        print("Parsing {}...".format(item.name))
+        output = "intermediate/{}.csv".format(item.name)
+        if os.path.exists(output):
+            os.remove(output)
+        header = True
+        for file in os.scandir(item):
+            append_seasonal_data(file, output, header)
+            header = False
+
+
+def append_seasonal_data(file, output, header):
+    # Load the data, delete the last (superfluous) column
+    data = pd.read_csv(file, header=0)
+    data = data.iloc[:, :-1]
+
+    # Delete the unused columns from the data
+    del data['InfectedIndividuals']
+    del data['ClinicalIndividuals']
+    del data['NewInfections']
+    del data['NonTreatment']
+    del data['TreatmentFailure']
+    
+    # Add the index column
+    id = re.search('(\d{1,2})', file.name).group(0)
+    data.insert(0, 'ID', id)
+
+    # Append the data to output file
+    data.to_csv(output, mode='a', index=False, header=header)
 
 
 def select(sql, parameters):
