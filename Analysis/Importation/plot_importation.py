@@ -40,11 +40,6 @@ MANUSCRIPT_FORMAT = 'matplotlibrc-line'
 # 8. unweighted : #AA4499
 PRIMARY, SECONDARY = range(2)
 NINE_PANEL = {
-    # Manuscript, primary
-    'proportion580Y-treatments' : ['#663333', '#225555'],    
-
-    # Manuscript, secondary
-
     # Supplemental plots
     'frequency-' : ['#555555', ''],
     'theta-' : ['#555555', ''],
@@ -72,24 +67,27 @@ NINE_PANEL = {
 
 COLUMN, PARTNER, YLABEL = range(3)
 REPORT_LAYOUT = {
-    # Single metric reports
+    # Manuscript items
+    'moi' : ['MARKER', None, 'Multiplicity of Infection'],
+    'proportion' : ['MARKER', None, 'Proportion of 580Y Multiclonal Infections'],
+    'theta' : ['MeanTheta', None, 'Theta (Population Mean)'],
+    'treatments' : ['Treatments', None, 'Treatments'],
+    'unweighted' : ['580yUnweighted', None, '580Y Clone Count'],
+
+    # Analysis items
     '580Ymulticlonal' : ['580yMulticlonal', None, '580Y Multiclonal Infections'],
     'clinical' : ['ClinicalIndividuals', None, 'Clinical Cases, per 1000'],
+    'clones' : ['ParasiteClones', None, 'P. Falciparum Clones'],
     'failures' : ['TreatmentFailure', None, 'Treatment Failures'], 
     'frequency' : ['MARKER', None, '580Y Frequency'],
     'infections' : ['InfectedIndividuals', None, 'Infections, per 1000'],
-    'moi' : ['MARKER', None, 'Multiplicity of Infection'],
     'multiclonal' : ['Multiclonal', None, 'Prevalence of Multiclonal Infections'],
     'newinfections' : ['NewInfections', None, 'New Infections'],
     'phi' : ['MARKER', None, 'Phi (Clinical / Infected)'],
-    'proportion' : ['MARKER', None, 'Proportion of 580Y Multiclonal Infections'],
     'proportion580Y' : ['MARKER', None, 'Proportion 580Y of All Clones'],
     'ratio' : ['MARKER', None, 'Ratio of Weighted to Unweighted 580Y Clones'],
     'symptoms' : ['MARKER', None, 'Probability of Symptoms'],
-    'theta' : ['MeanTheta', None, 'Theta (Population Mean)'],
-    'treatments' : ['Treatments', None, 'Treatments'],
     'weighted' : ['580yWeighted', None, 'Weighted 580Y Clone Count'],
-    'unweighted' : ['580yUnweighted', None, '580Y Clone Count'],
 
     # Overlay reports
     'clinical-symptoms' : ['ClinicalIndividuals', 'symptoms', 'Clinical Cases, per 1000'],
@@ -147,24 +145,54 @@ COMPARISONS = [
      '580Y Infection Behavior', '580Y-behavior'],
 ]
 
-def main():
+FIELDS, LABELS, PALETTE, FILENAME = range(4)
+FIGURES = [
+    # Figure 3, individual immune response 
+    [['unweighted', 'theta', 'treatments'],
+     ['580Y Clones', r'$\theta_{pop}$', 'Treatments'],
+     ['#fb8072', '#000000', '#e6ab02'], 
+     'MS BFA, Figure 3 - Individual Immune Response'],
+
+    # Figure 4, with-in host competition
+    [['moi', 'proportion', 'treatments'],
+     ['Multiplicity of Infection', 'Proportion of Multiclonal (580Y vs. All) ', 'Treatments'],
+     ['#BD4B4B', '#B4A5A5', '#e6ab02'],
+     'MS BFA, Figure 4 - With-in Host'],     
+
+    # Figure 5, competitive release
+    [['proportion', 'unweighted', 'treatments'],
+     ['Proportion of Multiclonal Infections (580Y vs. All) ', '580Y Clones', 'Treatments'],
+     ['#B4A5A5', '#fb8072', '#e6ab02'],
+     'MS BFA, Figure 5 - Competitive Release'],     
+]
+
+def main(analysis):
     aggregate_data, aggregate_dates = {}, {}
     for key in DATA_SETS:
         print(DATA_SETS[key][TITLE])
         dates, data = prepare(DATA_SETS[key][DATA_PATH])
-        study_reports(dates, data, DATA_SETS[key][TITLE], DATA_SETS[key][PLOT_OUTPUT])
+        if analysis:
+            study_reports(dates, data, DATA_SETS[key][TITLE], DATA_SETS[key][PLOT_OUTPUT])
 
         # Update the aggregate data sets
         aggregate_data[key] = data
         aggregate_dates[key] = dates
-        
-    print('Generating nine panel reports...')
-    nine_panel_reports(aggregate_dates, aggregate_data)
 
-    print('Generating comparsion figures...')
-    for ndx in range(len(COMPARISONS)):
-        comparison_figure(aggregate_dates, aggregate_data, COMPARISONS[ndx][FIELDS], COMPARISONS[ndx][LABELS], COMPARISONS[ndx][TITLE], COMPARISONS[ndx][FILENAME])
-        progressBar(ndx + 1, len(COMPARISONS))
+    if analysis:        
+        print('Generating nine panel reports...')
+        nine_panel_reports(aggregate_dates, aggregate_data)
+
+        print('Generating comparison figures...')
+        for ndx in range(len(FIGURES)):
+            comparison_figure(aggregate_dates, aggregate_data, COMPARISONS[ndx][FIELDS], COMPARISONS[ndx][LABELS], COMPARISONS[ndx][TITLE], COMPARISONS[ndx][FILENAME])
+            progressBar(ndx + 1, len(COMPARISONS))
+
+    if not analysis:
+        print('Generating manuscript figures...')
+        for ndx in range(len(FIGURES)):
+            comparison_figure(aggregate_dates, aggregate_data, FIGURES[ndx][FIELDS], FIGURES[ndx][LABELS], None, FIGURES[ndx][FILENAME], 
+                start = -61, end = -12, palette = FIGURES[ndx][PALETTE])
+            progressBar(ndx + 1, len(FIGURES))    
 
 
 def prepare(path):
@@ -231,9 +259,7 @@ def prepare(path):
     return dates, zoneData
 
 
-def comparison_figure(aggregate_dates, aggregate_data, fields, labels, title, filename):
-    STARTDATE, ENDDATE = -49, -24
-
+def comparison_figure(aggregate_dates, aggregate_data, fields, labels, title, filename, start = -49, end = -24, palette = None, normalized = True):
     # Load plot settings
     matplotlib.rc_file(MANUSCRIPT_FORMAT)
 
@@ -241,7 +267,7 @@ def comparison_figure(aggregate_dates, aggregate_data, fields, labels, title, fi
     for study in DATA_SETS:
         # Prepare the date format
         startDate = datetime.datetime.strptime(STUDYDATE, "%Y-%m-%d")
-        dates = aggregate_dates[study][STARTDATE:ENDDATE]
+        dates = aggregate_dates[study][start:end]
         dates = [startDate + datetime.timedelta(days=x) for x in dates]
 
         # Grab the column we are working with
@@ -256,14 +282,21 @@ def comparison_figure(aggregate_dates, aggregate_data, fields, labels, title, fi
             for field in fields:
                 # If we are rendering the beta, then use the seasonality adjustment as a proxy
                 if field == 'beta':
-                    handle, = axis[zone, column].plot(dates, beta_multiplier(zone, aggregate_dates[study][STARTDATE:ENDDATE]))
+                    handle, = axis[zone, column].plot(dates, beta_multiplier(zone, aggregate_dates[study][start:end]))
 
-                # Otherwise just show the normalized data for the field of interest
                 else:
-                    upper, median, lower = normalize(data[field], STARTDATE, ENDDATE)
-                    handle, = axis[zone, column].plot(dates, median)
-                    color = scale_luminosity(axis[zone, column].lines[-1].get_color(), 1)
-                    axis[zone, column].fill_between(dates, lower, upper, alpha=0.5, facecolor=color)
+                    # Apply normalization or just calculate the IQR
+                    if normalized: upper, median, lower = normalize(data[field], start, end)
+                    else: upper, median, lower = iqr(data[field], start, end)
+
+                    # Plot according the the defaults or or the palette
+                    if palette == None: handle, = axis[zone, column].plot(dates, median)
+                    else: handle, = axis[zone, column].plot(dates, median, color = palette[fields.index(field)])
+
+                    # Plot the IQR bounds
+                    color = scale_luminosity(axis[zone, column].lines[-1].get_color(), 1.2)
+                    axis[zone, column].fill_between(dates, lower, upper, alpha=0.4, facecolor=color)
+
                 handles.append(handle)
 
             # Set the subplot title
@@ -273,11 +306,13 @@ def comparison_figure(aggregate_dates, aggregate_data, fields, labels, title, fi
                 axis[zone, column].title.set_text(ZONES[zone])                        
     
     # Format the overall plot
-    figure.suptitle(title)
+    col = len(labels)
+    if title != None:
+        figure.suptitle(title)
+        col = (int)(col / 2)
 
-    # Set the legend
-    axis[2, 1].legend(handles=handles, labels=labels, loc='upper center', 
-        bbox_to_anchor=(0.5, -0.2), frameon=False, fancybox=False, shadow=False, ncol=(int)(len(labels) / 2))
+    axis[2, 1].legend(handles=handles, labels=labels, loc='upper center',
+        bbox_to_anchor=(0.5, -0.2), frameon=False, fancybox=False, shadow=False, ncol=col)            
 
     # Format the plots
     for ax in axis.flat:
@@ -317,7 +352,7 @@ def beta_multiplier(zone, times):
     return results
 
 
-def normalize(values, start, end):
+def iqr(values, start, end):
     # Find the bounds
     upper = np.percentile(values, 75, axis=0)
     median = np.percentile(values, 50, axis=0)
@@ -327,6 +362,14 @@ def normalize(values, start, end):
     upper = upper[start:end]
     median = median[start:end]
     lower = lower[start:end]
+
+    # Return the IQR
+    return upper, median, lower
+
+
+def normalize(values, start, end):
+    # Get the IQR
+    upper, median, lower = iqr(values, start, end)
 
     # Return nothing if the upper bound is invalid
     if max(median) == 0: return [0]*abs(start-end), [0]*abs(start-end), [0]*abs(start-end)
@@ -476,4 +519,4 @@ def format_yticks(ax):
 
 
 if __name__ == '__main__':
-    main()
+    main(False)
