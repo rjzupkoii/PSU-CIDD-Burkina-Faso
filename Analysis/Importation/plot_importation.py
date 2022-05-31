@@ -178,6 +178,10 @@ def main(analysis):
         aggregate_data[key] = data
         aggregate_dates[key] = dates
 
+    # Report key values
+    report_moi(aggregate_data)
+
+    # Generate analysis plots
     if analysis:        
         print('Generating nine panel reports...')
         nine_panel_reports(aggregate_dates, aggregate_data)
@@ -187,6 +191,7 @@ def main(analysis):
             comparison_figure(aggregate_dates, aggregate_data, COMPARISONS[ndx][FIELDS], COMPARISONS[ndx][LABELS], COMPARISONS[ndx][TITLE], COMPARISONS[ndx][FILENAME])
             progressBar(ndx + 1, len(COMPARISONS))
 
+    # Generate manuscript figures
     if not analysis:
         print('Generating manuscript figures...')
         for ndx in range(len(FIGURES)):
@@ -350,6 +355,22 @@ def beta_multiplier(zone, times):
         time = int((datetime.datetime.strptime(STUDYDATE, '%Y-%m-%d') + datetime.timedelta(days=days)).strftime('%j'))
         results.append(base + (a * sin_plus(b * math.pi * (time - phi) / 365)))
     return results
+
+
+def report_moi(dataset):
+    for study in DATA_SETS:
+        for zone in range(3):
+            data = dataset[study][zone]
+            
+            # Mean, one standard deviation
+            mean, sd = np.mean(data['moi']), np.std(data['moi'])
+            print(u"{}, Zone {}: {:.3f} \u00B1 {:.3f}".format(study, zone, mean, sd))
+
+            # IQR
+            upper = np.percentile(data['moi'], 75)
+            median = np.percentile(data['moi'], 50)
+            lower = np.percentile(data['moi'], 25)
+            print('{}, Zone {}: {:.3f} (IQR: {:.3f} - {:.3f}'.format(study, zone, median, lower, upper))    
 
 
 def iqr(values, start, end):
