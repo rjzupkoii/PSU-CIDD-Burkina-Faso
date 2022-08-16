@@ -2,7 +2,7 @@
 
 # plot_yearly_violin.py
 #
-# 
+# This script generates a yearly summary violin plot.
 import matplotlib.pyplot as plt
 import numpy as np
 

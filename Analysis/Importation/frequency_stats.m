@@ -16,8 +16,8 @@ process_year('data/bfa-merged.csv', filter);
 
 % % Generate the plots for the manuscript
 % generate_pairwise_plots();
-% generate_probablity_plot(-3.5);
-% generate_probablity_plot(-3);
+generate_probablity_plot(-3.5);
+generate_probablity_plot(-3);
 
 function [] = process_year(filename, filter)
     % Load the data and drop de novo studies
@@ -160,7 +160,7 @@ function [] = generate_probablity_plot(threshold)
     for ndx = 1:6
         subplot(2, 3, ndx);
         ylim([0 ymax]);
-        format(titles{ndx});
+        format(titles{ndx}, ymax);
     end
 
     % Format the plot
@@ -170,18 +170,26 @@ function [] = generate_probablity_plot(threshold)
     ylabel(han, {'Establishment Probablity', ''}, 'FontSize', 18);
 
     % Save the image to disk
-    save_figure(sprintf('out/probablity%0.1f-threshold.png', threshold));
+    save_figure(sprintf('plots/manuscript/probablity%0.1f-threshold.png', threshold), true);
+    save_figure(sprintf('plots/manuscript/probablity%0.1f-threshold.svg', threshold));
 end
 
-function [] = format(plot_title)
+function [] = format(plot_title, ymax)
     % Note the bounds of the rainy season
     xline(6, '-.', 'Start Rainy Season');
     xline(10, '-.', 'End Rainy Season');
+
+    fill = area([6 10], [ymax ymax]);
+    fill(1).FaceColor = [0.8 0.8 0.8];
+    fill(1).EdgeColor = [1 1 1];
+    children = get(gca, 'Children');
+    set(gca, 'Children', flipud(children));
 
     % Append the title
     title(plot_title, 'FontWeight', 'normal', 'FontSize', 16);
 
     % Generic formatting
+    xlim([0 13]);
     xticks(1:12);
     xticklabels(months);
     ytickformat('percentage');
