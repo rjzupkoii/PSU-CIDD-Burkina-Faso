@@ -63,7 +63,7 @@ def prepare(path, start = -61, end = -24):
 def plot(dates, data):
     STUDYDATE = '2007-01-01'
     color = iter(['#4477AA', '#66CCEE', '#EE6677', '#882255'])
-    label = iter([r'$\phi$', r'$\theta_{pop}$', 'New Infections', 'Treatments'])
+    label = iter([r'$\varphi$', r'$\theta_{pop}$', 'New Infections', 'Treatments'])
     
     # Prepare the date format
     startDate = datetime.datetime.strptime(STUDYDATE, "%Y-%m-%d")
@@ -85,7 +85,7 @@ def plot(dates, data):
         add_plot(right, dates, data[key], next(color), next(label), style='--')
     
     # Set the left y-axis label and tick values
-    left.set_ylabel(r'$\phi$ / $\theta_{pop}$ (Solid)')
+    left.set_ylabel(r'$\varphi$ / $\theta_{pop}$ (Solid)')
     left.set_ylim([0, 0.5])
     ticks = left.get_yticks()
     left.set_yticks(ticks)
