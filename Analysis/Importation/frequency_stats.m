@@ -182,6 +182,7 @@ function [] = format(plot_title, ymax)
     fill = area([6 10], [ymax ymax]);
     fill(1).FaceColor = [0.8 0.8 0.8];
     fill(1).EdgeColor = [1 1 1];
+    fill(1).FaceAlpha = 0.2;
     children = get(gca, 'Children');
     set(gca, 'Children', flipud(children));
 

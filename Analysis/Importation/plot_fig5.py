@@ -60,7 +60,7 @@ def prepare(path, start = -61, end = -24):
 
 def plot(dates, data):
     STUDYDATE = '2007-01-01'
-    color = iter(['#999933', '#AA4499', '#882255'])
+    color = iter(['#DDCC77', '#CC6677', '#117733'])
     label = iter(['Proporition', '580Y Clones', 'Treatments'])
     
     # Prepare the date format

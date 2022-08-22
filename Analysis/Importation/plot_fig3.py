@@ -62,7 +62,7 @@ def prepare(path, start = -61, end = -24):
 
 def plot(dates, data):
     STUDYDATE = '2007-01-01'
-    color = iter(['#4477AA', '#66CCEE', '#EE6677', '#882255'])
+    color = iter(['#332288', '#88CCEE', '#CC6677', '#117733'])
     label = iter([r'$\varphi$', r'$\theta_{pop}$', 'New Infections', 'Treatments'])
     
     # Prepare the date format

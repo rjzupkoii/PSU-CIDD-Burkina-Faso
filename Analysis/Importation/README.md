@@ -6,4 +6,5 @@ The following scripts were used to generate plots for the manuscript:
 - `frequency_stats.m` - Figure Two
 - `plot_fig3.py` - Figure Three
 - `plot_fig4.py` - Figure Four
-- `plot_fig5.py` - Figure Four
+- `plot_fig5.py` - Figure Five
+
