@@ -92,7 +92,7 @@ def plot(dates, data):
     left.set_yticklabels(ticks)
     
     # Set the right y-axis label and tick values
-    right.set_ylabel('580Y Clones / Treatments (Dashed)')
+    right.set_ylabel('Treatments / 580Y Clones (Dashed)')
     right.set_ylim([5.2, 6.2])
     ticks = right.get_yticks()
     right.set_yticks(ticks)

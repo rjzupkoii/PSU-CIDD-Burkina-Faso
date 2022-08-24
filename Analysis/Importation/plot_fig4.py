@@ -98,7 +98,7 @@ def plot(dates, data):
     left.set_yticklabels(ticks)
     
     # Set the right y-axis label and tick values
-    right.set_ylabel('Treatments / New Infections (Dashed)')
+    right.set_ylabel('MOI, 2-7 / Treatments, 100-10M (Dashed)')
     right.set_ylim([1, 7])
     ticks = right.get_yticks()
     right.set_yticks(ticks)
