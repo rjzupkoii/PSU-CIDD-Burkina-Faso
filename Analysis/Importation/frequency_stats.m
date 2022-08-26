@@ -16,8 +16,8 @@ process_year('data/bfa-merged.csv', filter);
 
 % % Generate the plots for the manuscript
 % generate_pairwise_plots();
-generate_probablity_plot(-3.5);
-generate_probablity_plot(-3);
+generate_probablity_plot(-3.5, 'normal');
+generate_probablity_plot(-3, 'binomial');
 
 function [] = process_year(filename, filter)
     % Load the data and drop de novo studies
@@ -117,12 +117,13 @@ function [] = generate_plot(block, imports, symptomatic)
     save_figure(sprintf('out/boxplot-%d-symptomatic-%d.png', imports, symptomatic));
 end
 
-function [] = generate_probablity_plot(threshold)
+function [] = generate_probablity_plot(threshold, distribution)
     % Prepare for the figure
     fig = figure;
     ndx = 0;
     ymax = 0;
     titles = cell(6);
+    pr_all = []; pr_low = []; pr_high = [];
 
     for symptomatic = 0:1
         for imports = 3:3:9
@@ -132,17 +133,39 @@ function [] = generate_probablity_plot(threshold)
     
             % Calculate the probablities
             probabilities = zeros(1, 12);
-            errors = zeros(1, 12);
+            err_low = zeros(1, 12);
+            err_high = zeros(1, 12);
             for month = 1:12
+                % Total establishments and replicate count
                 established = sum(data(:, month) > threshold);
-                replicates = sum(~isnan(data(:, month)));
-                probabilities(month) = (established / replicates) * 100.0;
-                errors(month) = 1.96 * sqrt(abs((probabilities(month) * (1 - probabilities(month))) / replicates));
+                replicates = size(data(:, month), 1);
+
+                if strcmp(distribution, 'normal')
+                    % Normal distribution and 95% CI
+                    probabilities(month) = established / replicates;
+                    err_high(month) = 1.96 * sqrt(abs((probabilities(month) * (1 - probabilities(month))) / replicates));
+                elseif strcmp(distribution, 'binomial')
+                    % Binomial 
+                    [phat, pci] = binofit(established, replicates);
+                    probabilities(month) = phat;
+                    err_low(month) = pci(1);
+                    err_high(month) = pci(2);
+                else
+                    error('Unknown distrubtion!')
+                end
+
+                % Probablity aross all posiblities
+                pr_all(end + 1) = probabilities(month);
+                if month >= 6 && month <= 10
+                    pr_high(end + 1) = probabilities(month);
+                else
+                    pr_low(end + 1) = probabilities(month);
+                end
             end
     
             % Note the ymax
-            if ymax < max(probabilities + errors)
-                ymax = max(probabilities + errors);
+            if ymax < max(probabilities + err_high)
+                ymax = max(probabilities + err_high);
             end
 
             % Move to the next subplot
@@ -153,7 +176,11 @@ function [] = generate_probablity_plot(threshold)
             hold on;
             titles{ndx} = sprintf('Importations: %d/mo, Symptomatic: %s', imports, yesno(symptomatic));
             scatter(1:12, probabilities, 15, [100 100 100] / 255, 'filled');
-            errorbar(1:12, probabilities, errors, 'LineStyle','none', 'Color', 'black');
+            if strcmp(distribution, 'normal')
+                errorbar(1:12, probabilities, err_high, 'LineStyle','none', 'Color', 'black');
+            elseif strcmp(distribution, 'binomial')
+                errorbar(1:12, probabilities, err_low, err_high, 'LineStyle','none', 'Color', 'black');
+            end
         end
     end
 
@@ -168,6 +195,12 @@ function [] = generate_probablity_plot(threshold)
     han = axes(fig, 'visible','off'); 
     han.YLabel.Visible = 'on';
     ylabel(han, {'Establishment Probablity', ''}, 'FontSize', 18);
+
+    % Report median and IQR
+    fprintf('Threshold %.2f / %s\n', threshold, distribution);
+    fprintf('All (n = %d), median: %.2f (IQR %.2f - %.2f)\n', size(pr_all, 2), prctile(pr_all, [50 25 75]));
+    fprintf('Low (n = %d), median: %.2f (IQR %.2f - %.2f)\n', size(pr_low, 2), prctile(pr_low, [50 25 75]));
+    fprintf('High (n = %d), median: %.2f (IQR %.2f - %.2f)\n\n', size(pr_high, 2), prctile(pr_high, [50 25 75]));
 
     % Save the image to disk
     save_figure(sprintf('plots/manuscript/probablity%0.1f-threshold.png', threshold), true);
@@ -193,7 +226,6 @@ function [] = format(plot_title, ymax)
     xlim([0 13]);
     xticks(1:12);
     xticklabels(months);
-    ytickformat('percentage');
     graphic = gca;
     graphic.FontSize = 14;
 end

@@ -108,6 +108,11 @@ def plot(dates, data):
     right_lines, right_labels = right.get_legend_handles_labels()
     left.legend(left_lines + right_lines, left_labels + right_labels, loc='center right', frameon=False)
     
+    # Report some values
+    print('Theta Pop: {:.4f} - {:.4f}'.format(np.min(data['MeanTheta']), np.max(data['MeanTheta'])))
+    print('Phi: {:.4f} - {:.4f}, {:.2f}%'.format(
+        np.min(data['Phi']), np.max(data['Phi']), (np.min(data['Phi']) / np.max(data['Phi']) * 100.0)))
+    
     # Save the plot
     fig.savefig('plots/manuscript/MS BFA, Fig. 3.png', bbox_inches='tight', dpi=150)
     fig.savefig('plots/manuscript/MS BFA, Fig. 3.svg', format='svg')

@@ -3,6 +3,7 @@
 # plot_import_violin.py
 #
 # Use the intermediate files from the MATLAB script to generate violin plots.
+import math
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -27,6 +28,7 @@ for frequency in [3, 6, 9]:
         # Load the data from disk and mask out the infinate values and NaN
         filename = "intermediate/final-frequency-{}-symptomatic-{}.csv".format(frequency, symptomatic)
         df = np.genfromtxt(filename, delimiter=',')
+        df[df == -np.inf] = math.log10(math.pow(10, -8))
         mask = ~np.isinf(df) & ~np.isnan(df)
         data = [d[m] for d, m in zip(df.T, mask.T)]
         
