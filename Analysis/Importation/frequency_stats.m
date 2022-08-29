@@ -175,12 +175,14 @@ function [] = generate_probablity_plot(threshold, distribution)
             % Add to the plot
             hold on;
             titles{ndx} = sprintf('Importations: %d/mo, Symptomatic: %s', imports, yesno(symptomatic));
-            scatter(1:12, probabilities, 15, [100 100 100] / 255, 'filled');
+            scatter(1:12, probabilities, 125, [100 100 100] / 255, 'filled');
             if strcmp(distribution, 'normal')
-                errorbar(1:12, probabilities, err_high, 'LineStyle','none', 'Color', 'black');
+                bar = errorbar(1:12, probabilities, err_high, 'LineStyle','none', 'Color', 'black');
             elseif strcmp(distribution, 'binomial')
-                errorbar(1:12, probabilities, err_low, err_high, 'LineStyle','none', 'Color', 'black');
+                bar = errorbar(1:12, probabilities, err_low, err_high, 'LineStyle','none', 'Color', 'black');
             end
+            bar.LineWidth = 0.85;
+            bar.Color =  [100 100 100] / 255;
         end
     end
 
@@ -191,10 +193,9 @@ function [] = generate_probablity_plot(threshold, distribution)
     end
 
     % Format the plot
-    sgtitle(sprintf('Probablity of Establishment (threshold > %0.1f)', threshold), 'FontSize', 18);
     han = axes(fig, 'visible','off'); 
     han.YLabel.Visible = 'on';
-    ylabel(han, {'Establishment Probablity', ''}, 'FontSize', 18);
+    ylabel(han, {sprintf('Probablity of Achiving Frequency 10^{%0.f} After Ten Years', threshold), ''}, 'FontSize', 18);
 
     % Report median and IQR
     fprintf('Threshold %.2f / %s\n', threshold, distribution);
@@ -227,7 +228,7 @@ function [] = format(plot_title, ymax)
     xticks(1:12);
     xticklabels(months);
     graphic = gca;
-    graphic.FontSize = 14;
+    graphic.FontSize = 16;
 end
 
 function [] = wilcoxon(imports, symptomatic)
