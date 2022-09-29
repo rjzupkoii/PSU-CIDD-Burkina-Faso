@@ -272,3 +272,9 @@ FROM (
 ) movements
 GROUP BY distance 
 ORDER BY distance ASC
+
+-- Select all of the model days elappsed and the calendar date
+select md.dayselapsed, to_date('2007-01-01', 'YYYY-MM-DD') + (md.dayselapsed || ' days')::interval as date
+from sim.monthlydata md 
+where md.replicateid = 25339
+order by date desc
