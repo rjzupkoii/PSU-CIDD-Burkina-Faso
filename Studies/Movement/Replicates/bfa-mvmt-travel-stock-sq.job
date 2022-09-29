@@ -6,4 +6,4 @@
 #PBS -l walltime=96:00:00
 
 cd $PBS_O_WORKDIR
-./MaSim -i bfa-mvmt-travel-sq.yml -s 9 -r DbReporter
+./MaSim -i bfa-mvmt-stock-sq.yml -s 9 -r DbReporter
