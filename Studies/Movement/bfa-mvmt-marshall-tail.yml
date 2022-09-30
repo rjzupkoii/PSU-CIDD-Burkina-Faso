@@ -84,21 +84,23 @@ raster_db:
   beta_by_location: [ 0 ]
 
 # Seasonality of malaria in Burkina Faso
-# 0: Sahelian zone (Short)  / 0.5, 0.5, 2.5, 146
-# 1: Sudano-Sahelian zone (Long) / 0.5, 0.5, 2.3, 155
-# 2: Sudanian zone (Permanent) / 1, 0, 1, 0
+# 0: Sahelian zone (3 month)        / 0.4, 0.6, 2.5, 146
+# 1: Sudano-Sahelian zone (4 month) / 0.4, 0.6, 2.3, 155
+# 2: Sudanian zone (5 month)        / 0.4, 0.6, 1.9, 155
 seasonal_info:
   enable: true
-  raster: true
-  base: [ 0.5, 0.5, 1]
-  a:    [ 0.5, 0.5, 0]
-  b:    [ 2.5, 2.3, 1]
-  phi:  [ 146, 155, 0]
+  mode: equation
+  equation:
+    raster: true
+    base: [ 0.4, 0.4, 0.4]
+    a:    [ 0.6, 0.6, 0.6]
+    b:    [ 2.5, 2.3, 1.9]
+    phi:  [ 146, 155, 155]
   
 # Country specific movement model and calibration, from Marshall et al. (2018), Table 1 with tuned rho
 spatial_model:
   name: "Marshall"
-  BurkinaFaso:
+  Marshall:
     alpha: 1.27
     log_rho: 0.45
     tau: 1.342
@@ -157,6 +159,9 @@ immune_system_information:
 
   # parameter kappa in supplement of 2015 LGH paper
   factor_effect_age_mature_immunity: 1
+
+  # Adjust the infliction point in the curve
+  midpoint: 0.15  
 
 # Settings that determine how long an individual stays in a given location
 circulation_info:
