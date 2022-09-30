@@ -1,7 +1,7 @@
 #1/bin/bash
 
 #PBS -A mfb9_b_g_sc_default
-#PBS -l pmem=32gb
+#PBS -l pmem=48gb
 #PBS -l nodes=1:ppn=1:rhel7:stmem
 #PBS -l walltime=8:00:00
 
