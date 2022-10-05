@@ -278,3 +278,11 @@ select md.dayselapsed, to_date('2007-01-01', 'YYYY-MM-DD') + (md.dayselapsed || 
 from sim.monthlydata md 
 where md.replicateid = 25339
 order by date desc
+
+-- Count of all of the movement entries for the given replicate
+select c.filename, dm.replicateid, sum(count)
+from sim.districtmovement dm
+  inner join sim.replicate r on r.id = dm.replicateid
+  inner join sim.configuration c on c.id = r.configurationid
+group by c.filename, dm.replicateid
+order by c.filename, dm.replicateid
