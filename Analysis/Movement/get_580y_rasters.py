@@ -6,10 +6,15 @@
 # This script generates mean 580Y frequency scripts based upon the 2036 (15-year)
 # data set under the status quo for Burkina Faso. The script assumes that all of
 # the relevant data will be under study id 9 and end with the -sq.yml filename
-# suffix.
+# suffix. 
+# 
+# The frequency and infected individuals queries only capture one month - 
+# January 2036 - worth of data to try and maintain some consistency with the 
+# PLOS GPH manuscript.
 ##
 import csv
 import os
+import statistics
 import sys
 
 # From the PSU-CIDD-MaSim-Support repository
@@ -27,6 +32,9 @@ CONNECTION = "host=masimdb.vmhost.psu.edu dbname=burkinafaso user=sim password=s
 # Number of replicates that we are looking for
 REPLICATE_COUNT = 10
 
+# The number of days elapsed from the start of simulation for January 2036
+DAYS_ELAPSED = 10592
+
 
 def get_580y_frequency(replicateId):
     sql = """
@@ -36,12 +44,12 @@ def get_580y_frequency(replicateId):
         FROM sim.monthlydata md 
             INNER JOIN sim.monthlygenomedata mgd ON mgd.monthlydataid = md.id
         WHERE md.replicateid = %(replicateId)s
-          AND md.dayselapsed BETWEEN 10592 AND 10927
+          AND md.dayselapsed = %(dayselapsed)s
         GROUP BY mgd.location, mgd.genomeid) iq
         INNER JOIN sim.genotype g on iq.genomeid = g.id
     WHERE g.name ~ '^.....Y..'
     GROUP BY iq.location"""
-    return select(CONNECTION, sql, {'replicateId': replicateId})
+    return select(CONNECTION, sql, {'replicateId': replicateId, 'dayselapsed': DAYS_ELAPSED})
 
 def get_header(replicateId):
     sql = """
@@ -57,9 +65,9 @@ def get_infected_individuals(replicateId):
     FROM sim.monthlydata md
         INNER JOIN sim.monthlysitedata msd ON msd.monthlydataid = md.id
     WHERE md.replicateid = %(replicateId)s
-      AND md.dayselapsed BETWEEN 10592 AND 10927
+      AND md.dayselapsed = %(dayselapsed)s
     GROUP BY msd.location"""
-    return select(CONNECTION, sql, {'replicateId': replicateId})
+    return select(CONNECTION, sql, {'replicateId': replicateId, 'dayselapsed': DAYS_ELAPSED})
 
 def get_locations(replicateId):
     sql = """
@@ -86,11 +94,15 @@ def process(replicates, filename):
     NODATA = -9999
 
     # Read in and sum the frequency and infected individuals
-    count = {}
-    individuals = {}
+    frequency = {}
     for replicate in replicates:
+        count, individuals = {}, {}
         read("{}/{}-580y.csv".format(CACHE, replicate), count)
         read("{}/{}-infections.csv".format(CACHE, replicate), individuals)
+        for key in count.keys():
+            if key not in frequency:
+                frequency[key] = []
+            frequency[key].append(count[key] / individuals[key])
       
     # Prepare the ASC header
     ascheader = asc.get_header()
@@ -112,7 +124,7 @@ def process(replicates, filename):
         key = row[0]
         x = row[1]
         y = row[2]
-        ascdata[x][y] = count[key] / individuals[key]
+        ascdata[x][y] = statistics.median(frequency[key])
 
     # Save the data to disk
     asc.write_asc(ascheader, ascdata, filename)
@@ -156,10 +168,7 @@ def main():
 def read(filename, dictionary):
     with open(filename, 'r') as read:
         for row in csv.reader(read):
-            key = int(row[0])
-            if key not in dictionary:
-                dictionary[key] = 0
-            dictionary[key] += float(row[1])
+            dictionary[int(row[0])] = float(row[1])
 
 def write(data, filename):
     with open(filename, 'w') as file:
