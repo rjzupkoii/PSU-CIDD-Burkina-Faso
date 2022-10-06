@@ -40,8 +40,7 @@ def get_replicate(replicateId):
     SELECT dm.destination AS index, sum(dm.count)
     FROM sim.districtmovement dm
     WHERE dm.replicateid = %(replicateId)s
-    GROUP BY dm.destination
-    """
+    GROUP BY dm.destination"""
     return select(CONNECTION, sql, {'replicateId': replicateId})
 
 def get_replicates():
@@ -51,8 +50,7 @@ def get_replicates():
         INNER JOIN sim.replicate r ON r.configurationid = c.id
     WHERE c.studyid = 9
       AND filename NOT LIKE '%-sq.yml'
-    ORDER BY c.filename
-    """
+    ORDER BY c.filename"""
     return select(CONNECTION, sql, None)
 
 
