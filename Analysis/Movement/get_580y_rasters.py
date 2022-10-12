@@ -30,7 +30,7 @@ CACHE = "data/cache"
 CONNECTION = "host=masimdb.vmhost.psu.edu dbname=burkinafaso user=sim password=sim"
 
 # Number of replicates that we are looking for
-REPLICATE_COUNT = 10
+REPLICATE_COUNT = 25
 
 # The number of days elapsed from the start of simulation for January 2036
 DAYS_ELAPSED = 10592
