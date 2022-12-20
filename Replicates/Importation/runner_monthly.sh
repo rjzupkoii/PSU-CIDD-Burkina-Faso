@@ -13,26 +13,28 @@ replicates=0
 
 # Replicate settings for studies
 DENSITY_LIST="4.301 3.0"
-IMPORTATION_LIST="3 6 9"
+IMPORTATION_LIST="1 3 6 9"
 
 # Iterate over all of the key variables and create the studies
-for density in $DENSITY_LIST; do
-  for importation in $IMPORTATION_LIST; do
+for month in `seq 1 12`; do
+  for density in $DENSITY_LIST; do
+    for importation in $IMPORTATION_LIST; do
 
       # Prepare the files
-      configuration="bfa-import-monthly-$importation-$density.yml"
+      configuration="bfa-import-$month-$importation-$density-0.yml"
       sed 's/#MONTH#/'"$month"'/g' bfa-importation-monthly-template.yml > $configuration
       sed -i 's/#PARASITEDENSITY#/'"$density"'/g' $configuration
       sed -i 's/#IMPORTATIONS#/'"$importation"'/g' $configuration
 
-      job="bfa-import-$importation-$density.pbs"
+      job="bfa-import-$month-$importation-$density.pbs"
       sed 's/#FILENAME#/'"$configuration"'/g' template.job > $job
 
       # Queue a single job
       check_delay $user
       qsub $job
       let "replicates+=1"
-  done
+    done
+  done	
 done
 
 echo "Jobs run: $replicates"
