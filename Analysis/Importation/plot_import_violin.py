@@ -18,14 +18,14 @@ SYMPTOMATIC_LABEL = ['Asymptomatic', 'Symptomatic']
 
 # Prepare the figure to work with
 matplotlib.rc_file('include/matplotlibrc-violin')
-fig, axs = plt.subplots(nrows=3, ncols=2, sharey=True, sharex=True)
+fig, axs = plt.subplots(nrows=4, ncols=2, sharey=True, sharex=True)
 plot = 0
 
 # Iterate over the primary combinations
-for frequency in [3, 6, 9]:
+for frequency in [1, 3, 6, 9]:
     for symptomatic in [0, 1]:
 
-        # Load the data from disk and mask out the infinate values and NaN
+        # Load the data from disk and mask out the infinite values and NaN
         filename = "intermediate/final-frequency-{}-symptomatic-{}.csv".format(frequency, symptomatic)
         df = np.genfromtxt(filename, delimiter=',')
         df[df == -np.inf] = math.log10(math.pow(10, -8))
@@ -69,7 +69,7 @@ for frequency in [3, 6, 9]:
         # Set the axis labels
         if plot % 2 == 1:
             ax.set_ylabel(r'580Y Frequency ($log_{10})$')
-        if plot > 4:
+        if plot > 6:
             ax.set_xlabel('Month of Importation')
 
 # Save the plot
