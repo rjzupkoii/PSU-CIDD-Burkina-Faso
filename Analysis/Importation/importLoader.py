@@ -109,7 +109,7 @@ def importation_study():
             
         # Query and update the record
         data = get_replicates(row[0])
-        with open(filename, "wb") as csvfile:
+        with open(filename, "w") as csvfile:
             writer = csv.writer(csvfile)
             for row in data:
                 writer.writerow(list(row))
@@ -123,7 +123,7 @@ def importation_study():
 
     print("Merging files...")
     if os.path.exists(MERGED): os.remove(MERGED)
-    with open(MERGED, "wb") as csvfile:
+    with open(MERGED, "w") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(HEADER)
         for file in glob.glob("data/bfa-importation-*.csv"):
