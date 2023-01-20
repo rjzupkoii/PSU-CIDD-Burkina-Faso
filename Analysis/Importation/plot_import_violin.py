@@ -2,7 +2,7 @@
 
 # plot_import_violin.py
 #
-# Use the intermediate files from the MATLAB script to generate violin plots.
+# Use the intermediate files from the MATLAB script frequency_stats.m to generate violin plots.
 import math
 import matplotlib
 import matplotlib.pyplot as plt

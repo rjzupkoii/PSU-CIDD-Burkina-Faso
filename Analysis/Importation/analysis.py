@@ -17,12 +17,23 @@ OFFSET = -36
 STUDYDATE = '2007-01-01'
 
 Y_LABEL = [
-    '580Y Count',           '% Clin. Inf.',
-    '580Y Multi Count',     '% Clin. Treated',
-    '580Y Frequency',       '% Multi. Treated',
-    '',                     '% Treat. Fail.',
+    ## Left Column
+    '580Y Count',
+    '580Y Multi Count',     
+    '580Y Frequency',
+    'MOI',                  
+    None,                    
+    
+    ## Right column
+    'Mean Theta',
+    '% Clin. Inf.',
+    '% Clin. Treated',
+    '% Multi. Treated',
+    '% Treat. Fail.',    
     ]
     
+ROWS = 5
+COLUMNS = 2
 
 def format_plot(plot, dates, label):
     # Draw the seasonality
@@ -36,28 +47,37 @@ def format_plot(plot, dates, label):
 
 def update_plot(plot, dates, data):
     
+    ## Left column
     plot[0][0].plot(dates, data['580yUnweighted'])
     plot[1][0].plot(dates, data['580yMulticlonal'])
     
     y = data['580yWeighted'] / data['InfectedIndividuals']
     plot[2][0].plot(dates, y)       # 580Y Frquency
         
+    # MOI = (Clones - (Clones - Infections)) / Multiclonal
+    y = (data['ParasiteClones'] - (data['ParasiteClones'] - data['InfectedIndividuals'])) / data['Multiclonal']
+    plot[3][0].plot(dates, y)       # MOI
+    
+    
+    ## Right column
+    plot[0][1].plot(dates, data['MeanTheta'])
+    
     y = (data['ClinicalIndividuals'] / data['InfectedIndividuals']) * 100.0
-    plot[0][1].plot(dates, y)       # % Clinical Infections
+    plot[1][1].plot(dates, y)       # % Clinical Infections
     
     y = (data['Treatments'] / data['ClinicalIndividuals']) * 100.0
-    plot[1][1].plot(dates, y)       # % Clinical Treated
+    plot[2][1].plot(dates, y)       # % Clinical Treated
     
     y = (data['Treatments'] / data['Multiclonal']) * 100.0
-    plot[2][1].plot(dates, y)       # % Multiclonal Treated
+    plot[3][1].plot(dates, y)       # % Multiclonal Treated
     
     y = (data['TreatmentFailure'] / data['Treatments']) * 100.0
-    plot[3][1].plot(dates, y)       # % Treatment Failures    
+    plot[4][1].plot(dates, y)       # % Treatment Failures    
     
 
 # Prepare the figure
 matplotlib.rc_file('matplotlibrc-line')
-figure, plot = plt.subplots(4, 2)
+figure, plot = plt.subplots(ROWS, COLUMNS)
 
 for ndx in range(1, 51):
     # Load the data
@@ -79,16 +99,11 @@ for ndx in range(1, 51):
     # Plot the data
     update_plot(plot, dates, data)
     
-# Format the figure    
-plot[3, 0].axis('off')
-for ndy in range(0, len(plot)):
-    for ndx in range(0, len(plot[ndy])):        
-        print(ndy, ndx, ndy * 2 + ndx, Y_LABEL[ ndy * 2 + ndx])
-        if ndy == 3 and ndx == 0: continue
-        format_plot(plot[ndy][ndx], dates, Y_LABEL[ndy * 2 + ndx])
-
-
-
-
-
-
+# Format the figure 
+plot[4, 0].axis('off')
+for ndy in range(0, COLUMNS):
+    for ndx in range(0, ROWS):
+        label = Y_LABEL[ndy * ROWS + ndx]
+        print(ndy, ndx, ndy * ROWS + ndx, label)
+        if label is None: continue
+        format_plot(plot[ndx][ndy], dates, label)    

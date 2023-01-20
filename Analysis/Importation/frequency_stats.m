@@ -11,13 +11,13 @@ filter = NaN;
 
 % Process the data sets
 mkdir('intermediate');
-% process('data/bfa-merged.csv', filter, false);
+process('data/bfa-merged.csv', filter, false);
 process_year('data/bfa-merged.csv', filter);
 
 % % Generate the plots for the manuscript
-% generate_pairwise_plots();
-generate_probablity_plot(-3.5, 'normal');
-generate_probablity_plot(-3, 'binomial');
+%generate_pairwise_plots();
+%generate_probablity_plot(-3.5, 'normal');
+%generate_probablity_plot(-3, 'binomial');
 
 function [] = process_year(filename, filter)
     % Load the data and drop de novo studies
@@ -32,7 +32,7 @@ function [] = process_year(filename, filter)
     data.frequency = log10(data.weightedoccurrences ./ data.infectedindividuals);
     
     % Generate the counts
-    for imports = 3:3:9
+    for imports = [1, 3, 6, 9]
         for symptomatic = 0:1
             % First pass filtering
             filtered = data(data.imports == imports, :);
@@ -68,7 +68,7 @@ function [] = process(filename, filter, plot)
     data.frequency = log10(data.weightedoccurrences ./ data.infectedindividuals);
     
     % Generate the counts
-    for imports = 3:3:9
+    for imports = [1, 3, 6, 9]
         for symptomatic = 0:1
             % First pass filtering
             filtered = data(data.imports == imports, :);
@@ -98,7 +98,7 @@ function [] = process(filename, filter, plot)
 end
 
 function [] = generate_pairwise_plots()
-    for imports = 3:3:9
+    for imports = [1, 3, 6, 9]
         for symptomatic = 0:1
             wilcoxon(imports, symptomatic);
         end
