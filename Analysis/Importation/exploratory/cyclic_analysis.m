@@ -33,8 +33,8 @@ where md.replicateid = 17640
   and msd.population > 10000
 order by msd.population desc 
 %}
-raw = readmatrix('data/bfa-cell.csv');
-plot_cells(raw, 'Cell Population > 10000');
+% raw = readmatrix('/bfa-cell.csv');
+% plot_cells(raw, 'Cell Population > 10000');
 
 
 %% Rwanda
@@ -49,11 +49,11 @@ where r.configurationid = 4027
   and msd.location in (8, 17)
 order by md.dayselapsed
 %}
-% raw = readmatrix('data/rwa-working.csv');
-% subplot(2, 1, 1);
-% plot_treatment(raw(raw(:, 3) == 8, :), 'Gasabo');
-% subplot(2, 1, 2);
-% plot_treatment(raw(raw(:, 3) == 17, :), 'Huye');
+raw = readmatrix('data/rwa-working.csv');
+subplot(2, 1, 1);
+plot_treatment(raw(raw(:, 3) == 8, :), 'Gasabo');
+subplot(2, 1, 2);
+plot_treatment(raw(raw(:, 3) == 17, :), 'Huye');
 
 
 %% Function defintions
