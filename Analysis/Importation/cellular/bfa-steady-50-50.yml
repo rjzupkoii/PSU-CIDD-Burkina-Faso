@@ -35,7 +35,7 @@ starting_date: 2007/1/1
 start_of_comparison_period: 2018/1/1
 
 # Ending date is 2018 plus 20 years
-ending_date: 2023/1/1
+ending_date: 2038/1/1
 
 # Discard the first five years worth of data
 start_collect_data_day: 1825 

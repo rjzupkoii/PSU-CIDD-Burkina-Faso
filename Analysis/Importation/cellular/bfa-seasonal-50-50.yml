@@ -35,7 +35,7 @@ starting_date: 2007/1/1
 start_of_comparison_period: 2018/1/1
 
 # Ending date is 2018 plus 20 years
-ending_date: 2023/1/1
+ending_date: 20238/1/1
 
 # Discard the first five years worth of data
 start_collect_data_day: 1825 
@@ -81,15 +81,15 @@ raster_db:
   beta_by_location: [ 0.7 ]
 
 # Seasonality of malaria in Burkina Faso
-# Sudanian zone (5 month)        / 0.4, 0.6, 1.9, 155
+# 0: Sahelian zone (3 month)        / 0.4, 0.6, 2.5, 146
 seasonal_info:
   enable: true
   mode: equation
   equation:
     base: [ 0.4 ]
     a:    [ 0.6 ]
-    b:    [ 1.9 ]
-    phi:  [ 155 ]
+    b:    [ 2.5 ]
+    phi:  [ 146 ]
   
 # Country specific movement model and calibration
 spatial_model:
