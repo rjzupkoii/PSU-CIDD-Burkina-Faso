@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 
 ##
-# comparision.py
+# plot_treatments.py
 #
-# Script to plot the comparision between cellular studies.
+# Script to plot the comparison of the total treatments between cellular studies.
 ##
-import numpy as np
+import datetime
+import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import sys
 
 # From the PSU-CIDD-MaSim-Support repository
-sys.path.insert(1, '../../../../PSU-CIDD-MaSim-Support/Python/include')
+sys.path.insert(1, '../../../PSU-CIDD-MaSim-Support/Python/include')
 from plotting import scale_luminosity
 
 
@@ -23,6 +25,7 @@ LAYOUT = {
     }
 
 LIMIT = [[49, 51], [50, 75]]
+STUDYDATE = '2007-01-01'
 
 def plot_data(data, dates, ax):
     # Find the bounds of the data
@@ -36,9 +39,16 @@ def plot_data(data, dates, ax):
     ax.fill_between(dates, lower, upper, alpha=0.5, facecolor=color)    
     
 
-data = pd.read_csv('../data/bfa-cellular.csv')
+matplotlib.rc_file('include/matplotlibrc-line')
+data = pd.read_csv('data/bfa-cellular.csv')
 studies = pd.unique(data.filename)
+
 dates = pd.unique(data.dayselapsed)
+
+# Prepare the date format
+startDate = datetime.datetime.strptime(STUDYDATE, "%Y-%m-%d")
+dates = [startDate + datetime.timedelta(days = int(x)) for x in dates]  
+
 
 figure, plots = plt.subplots(2, 2)
 row, col = 0, 0
@@ -62,13 +72,22 @@ for key in LAYOUT:
           
     # Add the data to the plot
     plot = plots[LAYOUT[key][0], LAYOUT[key][1]]
-    plot_data(dataset, dates, plot)            
-    
+
     # Format the plot
+    plot.set_xlim([min(dates), max(dates)])    
     if LAYOUT[key][1] == 0:
         plot.set_ylim([49, 51])
     else:
+        # Draw the seasonality
+        for year in range(2018, 2024):
+            plot.axvspan(datetime.datetime(year, 6, 1, 0, 0), datetime.datetime(year, 10, 1, 0, 0), alpha=0.2, color='#CCCCCC')    
+        
         plot.set_ylim([76.5, 80])
+
+    # Draw the actual plot data
+    plot_data(dataset, dates, plot)
+        
+        
     
     
     
