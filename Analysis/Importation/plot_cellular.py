@@ -29,7 +29,7 @@ LIMIT = [[49, 51], [50, 75]]
 STUDYDATE = '2007-01-01'
   
 
-def figure(column, ylabel, title):
+def figure(column, ylabel, filename, ylimit = None):
     # Sub function to render the actual data on the plot
     def plot_data(data, dates, ax):
         # Find the bounds of the data
@@ -54,7 +54,6 @@ def figure(column, ylabel, title):
     # Setup the figure
     matplotlib.rc_file('include/matplotlibrc-line')
     figure, plots = plt.subplots(2, 2)
-    figure.suptitle(title)
     
     for key in LAYOUT:
         # Filter the data for this plot
@@ -82,24 +81,24 @@ def figure(column, ylabel, title):
                 plot.axvspan(datetime.datetime(year, 6, 1, 0, 0), datetime.datetime(year, 10, 1, 0, 0), alpha=0.2, color='#CCCCCC')            
     
         # Format the plot
-        plot.set_xlim([min(dates), max(dates)])    
+        plot.set_xlim([min(dates), max(dates)])
+        if ylimit is not None:
+            plot.set_ylim(ylimit)
         if LAYOUT[key][1] == 0:
             plot.set_ylabel(ylabel)
         result = re.search(r"bfa-s([a-z]*)-(.*).yml", key)
         plot.title.set_text('S{} {}'.format(result.group(1), result.group(2)))
+        
+    # Save the plot
+    plt.savefig(filename, bbox_inches='tight')
+    plt.close()
     
-    
-def plot_clinical():
-    figure('clinicalepisodes', 'Total Clinical Episodes', 'Under-5 vs. Over-5 Clinical Episodes')
-
-def plot_percent_treated():
-    figure('percent_treated', 'Mean Treatment Seeking (%)', 'Under-5 vs. Over-5 Mean Treatment Seeking')
-    
-def plot_580y_frequency():
-    figure('frequency', '580Y Frequency', 'Under-5 vs. Over-5 580Y Frequency')    
     
 if __name__  == '__main__':
-    plot_580y_frequency()
+    figure('clinicalepisodes', 'Total Clinical Episodes', 'out/clinical.png', [4750, 14000])
+    figure('percent_treated', 'Mean Treatment Seeking (%)', 'out/treated.png')
+    figure('frequency', '580Y Frequency', 'out/frequency.png', [0, 0.045])
+    figure('weighted_580y', '580Y Weighted Count', 'out/weighted.png', [0, 6000])
     
     
     
