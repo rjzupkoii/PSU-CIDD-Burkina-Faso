@@ -64,7 +64,7 @@ artificial_rescaling_of_population_size: 1.0
 raster_db:
   # Adjusted population to account for burn-in up to 2017 start
   population_raster: "cellular.asc"
-
+  
   # Set the cell size used by raster, in sq.km
   cell_size: 5
 
@@ -75,21 +75,14 @@ raster_db:
   #if the number of values less than number of locations, the first value will be applied for all locations
   # this is the initial value, the modification values can be change by setting in events node
   p_treatment_for_less_than_5_by_location: [ 0.8 ]
-  p_treatment_for_more_than_5_by_location: [ 0.4 ]
+  p_treatment_for_more_than_5_by_location: [ 0.2 ]
 
   # Selected beta value
   beta_by_location: [ 0.7 ]
 
-# Seasonality of malaria in Burkina Faso
-# 0: Sahelian zone (3 month)        / 0.4, 0.6, 2.5, 146
+# Disable seasonality for this cell
 seasonal_info:
-  enable: true
-  mode: equation
-  equation:
-    base: [ 0.4 ]
-    a:    [ 0.6 ]
-    b:    [ 2.5 ]
-    phi:  [ 146 ]
+  enable: false
   
 # Country specific movement model and calibration
 spatial_model:
