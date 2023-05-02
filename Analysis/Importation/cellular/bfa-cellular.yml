@@ -35,7 +35,7 @@ starting_date: 2007/1/1
 start_of_comparison_period: 2018/1/1
 
 # Ending date is 2018 plus 20 years
-ending_date: 2023/1/1
+ending_date: 2038/1/1
 
 # Discard the first five years worth of data
 start_collect_data_day: 1825 
@@ -81,7 +81,7 @@ raster_db:
   p_treatment_for_more_than_5_by_location: [ 0.5 ]
 
   # Selected beta value
-  beta_by_location: [ 0.7 ]
+  beta_by_location: [ 0.35 ]
 
 # Seasonality of malaria in Burkina Faso
 # 0: Sahelian zone (3 month)        / 0.4, 0.6, 2.5, 146

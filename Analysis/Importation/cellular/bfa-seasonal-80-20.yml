@@ -78,7 +78,7 @@ raster_db:
   p_treatment_for_more_than_5_by_location: [ 0.2 ]
 
   # Selected beta value
-  beta_by_location: [ 0.7 ]
+  beta_by_location: [ 0.35 ]
 
 # Seasonality of malaria in Burkina Faso
 # 0: Sahelian zone (3 month)        / 0.4, 0.6, 2.5, 146
