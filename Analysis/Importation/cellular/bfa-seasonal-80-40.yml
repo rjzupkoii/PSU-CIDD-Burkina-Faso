@@ -201,6 +201,40 @@ events:
   - name: turn_off_mutation
     info:
       - day: 2007/1/1
+  - name: turn_on_mutation
+    info:
+      # Artemisinin
+      - day: 2018/1/1
+        drug_id: 0
+        mutation_probability: 0.001983
+      # Amodiaquine
+      - day: 2018/1/1
+        drug_id: 1
+        mutation_probability: 0.001983 
+      # Sulfadoxine/pyrimethamine
+      - day: 2018/1/1
+        drug_id: 2
+        mutation_probability: 0.0      
+      # Chloroquine
+      - day: 2018/1/1
+        drug_id: 3
+        mutation_probability: 0.001983 
+      # Lumefantrine
+      - day: 2018/1/1
+        drug_id: 4
+        mutation_probability: 0.001983   
+      # Piperaquine
+      - day: 2018/1/1
+        drug_id: 5
+        mutation_probability: 0.001983 
+      # Mefloquine
+      - day: 2018/1/1
+        drug_id: 6
+        mutation_probability: 0.001983 
+      # Quinine
+      - day: 2018/1/1
+        drug_id: 7
+        mutation_probability: 0.0
 
 # Drug Information
 #
