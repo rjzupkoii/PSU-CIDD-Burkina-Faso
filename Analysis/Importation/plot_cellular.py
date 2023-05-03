@@ -77,7 +77,7 @@ def figure(column, ylabel, filename, ylimit = None):
 
         # Draw the seasonality        
         if LAYOUT[key][0] == 1:            
-            for year in range(2018, 2028):
+            for year in range(2018, 2038):
                 plot.axvspan(datetime.datetime(year, 6, 1, 0, 0), datetime.datetime(year, 10, 1, 0, 0), alpha=0.2, color='#CCCCCC')            
     
         # Format the plot
@@ -95,10 +95,10 @@ def figure(column, ylabel, filename, ylimit = None):
     
     
 if __name__  == '__main__':
-    figure('clinicalepisodes', 'Total Clinical Episodes', 'out/clinical.png', [4750, 14000])
+    figure('clinicalepisodes', 'Total Clinical Episodes', 'out/clinical.png', [3900, 18000])
     figure('percent_treated', 'Mean Treatment Seeking (%)', 'out/treated.png')
-    figure('frequency', '580Y Frequency', 'out/frequency.png', [0, 0.045])
-    figure('weighted_580y', '580Y Weighted Count', 'out/weighted.png', [0, 6000])
+    figure('frequency', '580Y Frequency', 'out/frequency.png', [0, 0.4])
+    figure('weighted_580y', '580Y Weighted Count', 'out/weighted.png', [0, 60000])
     
     
     
