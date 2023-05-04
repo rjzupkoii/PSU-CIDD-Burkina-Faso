@@ -25,7 +25,6 @@ LAYOUT = {
     'bfa-seasonal-80-20.yml' : [1, 1]
     }
 
-LIMIT = [[49, 51], [50, 75]]
 STUDYDATE = '2007-01-01'
   
 
