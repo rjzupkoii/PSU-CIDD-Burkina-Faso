@@ -2,8 +2,8 @@
 #
 # Boni Lab
 #
-# Configuration Brukina Faso on a cellular basis to verify the
-# impact of various variables on population level behavior.
+# Configuration Brukina Faso on a 2 by two grid basis to verify 
+# the cause of emergent phenomenon.
 # ---------------------------------------------------------------
 
 # ---------------------------------------------------------------
@@ -62,11 +62,18 @@ artificial_rescaling_of_population_size: 1.0
 # that the paths are relative to the binary file for the simulation
 # ---------------------------------------------------------------
 raster_db:
-  # Adjusted population to account for burn-in up to 2017 start
-  population_raster: "cellular.asc"
+  # Population in a two by two grid space
+  population_raster: "2x-grid.asc"
     
-  # Raster files defining the cell
-  ecoclimatic_raster: "ecozone.asc"
+  # Raster file defining the climate zones
+  ecoclimatic_raster: "2x-ecozone.asc"
+
+  # Raster files defining treatments
+  pr_treatment_under5: "2x-treatment.asc"
+  pr_treatment_over5: "2x-treatment.asc" 
+
+  # Raster file defining the beta
+  beta_raster: "2x-beta.asc"
   
   # Set the cell size used by raster, in sq.km
   cell_size: 5
@@ -81,7 +88,7 @@ raster_db:
   p_treatment_for_more_than_5_by_location: [ 0.5 ]
 
   # Selected beta value
-  beta_by_location: [ 0.35 ]
+  beta_by_location: [ -1 ]
 
 # Seasonality of malaria in Burkina Faso
 # 0: Sahelian zone (3 month)        / 0.4, 0.6, 2.5, 146
@@ -91,10 +98,11 @@ seasonal_info:
   enable: true
   mode: equation
   raster: true
-  base: [ 0.4, 0.4, 0.4]
-  a:    [ 0.6, 0.6, 0.6]
-  b:    [ 2.5, 2.3, 1.9]
-  phi:  [ 146, 155, 155]
+  equation:
+    base: [ 0.4, 0.4, 0.4]
+    a:    [ 0.6, 0.6, 0.6]
+    b:    [ 2.5, 2.3, 1.9]
+    phi:  [ 146, 155, 155]
   
 # Country specific movement model and calibration
 spatial_model:
@@ -148,7 +156,7 @@ immune_system_information:
 
   # Max probability of experiencing symptoms as a result of a new infection
   # the actual probability will depend on the host's immunity
-    max_clinical_probability: 0.99
+  max_clinical_probability: 0.99
 
   # slope of sigmoidal prob-v-immunity function (parameter z in supplement of 2015 LGH paper) 
   immune_effect_on_progression_to_clinical: 4.5
@@ -159,7 +167,7 @@ immune_system_information:
   # parameter kappa in supplement of 2015 LGH paper
   factor_effect_age_mature_immunity: 1
 
-    # Adjust the infliction point in the curve
+  # Adjust the infliction point in the curve
   midpoint: 0.15  
 
 # Settings that determine how long an individual stays in a given location
@@ -206,6 +214,40 @@ events:
   - name: turn_off_mutation
     info:
       - day: 2007/1/1
+  - name: turn_on_mutation
+    info:
+      # Artemisinin
+      - day: 2018/1/1
+        drug_id: 0
+        mutation_probability: 0.001983
+      # Amodiaquine
+      - day: 2018/1/1
+        drug_id: 1
+        mutation_probability: 0.001983 
+      # Sulfadoxine/pyrimethamine
+      - day: 2018/1/1
+        drug_id: 2
+        mutation_probability: 0.0      
+      # Chloroquine
+      - day: 2018/1/1
+        drug_id: 3
+        mutation_probability: 0.001983 
+      # Lumefantrine
+      - day: 2018/1/1
+        drug_id: 4
+        mutation_probability: 0.001983   
+      # Piperaquine
+      - day: 2018/1/1
+        drug_id: 5
+        mutation_probability: 0.001983 
+      # Mefloquine
+      - day: 2018/1/1
+        drug_id: 6
+        mutation_probability: 0.001983 
+      # Quinine
+      - day: 2018/1/1
+        drug_id: 7
+        mutation_probability: 0.0
 
 # Drug Information
 #
