@@ -22,13 +22,13 @@ Y_LABEL = [
     '580Y Multi Count',     
     '580Y Frequency',
     'MOI',                  
-    None,                    
+    None,       
     
     ## Right column
     'Mean Theta',
+    'New Inf.',
     '% Clin. Inf.',
     '% Clin. Treated',
-    '% Multi. Treated',
     '% Treat. Fail.',    
     ]
     
@@ -61,16 +61,14 @@ def update_plot(plot, dates, data):
     
     ## Right column
     plot[0][1].plot(dates, data['MeanTheta'])
-    
+    plot[1][1].plot(dates, data['NewInfections'])
+        
     y = (data['ClinicalIndividuals'] / data['InfectedIndividuals']) * 100.0
-    plot[1][1].plot(dates, y)       # % Clinical Infections
+    plot[2][1].plot(dates, y)       # % Clinical Infections
     
     y = (data['Treatments'] / data['ClinicalIndividuals']) * 100.0
-    plot[2][1].plot(dates, y)       # % Clinical Treated
-    
-    y = (data['Treatments'] / data['Multiclonal']) * 100.0
-    plot[3][1].plot(dates, y)       # % Multiclonal Treated
-    
+    plot[3][1].plot(dates, y)       # % Clinical Treated
+        
     y = (data['TreatmentFailure'] / data['Treatments']) * 100.0
     plot[4][1].plot(dates, y)       # % Treatment Failures    
     
