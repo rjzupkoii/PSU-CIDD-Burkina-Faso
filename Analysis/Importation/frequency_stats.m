@@ -14,10 +14,9 @@ mkdir('intermediate');
 process('data/bfa-merged.csv', filter, false);
 process_year('data/bfa-merged.csv', filter);
 
-% % Generate the plots for the manuscript
-%generate_pairwise_plots();
-%generate_probablity_plot(-3.5, 'normal');
-%generate_probablity_plot(-3, 'binomial');
+% Generate the plots for the manuscript
+generate_pairwise_plots();
+generate_probablity_plot(-3, 'binomial');
 
 function [] = process_year(filename, filter)
     % Load the data and drop de novo studies
@@ -126,7 +125,7 @@ function [] = generate_probablity_plot(threshold, distribution)
     pr_all = []; pr_low = []; pr_high = [];
 
     for symptomatic = 0:1
-        for imports = 3:3:9
+        for imports = [1 3 6 9]
             % Load the data
             filename = sprintf('intermediate/final-frequency-%d-symptomatic-%d.csv', imports, symptomatic);
             data = readmatrix(filename);
@@ -155,11 +154,11 @@ function [] = generate_probablity_plot(threshold, distribution)
                 end
 
                 % Probablity aross all posiblities
-                pr_all(end + 1) = probabilities(month);
+                pr_all(end + 1) = probabilities(month);         %#ok
                 if month >= 6 && month <= 10
-                    pr_high(end + 1) = probabilities(month);
+                    pr_high(end + 1) = probabilities(month);    %#ok
                 else
-                    pr_low(end + 1) = probabilities(month);
+                    pr_low(end + 1) = probabilities(month);     %#ok
                 end
             end
     
@@ -170,7 +169,7 @@ function [] = generate_probablity_plot(threshold, distribution)
 
             % Move to the next subplot
             ndx = ndx + 1;
-            subplot(2, 3, ndx);            
+            subplot(2, 4, ndx);            
                 
             % Add to the plot
             hold on;
@@ -186,8 +185,8 @@ function [] = generate_probablity_plot(threshold, distribution)
         end
     end
 
-    for ndx = 1:6
-        subplot(2, 3, ndx);
+    for ndx = 1:8
+        subplot(2, 4, ndx);
         ylim([0 ymax]);
         format(titles{ndx}, ymax);
     end
