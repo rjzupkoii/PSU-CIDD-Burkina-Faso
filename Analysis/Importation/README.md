@@ -4,7 +4,6 @@ The following scripts were used to generate plots for the manuscript:
 
 - `plot_import_violin.py` - Figure One
 - `frequency_stats.m` - Figure Two
-- `plot_fig3.py` - Figure Three
-- `plot_fig4.py` - Figure Four
-- `plot_fig5.py` - Figure Five
+
+- `plot_fig4.py` - Pending, may be used as a manuscript figure
 

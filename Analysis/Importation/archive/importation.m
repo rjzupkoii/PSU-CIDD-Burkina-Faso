@@ -2,7 +2,7 @@
 %
 % Analysis script to determine the role that seasonality has on genotype
 % fixation following importation.
-addpath('include');
+addpath('../include');
 clear;
 
 generate(@plot_importation_replicates, 'data/bfa-merged.csv', 'out/imports-%d-symptomatic-%d-mutations-%d.png');

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
 ##
-# plot_fig3.py
+# plot_fig5.py
 #
-# Generate the Figure Three plot for the Burkina Faso 580Y importation manuscript.
+# Generate the Figure Five plot for the Burkina Faso 580Y importation manuscript.
+#
+# REMARKS Competitive release analysis figure.
 ##
 import datetime
 import math
@@ -24,7 +26,7 @@ def main():
 
 
 def prepare(path, start = -61, end = -24):
-    VARIABLES =  ['Phi', 'MeanTheta', 'NewInfections', 'Treatments']    
+    VARIABLES =  ['580yUnweighted', 'Proportion', 'Treatments']    
     
     # Build the dictionary that will be used to store the data
     dates, data = [], {}
@@ -45,10 +47,8 @@ def prepare(path, start = -61, end = -24):
         for date in dates:
             byDate = replicate[replicate['DaysElapsed'] == date]
             for key in VARIABLES:
-                if key == 'Phi':
-                    data[key][ndx].append(sum(byDate['ClinicalIndividuals']) / sum(byDate['InfectedIndividuals']))
-                elif key == 'MeanTheta':
-                    data[key][ndx].append(np.mean(byDate['MeanTheta']))
+                if key.startswith('Proportion'):
+                    data[key][ndx].append(sum(byDate['580yMulticlonal']) / sum(byDate['Multiclonal']))
                 else:
                     data[key][ndx].append(math.log10(sum(byDate[key])))
     
@@ -62,8 +62,8 @@ def prepare(path, start = -61, end = -24):
 
 def plot(dates, data):
     STUDYDATE = '2007-01-01'
-    color = iter(['#332288', '#88CCEE', '#CC6677', '#117733'])
-    label = iter([r'$\varphi$', r'$\theta_{pop}$', 'New Infections', 'Treatments'])
+    color = iter(['#DDCC77', '#CC6677', '#117733'])
+    label = iter(['Proportion', '580Y Clones', 'Treatments'])
     
     # Prepare the date format
     startDate = datetime.datetime.strptime(STUDYDATE, "%Y-%m-%d")
@@ -79,43 +79,38 @@ def plot(dates, data):
         left.axvspan(datetime.datetime(year, 6, 1, 0, 0), datetime.datetime(year, 11, 1, 0, 0), alpha=0.2, color='#CCCCCC')
     
     # Add the study data
-    for key in ['Phi', 'MeanTheta']:
+    for key in ['Proportion']:
         add_plot(left, dates, data[key], next(color), next(label))
-    for key in ['NewInfections', 'Treatments']:
+    for key in ['580yUnweighted', 'Treatments']:
         add_plot(right, dates, data[key], next(color), next(label), style='--')
     
     # Set the left y-axis label and tick values
-    left.set_ylabel(r'$\varphi$ / $\theta_{pop}$ (Solid)')
-    left.set_ylim([0, 0.5])
+    left.set_ylabel('Proportion (Solid)')
+    left.set_ylim([0, 0.4])
     ticks = left.get_yticks()
     left.set_yticks(ticks)
-    ticks = ['{:.1f}'.format(value) for value in ticks]
+    ticks = ['{:.2f}'.format(value) for value in ticks]
     ticks[0] = ''
     left.set_yticklabels(ticks)
     
     # Set the right y-axis label and tick values
-    right.set_ylabel('Treatments / New Infections (Dashed)')
-    right.set_ylim([5, 7])
+    right.set_ylabel('Treatments / 580Y Clones (Dashed)')
+    right.set_ylim([5.2, 6.2])
     ticks = right.get_yticks()
     right.set_yticks(ticks)
     ticks = format_ticks([math.pow(10, value) for value in ticks])[1]
-    ticks[0] = ''    
+    ticks[0] = ''
     right.set_yticklabels(ticks)
     
     # Set the x label, legend
     left.set_xlabel('Month')
     left_lines, left_labels = left.get_legend_handles_labels()
     right_lines, right_labels = right.get_legend_handles_labels()
-    left.legend(left_lines + right_lines, left_labels + right_labels, loc='center right', frameon=False)
-    
-    # Report some values
-    print('Theta Pop: {:.4f} - {:.4f}'.format(np.min(data['MeanTheta']), np.max(data['MeanTheta'])))
-    print('Phi: {:.4f} - {:.4f}, {:.2f}%'.format(
-        np.min(data['Phi']), np.max(data['Phi']), (np.min(data['Phi']) / np.max(data['Phi']) * 100.0)))
+    left.legend(left_lines + right_lines, left_labels + right_labels, loc='upper left', frameon=False)
     
     # Save the plot
-    fig.savefig('plots/manuscript/MS BFA, Fig. 3.png', bbox_inches='tight', dpi=150)
-    fig.savefig('plots/manuscript/MS BFA, Fig. 3.svg', format='svg')
+    fig.savefig('plots/manuscript/MS BFA, Fig. 5.png', bbox_inches='tight', dpi=150)
+    fig.savefig('plots/manuscript/MS BFA, Fig. 5.svg', format='svg')
     
 
 def add_plot(axis, dates, values, color, label, style='-'):
