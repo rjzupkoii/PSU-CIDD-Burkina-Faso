@@ -2,8 +2,8 @@
 #
 # Boni Lab
 #
-# Configuration Brukina Faso on a 2 by two grid basis to verify 
-# the cause of emergent phenomenon.
+# Configuration Brukina Faso on a 3x3 grid to verify the cause
+# of emergent phenomenon, with seasonality.
 # ---------------------------------------------------------------
 
 # ---------------------------------------------------------------
@@ -34,8 +34,8 @@ starting_date: 2007/1/1
 # Start recording in 2018 since that's the major shift took place
 start_of_comparison_period: 2018/1/1
 
-# Ending date is 2018 plus 20 years
-ending_date: 2038/1/1
+# Ending date is 2018 plus 50 years
+ending_date: 2068/1/1
 
 # Discard the first five years worth of data
 start_collect_data_day: 1825 
