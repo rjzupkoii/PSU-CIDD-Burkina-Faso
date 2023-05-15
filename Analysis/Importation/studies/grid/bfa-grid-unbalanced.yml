@@ -63,17 +63,13 @@ artificial_rescaling_of_population_size: 1.0
 # ---------------------------------------------------------------
 raster_db:
   # Population in a two by two grid space
-  population_raster: "2x-grid.asc"
+  population_raster: "3x-grid.asc"
     
   # Raster file defining the climate zones
-  ecoclimatic_raster: "2x-ecozone.asc"
-
-  # Raster files defining treatments
-  pr_treatment_under5: "2x-treatment-u5.asc"
-  pr_treatment_over5: "2x-treatment-o5.asc" 
+  ecoclimatic_raster: "3x-ecozone.asc"
 
   # Raster file defining the beta
-  beta_raster: "2x-beta.asc"
+  beta_raster: "3x-beta.asc"
   
   # Set the cell size used by raster, in sq.km
   cell_size: 5
@@ -84,8 +80,8 @@ raster_db:
   # probability that a symptomatic and infected individual seeks and receives antimalarial treatment
   #if the number of values less than number of locations, the first value will be applied for all locations
   # this is the initial value, the modification values can be change by setting in events node
-  p_treatment_for_less_than_5_by_location: [ 0.5 ]
-  p_treatment_for_more_than_5_by_location: [ 0.5 ]
+  p_treatment_for_less_than_5_by_location: [ 0.87 ]
+  p_treatment_for_more_than_5_by_location: [ 0.391 ]
 
   # Selected beta value
   beta_by_location: [ -1 ]
