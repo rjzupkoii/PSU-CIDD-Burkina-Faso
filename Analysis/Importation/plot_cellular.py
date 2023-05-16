@@ -20,7 +20,7 @@ from plotting import scale_luminosity
 STUDYDATE = '2007-01-01'
   
 
-def figure(data_file, layout, column, ylabel, filename, ylimit = None):
+def figure(data_file, layout, column, ylabel, filename, xlimit = None, ylimit = None):
     # Sub function to render the actual data on the plot
     def plot_data(data, dates, ax):
         # Find the bounds of the data
@@ -68,11 +68,14 @@ def figure(data_file, layout, column, ylabel, filename, ylimit = None):
 
         # Draw the seasonality        
         if layout[key][0] == 1:            
-            for year in range(2018, 2038):
+            for year in range(2018, 2068):
                 plot.axvspan(datetime.datetime(year, 6, 1, 0, 0), datetime.datetime(year, 10, 1, 0, 0), alpha=0.2, color='#CCCCCC')            
     
         # Format the plot
-        plot.set_xlim([min(dates), max(dates)])
+        if xlimit is not None:
+            plot.set_xlim(xlimit)    
+        else:
+            plot.set_xlim([min(dates), max(dates)])
         if ylimit is not None:
             plot.set_ylim(ylimit)
         if layout[key][1] == 0:
@@ -85,16 +88,16 @@ def figure(data_file, layout, column, ylabel, filename, ylimit = None):
         
     # Save the plot
     plt.savefig(filename, bbox_inches='tight')
-    # plt.close()
+    plt.close()
     
 
 def get_title(filename):
     MAPPING = {
         # Grid based studies
         'bfa-grid-ns-balanced.yml'   : 'No Season, 50-50',
-        'bfa-grid-ns-unbalanced.yml' : 'No Season, 80-20',
+        'bfa-grid-ns-unbalanced.yml' : 'No Season, 87-39',
         'bfa-grid-balanced.yml'      : 'Seasonal, 50-50',
-        'bfa-grid-unbalanced.yml'    : 'Seasonal, 80-20',
+        'bfa-grid-unbalanced.yml'    : 'Seasonal, 87-39',
         
         # Single cell studies
         'bfa-steady-50-50.yml'   : 'No Season, 50-50',
@@ -104,7 +107,7 @@ def get_title(filename):
         
         # Primary titles
         'data/bfa-cellular.csv' : 'Single Cell Study',
-        'data/bfa-grid.csv'     : '2x2 Grid Study'
+        'data/bfa-grid.csv'     : '3x3 Grid Study'
     }
     return MAPPING[filename]
 
@@ -118,10 +121,10 @@ def plot_cell():
         'bfa-seasonal-80-20.yml' : [1, 1]
     }
 
-    figure(FILENAME, LAYOUT, 'clinicalepisodes', 'Total Clinical Episodes', 'out/clinical.png', [3900, 18000])
+    figure(FILENAME, LAYOUT, 'clinicalepisodes', 'Total Clinical Episodes', 'out/clinical.png', ylimit=[3900, 18000])
     figure(FILENAME, LAYOUT, 'percent_treated', 'Mean Treatment Seeking (%)', 'out/treated.png')
-    figure(FILENAME, LAYOUT, 'frequency', '580Y Frequency', 'out/frequency.png', [0, 0.4])
-    figure(FILENAME, LAYOUT, 'weighted_580y', '580Y Weighted Count', 'out/weighted.png', [0, 60000])
+    figure(FILENAME, LAYOUT, 'frequency', '580Y Frequency', 'out/frequency.png', ylimit=[0, 0.4])
+    figure(FILENAME, LAYOUT, 'weighted_580y', '580Y Weighted Count', 'out/weighted.png', ylimit=[0, 60000])
 
 
 def plot_grid():
@@ -133,10 +136,21 @@ def plot_grid():
         'bfa-grid-unbalanced.yml'    : [1, 1]
     }
 
-    figure(FILENAME, LAYOUT, 'clinicalepisodes', 'Total Clinical Episodes', 'out/grid_clinical.png', [5000, 52000])
+    # The figures across the full time frame
+    figure(FILENAME, LAYOUT, 'clinicalepisodes', 'Total Clinical Episodes', 'out/grid_clinical.png', ylimit=[5000, 91000])
     figure(FILENAME, LAYOUT, 'percent_treated', 'Mean Treatment Seeking (%)', 'out/grid_treated.png')
-    figure(FILENAME, LAYOUT, 'frequency', '580Y Frequency', 'out/grid_frequency.png', [0, 0.25])
-    figure(FILENAME, LAYOUT, 'weighted_580y', '580Y Weighted Count', 'out/grid_weighted.png', [0, 62000])
+    figure(FILENAME, LAYOUT, 'frequency', '580Y Frequency', 'out/grid_frequency.png', ylimit=[0, 1])
+    figure(FILENAME, LAYOUT, 'weighted_580y', '580Y Weighted Count', 'out/grid_weighted.png', ylimit=[0, 640000])
+    
+    # The figures across a ten year time frame
+    xlimit = [datetime.datetime(2040, 1, 1), datetime.datetime(2045, 12, 31)]
+    figure(FILENAME, LAYOUT, 'clinicalepisodes', 'Total Clinical Episodes', 'out/grid_5y_clinical.png', 
+            xlimit=xlimit, ylimit=[10000, 55000])
+    figure(FILENAME, LAYOUT, 'percent_treated', 'Mean Treatment Seeking (%)', 'out/grid_5y_treated.png', xlimit=xlimit)
+    figure(FILENAME, LAYOUT, 'frequency', '580Y Frequency', 'out/grid_5y_frequency.png',
+            xlimit=xlimit, ylimit=[0, 0.7])
+    figure(FILENAME, LAYOUT, 'weighted_580y', '580Y Weighted Count', 'out/grid_5y_weighted.png', 
+           xlimit=xlimit, ylimit=[0, 250000])
     
 
 if __name__  == '__main__':

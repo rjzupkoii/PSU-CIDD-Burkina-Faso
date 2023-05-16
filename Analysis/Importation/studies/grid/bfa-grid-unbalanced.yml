@@ -81,7 +81,7 @@ raster_db:
   #if the number of values less than number of locations, the first value will be applied for all locations
   # this is the initial value, the modification values can be change by setting in events node
   p_treatment_for_less_than_5_by_location: [ 0.87 ]
-  p_treatment_for_more_than_5_by_location: [ 0.391 ]
+  p_treatment_for_more_than_5_by_location: [ 0.234 ]
 
   # Selected beta value
   beta_by_location: [ -1 ]
