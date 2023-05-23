@@ -93,7 +93,13 @@ def figure(data_file, layout, column, ylabel, filename, xlimit = None, ylimit = 
 
 def get_title(filename):
     MAPPING = {
-        # Grid based studies
+        # 2x Grid based studies
+        'bfa-2x-grid-ns-balanced.yml'   : 'No Season, 50-50',
+        'bfa-2x-grid-ns-unbalanced.yml' : 'No Season, 87-39',
+        'bfa-2x-grid-balanced.yml'      : 'Seasonal, 50-50',
+        'bfa-2x-grid-unbalanced.yml'    : 'Seasonal, 87-39',
+
+        # 3x Grid based studies
         'bfa-grid-ns-balanced.yml'   : 'No Season, 50-50',
         'bfa-grid-ns-unbalanced.yml' : 'No Season, 87-39',
         'bfa-grid-balanced.yml'      : 'Seasonal, 50-50',
@@ -107,7 +113,8 @@ def get_title(filename):
         
         # Primary titles
         'data/bfa-cellular.csv' : 'Single Cell Study',
-        'data/bfa-grid.csv'     : '3x3 Grid Study'
+        'data/bfa-2x-grid.csv'  : '2x2 Grid Study',
+        'data/bfa-3x-grid.csv'  : '3x3 Grid Study'
     }
     return MAPPING[filename]
 
@@ -127,8 +134,23 @@ def plot_cell():
     figure(FILENAME, LAYOUT, 'weighted_580y', '580Y Weighted Count', 'out/weighted.png', ylimit=[0, 60000])
 
 
-def plot_grid():
-    FILENAME = 'data/bfa-grid.csv'
+def plot_2x_grid():
+    FILENAME = 'data/bfa-2x-grid.csv'
+    LAYOUT = {
+        'bfa-2x-grid-ns-balanced.yml'   : [0, 0],
+        'bfa-2x-grid-ns-unbalanced.yml' : [0, 1],
+        'bfa-2x-grid-balanced.yml'      : [1, 0],
+        'bfa-2x-grid-unbalanced.yml'    : [1, 1]
+    }
+
+    figure(FILENAME, LAYOUT, 'clinicalepisodes', 'Total Clinical Episodes', 'out/2x_clinical.png', ylimit=[8000, 80000])
+    figure(FILENAME, LAYOUT, 'percent_treated', 'Mean Treatment Seeking (%)', 'out/2x_treated.png')
+    figure(FILENAME, LAYOUT, 'frequency', '580Y Frequency', 'out/2x_frequency.png', ylimit=[0, 1])
+    figure(FILENAME, LAYOUT, 'weighted_580y', '580Y Weighted Count', 'out/2x_weighted.png', ylimit=[0, 600000])  
+
+
+def plot_3x_grid():
+    FILENAME = 'data/bfa-3x-grid.csv'
     LAYOUT = {
         'bfa-grid-ns-balanced.yml'   : [0, 0],
         'bfa-grid-ns-unbalanced.yml' : [0, 1],
@@ -137,23 +159,25 @@ def plot_grid():
     }
 
     # The figures across the full time frame
-    figure(FILENAME, LAYOUT, 'clinicalepisodes', 'Total Clinical Episodes', 'out/grid_clinical.png', ylimit=[5000, 91000])
-    figure(FILENAME, LAYOUT, 'percent_treated', 'Mean Treatment Seeking (%)', 'out/grid_treated.png')
-    figure(FILENAME, LAYOUT, 'frequency', '580Y Frequency', 'out/grid_frequency.png', ylimit=[0, 1])
-    figure(FILENAME, LAYOUT, 'weighted_580y', '580Y Weighted Count', 'out/grid_weighted.png', ylimit=[0, 640000])
+    figure(FILENAME, LAYOUT, 'clinicalepisodes', 'Total Clinical Episodes', 'out/3x_clinical.png', ylimit=[5000, 91000])
+    figure(FILENAME, LAYOUT, 'percent_treated', 'Mean Treatment Seeking (%)', 'out/3x_treated.png')
+    figure(FILENAME, LAYOUT, 'frequency', '580Y Frequency', 'out/3x_frequency.png', ylimit=[0, 1])
+    figure(FILENAME, LAYOUT, 'weighted_580y', '580Y Weighted Count', 'out/3x_weighted.png', ylimit=[0, 640000])
     
     # The figures across a ten year time frame
     xlimit = [datetime.datetime(2040, 1, 1), datetime.datetime(2045, 12, 31)]
-    figure(FILENAME, LAYOUT, 'clinicalepisodes', 'Total Clinical Episodes', 'out/grid_5y_clinical.png', 
+    figure(FILENAME, LAYOUT, 'clinicalepisodes', 'Total Clinical Episodes', 'out/5year_clinical.png', 
             xlimit=xlimit, ylimit=[10000, 55000])
-    figure(FILENAME, LAYOUT, 'percent_treated', 'Mean Treatment Seeking (%)', 'out/grid_5y_treated.png', xlimit=xlimit)
-    figure(FILENAME, LAYOUT, 'frequency', '580Y Frequency', 'out/grid_5y_frequency.png',
+    figure(FILENAME, LAYOUT, 'percent_treated', 'Mean Treatment Seeking (%)', 'out/5year_treated.png', xlimit=xlimit)
+    figure(FILENAME, LAYOUT, 'frequency', '580Y Frequency', 'out/5year_frequency.png',
             xlimit=xlimit, ylimit=[0, 0.7])
-    figure(FILENAME, LAYOUT, 'weighted_580y', '580Y Weighted Count', 'out/grid_5y_weighted.png', 
+    figure(FILENAME, LAYOUT, 'weighted_580y', '580Y Weighted Count', 'out/5year_weighted.png', 
            xlimit=xlimit, ylimit=[0, 250000])
     
 
 if __name__  == '__main__':
     plot_cell()
-    plot_grid()
+    plot_2x_grid()
+    plot_3x_grid()
+    
     
