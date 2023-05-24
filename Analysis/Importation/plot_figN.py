@@ -26,7 +26,7 @@ class DataSet:
         filtered = self.data[self.data['dayselapsed'] == np.unique(self.data['dayselapsed'])[-1]]
         if threshold == 0:
             filtered = filtered[filtered['frequency'] == 0]
-        else:
+        elif threshold is not None:
             filtered = filtered[filtered['frequency'] >= threshold]
         return np.unique(filtered[(filtered['month'] == month) &  
                                   (filtered['imports'] == imports) & 
@@ -95,6 +95,11 @@ def generate(filename, threshold, directory):
     def get_title(symptomatic, imports):
         postfix = 's'
         if imports == 1: postfix = ''
+        
+        if threshold is None:
+            return '{}ymptomatic with {} import{} in month'.format(
+                ['As', 'S'][symptomatic], imports, postfix)
+        
         symbol = '≥'
         if threshold == 0: symbol = '='
         return '{}ymptomatic with {} import{} in month, filter{}{}'.format(
@@ -144,5 +149,6 @@ if __name__ == '__main__':
     FILENAME = 'data/bfa-merged.csv'
     STUDYDATE = '2007-01-01'
    
+    generate(FILENAME, None, 'all')
     generate(FILENAME, 0, 'zero')
     generate(FILENAME, 1e-4, 'positive')
