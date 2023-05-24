@@ -9,17 +9,15 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import os
 
-FILENAME = 'data/bfa-merged.csv'
-STUDYDATE = '2007-01-01'
-THRESHOLD = 1e-4
 
 class DataSet:
     data = None
     
-    def __init__(self):
+    def __init__(self, filename):
         # Load the data, filter out mutations,  and calculate the frequency
-        self.data = pd.read_csv(FILENAME)
+        self.data = pd.read_csv(filename)
         self.data = self.data[self.data['mutations'] == 0]
         self.data['frequency'] = self.data['weightedoccurrences'] / self.data['infectedindividuals']            
 
@@ -65,7 +63,6 @@ def add_plot(plot, dataset, replicates, month):
     return ylimit
 
 
-
 def format_plots(plots, xlimit, ylimit):
     row, col = 0, 0
     for ndx in range(1, 13):
@@ -88,53 +85,64 @@ def format_plots(plots, xlimit, ylimit):
             col = 0    
 
 
-def get_filename(symptomatic, imports):
-    postfix = 's'
-    if imports == 1: postfix = ''
-    return 'out/{}ymptomatic - {} import{}.png'.format(['as', 's'][symptomatic], imports, postfix)
+def generate(filename, threshold, directory):
+    def get_filename(symptomatic, imports):
+        postfix = 's'
+        if imports == 1: postfix = ''
+        return 'out/{}/{}ymptomatic - {} import{}.png'.format(
+            directory, ['as', 's'][symptomatic], imports, postfix)
+
+    def get_title(symptomatic, imports):
+        postfix = 's'
+        if imports == 1: postfix = ''
+        symbol = '≥'
+        if threshold == 0: symbol = '='
+        return '{}ymptomatic with {} import{} in month, filter{}{}'.format(
+            ['As', 'S'][symptomatic], imports, postfix, symbol, threshold)
 
 
-def get_title(symptomatic, imports):
-    postfix = 's'
-    if imports == 1: postfix = ''
-    symbol = '≥'
-    if THRESHOLD == 0: symbol = '='
-    return '{}ymptomatic with {} import{} in month, filter{}{}'.format(
-        ['As', 'S'][symptomatic], imports, postfix, symbol, THRESHOLD)
+    # Make sure the directory exists
+    os.makedirs('out/{}'.format(directory), exist_ok=True)
 
-
-# Set the overall figure format
-matplotlib.rc_file('include/matplotlibrc-line')
-
-data = DataSet()
-xlimit = [min(data.get_dates()), max(data.get_dates())]
-
-for symptomatic in [0, 1]:
-    for imports in [1, 3, 6, 9]:
-
-        # Set-up a new plot to work with
-        figure, plots = plt.subplots(3, 4)
-        figure.autofmt_xdate(rotation=45)
-        
-        # Add the data
-        row, col, ylimit = 0, 0, 0
-        for month in range(1, 13):
-        
-            # Find the replicates that need to be plotted
-            replicates = data.get_replicates(month, imports, symptomatic, THRESHOLD)
-            ylimit = max(ylimit, add_plot(plots[row][col], data, replicates, calendar.month_name[month]))
+    # Set the overall figure format
+    matplotlib.rc_file('include/matplotlibrc-line')
+    
+    data = DataSet(filename)
+    xlimit = [min(data.get_dates()), max(data.get_dates())]
+    
+    for symptomatic in [0, 1]:
+        for imports in [1, 3, 6, 9]:
+    
+            # Set-up a new plot to work with
+            figure, plots = plt.subplots(3, 4)
+            figure.autofmt_xdate(rotation=45)
             
-            # Update our plot index
-            col += 1
-            if col % 4 == 0:
-                row += 1
-                col = 0    
-                            
-        # Format the overall plot
-        format_plots(plots, xlimit, ylimit)
-        figure.suptitle(get_title(symptomatic, imports))
+            # Add the data
+            row, col, ylimit = 0, 0, 0
+            for month in range(1, 13):
+            
+                # Find the replicates that need to be plotted
+                replicates = data.get_replicates(month, imports, symptomatic, threshold)
+                ylimit = max(ylimit, add_plot(plots[row][col], data, replicates, calendar.month_name[month]))
+                
+                # Update our plot index
+                col += 1
+                if col % 4 == 0:
+                    row += 1
+                    col = 0    
+                                
+            # Format the overall plot
+            format_plots(plots, xlimit, ylimit)
+            figure.suptitle(get_title(symptomatic, imports))
+            
+            # Save the plot
+            plt.savefig(get_filename(symptomatic, imports), bbox_inches='tight')
+            plt.close()
         
-        # Save the plot
-        plt.savefig(get_filename(symptomatic, imports), bbox_inches='tight')
-        plt.close()
         
+if __name__ == '__main__':
+    FILENAME = 'data/bfa-merged.csv'
+    STUDYDATE = '2007-01-01'
+   
+    generate(FILENAME, 0, 'zero')
+    generate(FILENAME, 1e-4, 'positive')
