@@ -63,14 +63,18 @@ def add_plot(plot, dataset, replicates, month):
     return ylimit
 
 
-def format_plots(plots, xlimit, ylimit):
+def format_plots(plots, xlimit, ylimit, log10):
     row, col = 0, 0
     for ndx in range(1, 13):
         plots[row][col].set_xlim(xlimit)
-        plots[row][col].set_ylim([0, ylimit])
-                
-        # Add the y-axis label
-        plots[1][0].set_ylabel('Frequency')
+
+        if log10:
+            plots[row][col].set_ylim([0, 0.01])
+            plots[row][col].set_yscale('symlog')
+            plots[1][0].set_ylabel('Frequency ($log_{10}$)')
+        else:
+            plots[row][col].set_ylim([0, ylimit])
+            plots[1][0].set_ylabel('Frequency')
         
         # Hide the labels if they aren't needed
         if col > 0: 
@@ -85,7 +89,7 @@ def format_plots(plots, xlimit, ylimit):
             col = 0    
 
 
-def generate(filename, threshold, directory):
+def generate(filename, threshold, directory, log10=False):
     def get_filename(symptomatic, imports):
         postfix = 's'
         if imports == 1: postfix = ''
@@ -134,10 +138,10 @@ def generate(filename, threshold, directory):
                 col += 1
                 if col % 4 == 0:
                     row += 1
-                    col = 0    
+                    col = 0
                                 
             # Format the overall plot
-            format_plots(plots, xlimit, ylimit)
+            format_plots(plots, xlimit, ylimit, log10)
             figure.suptitle(get_title(symptomatic, imports))
             
             # Save the plot
