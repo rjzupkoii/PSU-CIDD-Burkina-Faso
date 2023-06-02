@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-# plot_figN.py
+# plot_spaghetti.py
 #
-# Generate the Figure NN plot for the Burkina Faso 580Y importation manuscript.
+# Generate the spaghetti plots for the Burkina Faso 580Y importation manuscript.
 import calendar
 import datetime
 import matplotlib
