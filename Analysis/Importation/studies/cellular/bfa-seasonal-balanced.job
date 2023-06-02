@@ -8,4 +8,4 @@
 #SBATCH --account=mfb9
 
 cd $SLURM_SUBMIT_DIR
-./MaSim -i bfa-seasonal-50-50.yml -s 10 -r DbReporter
+./MaSim -i bfa-seasonal-balanced.yml -s 10 -r DbReporter
