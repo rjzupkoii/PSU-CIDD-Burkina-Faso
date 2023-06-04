@@ -8,8 +8,8 @@ import datetime
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import os
+import pandas as pd
 
 
 class DataSet:
@@ -22,12 +22,22 @@ class DataSet:
         self.data['frequency'] = self.data['weightedoccurrences'] / self.data['infectedindividuals']            
 
     # Get the replicates for the given combination of values.
-    def get_replicates(self, month, imports, symptomatic, threshold):
+    def get_replicates(self, month, imports, symptomatic, lower, upper):
         filtered = self.data[self.data['dayselapsed'] == np.unique(self.data['dayselapsed'])[-1]]
-        if threshold == 0:
+
+        # Should we return replicates with extinction?
+        if lower is None and upper is not None:
             filtered = filtered[filtered['frequency'] == 0]
-        elif threshold is not None:
-            filtered = filtered[filtered['frequency'] >= threshold]
+
+        # Are we just filtering on the lower bound?
+        elif lower is not None and upper is None:
+            filtered = filtered[filtered['frequency'] >= lower]
+
+        # Otherwise just used the bands provided if they are provided
+        elif lower is not None and upper is not None:
+            filtered = filtered[(filtered['frequency'] > lower) & (filtered['frequency'] < upper)]
+
+        # Return the results based upon the rest of the filter
         return np.unique(filtered[(filtered['month'] == month) &  
                                   (filtered['imports'] == imports) & 
                                   (filtered['symptomatic'] == symptomatic)]['replicateid'])
@@ -89,7 +99,7 @@ def format_plots(plots, xlimit, ylimit, log10):
             col = 0    
 
 
-def generate(filename, threshold, directory, log10=False):
+def generate(filename, directory, lower, upper, log10=False):
     def get_filename(symptomatic, imports):
         postfix = 's'
         if imports == 1: postfix = ''
@@ -100,15 +110,23 @@ def generate(filename, threshold, directory, log10=False):
         postfix = 's'
         if imports == 1: postfix = ''
         
-        if threshold is None:
-            return '{}ymptomatic with {} import{} in month'.format(
+        # Extinction plot of replicates with frequency = 0 
+        if lower is None and  upper == 0:
+            return '{}ymptomatic with {} import{} in month, extinction'.format(
                 ['As', 'S'][symptomatic], imports, postfix)
         
-        symbol = '≥'
-        if threshold == 0: symbol = '='
-        return '{}ymptomatic with {} import{} in month, filter{}{}'.format(
-            ['As', 'S'][symptomatic], imports, postfix, symbol, threshold)
+        # Emergence plot of replicates with frequency > 0 and < 1e-3
+        if lower == 0 and upper == 1e-3:
+            return '{}ymptomatic with {} import{} in month, emergence (> 0 and < 0.001)'.format(
+                ['As', 'S'][symptomatic], imports, postfix)
 
+        # Establishment plot of replicates with frequency ≥ 1e-3
+        if lower == 1e-3 and upper is None:
+            return '{}ymptomatic with {} import{} in month, establishment (≥ 0.001)'.format(
+                ['As', 'S'][symptomatic], imports, postfix)
+        
+        # Likely plotting everything, just note the parameters
+        return '{}ymptomatic with {} import{} in month'.format(['As', 'S'][symptomatic], imports, postfix)
 
     # Make sure the directory exists
     os.makedirs('out/{}'.format(directory), exist_ok=True)
@@ -131,7 +149,7 @@ def generate(filename, threshold, directory, log10=False):
             for month in range(1, 13):
             
                 # Find the replicates that need to be plotted
-                replicates = data.get_replicates(month, imports, symptomatic, threshold)
+                replicates = data.get_replicates(month, imports, symptomatic, lower, upper)
                 ylimit = max(ylimit, add_plot(plots[row][col], data, replicates, calendar.month_name[month]))
                 
                 # Update our plot index
@@ -153,6 +171,7 @@ if __name__ == '__main__':
     FILENAME = 'data/bfa-merged.csv'
     STUDYDATE = '2007-01-01'
    
-    generate(FILENAME, None, 'all')
-    generate(FILENAME, 0, 'zero')
-    generate(FILENAME, 1e-4, 'positive')
+    generate(FILENAME, 'all', None, None)
+    generate(FILENAME, 'extinction', None, 0)
+    generate(FILENAME, 'emergence', 0, 1e-3)
+    generate(FILENAME, 'establishment', 1e-3, None)
