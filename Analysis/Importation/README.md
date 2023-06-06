@@ -1,6 +1,6 @@
 This directory contains the various scripts that were used for data and analysis and figure generation for the Burkina Faso 580Y importation study.
 
-The following scripts were used to generate plots and data in the manuscript:
+The following scripts were used to generate plots and data in the manuscript, along with the R scripts in `stats`:
 
 **Data Processing**
 - `importLoader.py` - Retrieves the data from the database and saves it as CSV files. Must be run before everything else to ensure the most recent data.
