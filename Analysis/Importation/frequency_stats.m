@@ -15,7 +15,9 @@ process('data/bfa-merged.csv', filter, false);
 process_year('data/bfa-merged.csv', filter);
 
 % Generate the plots for the manuscript
+mkdir('out');
 generate_pairwise_plots();
+mkdir('plots/manuscript');
 generate_probablity_plot(-3, 'binomial');
 
 function [] = process_year(filename, filter)

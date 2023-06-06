@@ -106,10 +106,10 @@ def get_title(filename):
         'bfa-grid-unbalanced.yml'    : 'Seasonal, 87-39',
         
         # Single cell studies
-        'bfa-steady-50-50.yml'   : 'No Season, 50-50',
-        'bfa-steady-80-20.yml'   : 'No Season, 80-20',
-        'bfa-seasonal-50-50.yml' : 'Seasonal, 50-50',
-        'bfa-seasonal-80-20.yml' : 'Seasonal, 80-20',
+        'bfa-steady-balanced.yml'   : 'No Season, 50-50',
+        'bfa-steady-unbalanced.yml'   : 'No Season, 87-39',
+        'bfa-seasonal-balanced.yml' : 'Seasonal, 50-50',
+        'bfa-seasonal-unbalanced.yml' : 'Seasonal, 80-39',
         
         # Primary titles
         'data/bfa-cellular.csv' : 'Single Cell Study',
@@ -122,16 +122,16 @@ def get_title(filename):
 def plot_cell():
     FILENAME = 'data/bfa-cellular.csv'
     LAYOUT = {
-        'bfa-steady-50-50.yml'   : [0, 0],
-        'bfa-steady-80-20.yml'   : [0, 1],
-        'bfa-seasonal-50-50.yml' : [1, 0],
-        'bfa-seasonal-80-20.yml' : [1, 1]
+        'bfa-steady-balanced.yml'   : [0, 0],
+        'bfa-steady-unbalanced.yml'   : [0, 1],
+        'bfa-seasonal-balanced.yml' : [1, 0],
+        'bfa-seasonal-unbalanced.yml' : [1, 1]
     }
 
-    figure(FILENAME, LAYOUT, 'clinicalepisodes', 'Total Clinical Episodes', 'out/clinical.png', ylimit=[3900, 18000])
+    figure(FILENAME, LAYOUT, 'clinicalepisodes', 'Total Clinical Episodes', 'out/clinical.png', ylimit=[4500, 36000])
     figure(FILENAME, LAYOUT, 'percent_treated', 'Mean Treatment Seeking (%)', 'out/treated.png')
-    figure(FILENAME, LAYOUT, 'frequency', '580Y Frequency', 'out/frequency.png', ylimit=[0, 0.4])
-    figure(FILENAME, LAYOUT, 'weighted_580y', '580Y Weighted Count', 'out/weighted.png', ylimit=[0, 60000])
+    figure(FILENAME, LAYOUT, 'frequency', '580Y Frequency', 'out/frequency.png', ylimit=[0, 1])
+    figure(FILENAME, LAYOUT, 'weighted_580y', '580Y Weighted Count', 'out/weighted.png', ylimit=[0, 375000])
 
 
 def plot_2x_grid():
