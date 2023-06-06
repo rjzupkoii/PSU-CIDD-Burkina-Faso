@@ -1,6 +1,6 @@
 
 
-# Pull in deata and separate by de novo, importation during low-transmission, 
+# Pull in data and separate by de novo, importation during low-transmission, 
 #	and importation during high-transmission
 
 setwd('')
