@@ -82,6 +82,11 @@ def format_plots(plots, xlimit, ylimit, log10):
             plots[row][col].set_ylim([0, 0.01])
             plots[row][col].set_yscale('symlog')
             plots[1][0].set_ylabel('Frequency ($log_{10}$)')
+        elif ylimit < 1e-4:
+            # For small values, include the multiplier in the y-axis legend
+            # This allows us to remove it from above the y-axis itself 
+            plots[row][col].set_ylim([0, ylimit])
+            plots[1][0].set_ylabel(r'Frequency ($\times 10^{-5}$)')
         else:
             plots[row][col].set_ylim([0, ylimit])
             plots[1][0].set_ylabel('Frequency')
