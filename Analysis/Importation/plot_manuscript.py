@@ -61,6 +61,10 @@ def prepare(path, variables, start = -61, end = -24):
                     data[key][ndx].append(sum(byDate['580yMulticlonal']) / sum(byDate['Multiclonal']))                    
                 elif key == 'ClinicalCoverage':
                     data[key][ndx].append(sum(byDate['Treatments']) / sum(byDate['ClinicalIndividuals']))
+                elif key == 'PhiCoverage':
+                    phi = sum(byDate['ClinicalIndividuals']) / sum(byDate['InfectedIndividuals'])
+                    coverage = sum(byDate['Treatments']) / sum(byDate['ClinicalIndividuals'])
+                    data[key][ndx].append(phi * coverage)
                 else:
                     data[key][ndx].append(math.log10(sum(byDate[key])))
     
@@ -100,6 +104,7 @@ def plot(parameters, dates, data):
     STUDYDATE = '2007-01-01'
     color = parameters['colors']
     label = parameters['labels']
+    style = parameters['styles']
         
     # Prepare the date format
     startDate = datetime.datetime.strptime(STUDYDATE, "%Y-%m-%d")
@@ -116,12 +121,12 @@ def plot(parameters, dates, data):
     
     # Add the study data
     for key in parameters['left.keys']:
-        add_plot(left, dates, data[key], next(color), next(label))
+        add_plot(left, dates, data[key], next(color), next(label), style=next(style))
     for key in parameters['right.keys']:
-        add_plot(right, dates, data[key], next(color), next(label), style='--')
+        add_plot(right, dates, data[key], next(color), next(label), style=next(style))
     
     # Set the left y-axis label and tick values
-    left.set_ylabel(parameters['left.ylabel'] + ' (Solid)')
+    left.set_ylabel(parameters['left.ylabel'])
     left.set_ylim([0, 0.5])
     ticks = left.get_yticks()
     left.set_yticks(ticks)
@@ -130,7 +135,7 @@ def plot(parameters, dates, data):
     left.set_yticklabels(ticks)
     
     # Set the right y-axis label and tick values
-    right.set_ylabel(parameters['right.ylabel'] + ' (Dashed)')
+    right.set_ylabel(parameters['right.ylabel'])
     if parameters['right.formatter'] != None:
         right.yaxis.set_major_formatter(parameters['right.formatter'])
         
@@ -157,7 +162,8 @@ if __name__ == '__main__':
 
         'variables'     : ['Phi', 'MeanTheta', 'ClinicalCoverage'],
         'labels'        : iter([r'$\varphi$', r'$\theta_{pop}$', 'Treatment Coverage']),
-        'colors'        : iter(['#332288', '#88CCEE', '#CC6677', '#117733']),
+        'colors'        : iter(['#332288', '#88CCEE', '#CC6677']),
+        'styles'        : iter(['-', '-', '--']),
 
         'left.keys'     : ['Phi', 'MeanTheta'],
         'left.ylabel'   : r'$\varphi$ / $\theta_{pop}$',
@@ -174,6 +180,7 @@ if __name__ == '__main__':
         'variables'       : ['580YProportion', 'MOI'],
         'labels'          : iter(['Ratio of Multiclonal with 580Y vs. All Mulitclonal', 'Multiplicity of Infection']),
         'colors'          : iter(['#DDCC77', '#CC6677']),
+        'styles'          : iter(['-', '--']),
         
         'left.keys'       : ['580YProportion'],
         'left.ylabel'     : 'Multiclonal Ratio',
@@ -183,4 +190,21 @@ if __name__ == '__main__':
         'right.formatter' : None
     }
     make_figure(FIGURE_SEVEN)
+    
+    FIGURE_EIGHT = {
+        'filename'        : 'out/Fig. 8 - BFA, Phi-Coverage.png',
+        
+        'variables'       : ['Phi', 'PhiCoverage', 'ClinicalCoverage'],
+        'labels'          : iter([r'$\varphi$', r'$\varphi \cdot Coverage$', 'Coverage']),
+        'colors'          : iter(['#0000FF', '#000000', '#88CCEE']),
+        'styles'          : iter(['--', '-', '--']),
+        
+        'left.keys'       : ['Phi', 'PhiCoverage'],
+        'left.ylabel'     : r'$\varphi$ / $\varphi \cdot Coverage$',
+        
+        'right.keys'      : ['ClinicalCoverage'],
+        'right.ylabel'    : 'Treatment Coverage of Clinical Cases',
+        'right.formatter' :  mtick.PercentFormatter(1.0, decimals=0)
+    }
+    make_figure(FIGURE_EIGHT)
     

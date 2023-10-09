@@ -95,21 +95,21 @@ def get_title(filename):
     MAPPING = {
         # 2x Grid based studies
         'bfa-2x-grid-ns-balanced.yml'   : 'No Season, 50-50',
-        'bfa-2x-grid-ns-unbalanced.yml' : 'No Season, 87-39',
+        'bfa-2x-grid-ns-unbalanced.yml' : 'No Season, 87-23.4',
         'bfa-2x-grid-balanced.yml'      : 'Seasonal, 50-50',
-        'bfa-2x-grid-unbalanced.yml'    : 'Seasonal, 87-39',
+        'bfa-2x-grid-unbalanced.yml'    : 'Seasonal, 87-23.4',
 
         # 3x Grid based studies
         'bfa-grid-ns-balanced.yml'   : 'No Season, 50-50',
-        'bfa-grid-ns-unbalanced.yml' : 'No Season, 87-39',
+        'bfa-grid-ns-unbalanced.yml' : 'No Season, 87-23.4',
         'bfa-grid-balanced.yml'      : 'Seasonal, 50-50',
-        'bfa-grid-unbalanced.yml'    : 'Seasonal, 87-39',
+        'bfa-grid-unbalanced.yml'    : 'Seasonal, 87-23.4',
         
         # Single cell studies
         'bfa-steady-balanced.yml'   : 'No Season, 50-50',
-        'bfa-steady-unbalanced.yml'   : 'No Season, 87-39',
+        'bfa-steady-unbalanced.yml'   : 'No Season, 87-23.4',
         'bfa-seasonal-balanced.yml' : 'Seasonal, 50-50',
-        'bfa-seasonal-unbalanced.yml' : 'Seasonal, 80-39',
+        'bfa-seasonal-unbalanced.yml' : 'Seasonal, 87-23.4',
         
         # Primary titles
         'data/bfa-cellular.csv' : 'Single Cell Study',
