@@ -168,7 +168,7 @@ def generate(filename, directory, lower, upper, log10=False):
             figure.suptitle(get_title(symptomatic, imports))
             
             # Save the plot
-            plt.savefig(get_filename(symptomatic, imports), bbox_inches='tight')
+            plt.savefig(get_filename(symptomatic, imports), bbox_inches='tight', dpi=300)
             plt.close()
         
         

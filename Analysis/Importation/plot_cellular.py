@@ -9,6 +9,7 @@ import datetime
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 import pandas as pd
 import sys
 
@@ -87,7 +88,7 @@ def figure(data_file, layout, column, ylabel, filename, xlimit = None, ylimit = 
     figure.suptitle(get_title(data_file))
         
     # Save the plot
-    plt.savefig(filename, bbox_inches='tight')
+    plt.savefig(filename, bbox_inches='tight', dpi=150)
     plt.close()
     
 
@@ -176,6 +177,10 @@ def plot_3x_grid():
     
 
 if __name__  == '__main__':
+    # Make sure the out directory exists
+    os.makedirs('out', exist_ok=True)    
+
+    # Generate the plots
     plot_cell()
     plot_2x_grid()
     plot_3x_grid()

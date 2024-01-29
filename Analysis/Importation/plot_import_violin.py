@@ -73,5 +73,4 @@ for frequency in [1, 3, 6, 9]:
             ax.set_xlabel('Month of Importation')
 
 # Save the plot
-fig.savefig('plots/manuscript/MS BFA, Fig. 1.png', dpi=150)
-fig.savefig('plots/manuscript/MS BFA, Fig. 1.svg', format='svg')
+fig.savefig('out/MS BFA, Fig. 1.png', dpi=300)

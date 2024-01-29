@@ -151,14 +151,14 @@ def plot(parameters, dates, data):
     else:
         fig.tight_layout()
         fig.savefig(parameters['filename'], dpi=150)        
-    # fig.clear()
+    fig.clear()
     
 
 if __name__ == '__main__':
     os.makedirs('out', exist_ok=True)
 
-    FIGURE_SIX = {
-        'filename'      : 'out/Fig. 6 - BFA, Treatment Coverage.png',
+    SUP_FIGURE_S5 = {
+        'filename'      : 'out/ESM Fig. S5 - BFA, Treatment Coverage.png',
 
         'variables'     : ['Phi', 'MeanTheta', 'ClinicalCoverage'],
         'labels'        : iter([r'$\varphi$', r'$\theta_{pop}$', 'Treatment Coverage']),
@@ -172,8 +172,25 @@ if __name__ == '__main__':
         'right.ylabel'  : 'Treatment Coverage of Clinical Cases',
         'right.formatter' : mtick.PercentFormatter(1.0, decimals=0)
     }
-    make_figure(FIGURE_SIX)
+    make_figure(SUP_FIGURE_S5)
     
+    FIGURE_SIX = {
+        'filename'        : 'out/Fig. 6 - BFA, Phi-Coverage.png',
+        
+        'variables'       : ['Phi', 'PhiCoverage', 'ClinicalCoverage'],
+        'labels'          : iter([r'$\varphi$', r'$\varphi \cdot Coverage$', 'Coverage']),
+        'colors'          : iter(['#0000FF', '#000000', '#88CCEE']),
+        'styles'          : iter(['--', '-', '--']),
+        
+        'left.keys'       : ['Phi', 'PhiCoverage'],
+        'left.ylabel'     : r'$\varphi$ / $\varphi \cdot Coverage$',
+        
+        'right.keys'      : ['ClinicalCoverage'],
+        'right.ylabel'    : 'Treatment Coverage of Clinical Cases',
+        'right.formatter' :  mtick.PercentFormatter(1.0, decimals=0)
+    }
+    make_figure(FIGURE_SIX)
+
     FIGURE_SEVEN = {
         'filename'        : 'out/Fig. 7 - BFA, MOI.png',
         
@@ -190,21 +207,5 @@ if __name__ == '__main__':
         'right.formatter' : None
     }
     make_figure(FIGURE_SEVEN)
-    
-    FIGURE_EIGHT = {
-        'filename'        : 'out/Fig. 8 - BFA, Phi-Coverage.png',
-        
-        'variables'       : ['Phi', 'PhiCoverage', 'ClinicalCoverage'],
-        'labels'          : iter([r'$\varphi$', r'$\varphi \cdot Coverage$', 'Coverage']),
-        'colors'          : iter(['#0000FF', '#000000', '#88CCEE']),
-        'styles'          : iter(['--', '-', '--']),
-        
-        'left.keys'       : ['Phi', 'PhiCoverage'],
-        'left.ylabel'     : r'$\varphi$ / $\varphi \cdot Coverage$',
-        
-        'right.keys'      : ['ClinicalCoverage'],
-        'right.ylabel'    : 'Treatment Coverage of Clinical Cases',
-        'right.formatter' :  mtick.PercentFormatter(1.0, decimals=0)
-    }
-    make_figure(FIGURE_EIGHT)
+
     
